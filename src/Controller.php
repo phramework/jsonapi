@@ -353,8 +353,9 @@ abstract class Controller
                                 //unparsable
                             } else {
                                 //use filterValidationModel for this property
-                                //if defined
-                                if ($filterValidationModel
+                                //if defined and operator is a CLASS_LIKE operator
+                                if (in_array($operator, Operator::getLikeOperators())
+                                    && $filterValidationModel
                                     && isset($filterValidationModel->properties->{$filterKey})
                                 ) {
                                     //Validate operant value
