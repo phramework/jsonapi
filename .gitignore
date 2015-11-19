@@ -1,0 +1,10 @@
+nbproject/
+**/vendor/
+/nbproject/private
+/doc/
+/apidoc/
+error_log.txt
+node_modules/
+composer.lock
+npm-debug.log
+build/
