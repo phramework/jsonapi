@@ -115,7 +115,7 @@ abstract class Controller
     /**
      * Extract included related resources from parameters
      * @param  array|object $params Request parameters
-     * @return null|array
+     * @return null|string[]
      */
     protected static function getRequestInclude($params = [])
     {
@@ -264,7 +264,7 @@ abstract class Controller
                     //when TYPE_TO_ONE it's easy to filter
                 } else {
                     $validationModel = $modelClass::getValidationModel();
-
+                    $filterValidationModel = $modelClass::getFilterValidationModel();
                     $filterable = $modelClass::getFilterable();
 
                     $isJSONFilter = false;
@@ -352,9 +352,19 @@ abstract class Controller
                             if ($isJSONFilter) {
                                 //unparsable
                             } else {
-                                //Validate operant value
-                                $operant = $validationModel->properties
-                                    ->{$filterKey}->parse($operant);
+                                //use filterValidationModel for this property
+                                //if defined
+                                if ($filterValidationModel
+                                    && isset($filterValidationModel->properties->{$filterKey})
+                                ) {
+                                    //Validate operant value
+                                    $operant = $filterValidationModel->properties
+                                        ->{$filterKey}->parse($operant);
+                                } else {
+                                    //Validate operant value
+                                    $operant = $validationModel->properties
+                                        ->{$filterKey}->parse($operant);
+                                }
                             }
                         }
                         if ($isJSONFilter) {

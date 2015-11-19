@@ -214,6 +214,17 @@ class Model
     }
 
     /**
+     * Get validation model used for filters, if set for a property, this
+     * will override the validation model defined in getValidationModel for this
+     * property
+     * @return \Phramework\Validate\Object
+     */
+    public static function getFilterValidationModel()
+    {
+        return null;
+    }
+
+    /**
      * Use resource's validationModel to validate attributes
      *
      * Filtered and fixed values will be updated on original $attributes
