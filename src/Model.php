@@ -27,7 +27,7 @@ use \Phramework\JSONAPI\Relationship;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Spafaridis Xenophon <nohponex@gmail.com>
  */
-class Model
+abstract class Model
 {
     /**
      * Model's method prefix
@@ -416,6 +416,23 @@ class Model
         return \Phramework\Models\SCRUD\Update::update(
             $id,
             (array)$attributes,
+            static::getTable(),
+            static::getIdAttribute()
+        );
+    }
+
+    /**
+     * Delete a database record
+     * @param  mixex $id id attribute's value
+     * @param  array $additionalAttributes Key-value array with addiotnal fields
+     * to use in WHERE clause
+     * @return boolean Returns true on success, false on failure
+     */
+    public static function delete($id, $additionalAttributes = [])
+    {
+        return \Phramework\Models\SCRUD\Delete::delete(
+            $id,
+            (array)$additionalAttributes,
             static::getTable(),
             static::getIdAttribute()
         );
