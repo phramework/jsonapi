@@ -1,0 +1,41 @@
+{
+  "name": "phramework/jsonapi",
+  "description": "JSON API specification implementation",
+  "homepage": "https://nohponex.gr",
+  "authors": [
+    {
+      "name": "Xenofon Spafaridis",
+      "email": "nohponex@gmail.com",
+      "homepage": "https://nohponex.gr"
+    }
+  ],
+  "require": {
+    "php": "^7.0.0",
+    "ext-json": "*",
+    "psr/http-message": "^1.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.1.1",
+    "phpunit/phpunit": "^6.4.0",
+    "mockery/mockery": "^1.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "Phramework\\JsonApi\\": "src"
+    }
+  },
+  "autoload-dev": {},
+  "archive": {
+    "exclude": [
+      "*",
+      ".*",
+      "!/src/*"
+    ]
+  },
+  "scripts": {
+    "test": "./vendor/bin/phpunit",
+    "lint": "./vendor/bin/phpcs -p -s --standard=PSR2 ./src ./tests"
+  }
+}
