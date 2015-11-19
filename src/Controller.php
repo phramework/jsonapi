@@ -80,22 +80,6 @@ abstract class Controller
     }
 
     /**
-     * If !assert then a unknown_error exceptions is thrown.
-     *
-     * @param mixed  $assert
-     * @param string $exceptionMessage [Optional] Default is 'unknown_error'
-     * @throws \Exception
-     */
-    protected static function testUnknownError(
-        $assert,
-        $exceptionMessage = 'Unknown Error'
-    ) {
-        if (!$assert) {
-            throw new \Exception($exceptionMessage);
-        }
-    }
-
-    /**
      * View JSONAPI data
      * @param stdClass $data
      * @uses \Phramework\Viewers\JSONAPI
