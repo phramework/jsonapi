@@ -63,6 +63,23 @@ abstract class Controller
     }
 
     /**
+     * If !assert then a Exception exception is thrown.
+     *
+     * @param mixed  $assert
+     * @param string $exceptionMessage [Optional] Default is 'unknown_error'
+     *
+     * @throws Exception
+     */
+    protected static function testUnknownError(
+        $assert,
+        $exceptionMessage = 'Unknown error'
+    ) {
+        if (!$assert) {
+            throw new \Exception($exceptionMessage);
+        }
+    }
+
+    /**
      * If !assert then a unknown_error exceptions is thrown.
      *
      * @param mixed  $assert
@@ -642,7 +659,7 @@ abstract class Controller
             );
         }
 
-        \Phramework\Models\Response\noContent();
+        \Phramework\Models\Response::noContent();
     }
 
     /**
