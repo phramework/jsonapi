@@ -30,7 +30,7 @@ use \Phramework\Exceptions\RequestException;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Spafaridis Xenophon <nohponex@gmail.com>
  */
-class Controller
+abstract class Controller
 {
     /**
      * Shortcut to \Phramework\Phramework::view.
