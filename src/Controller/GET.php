@@ -16,6 +16,10 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use \Phramework\Models\Request;
+use \Phramework\Models\Operator;
+use \Phramework\Exceptions\RequestException;
+
 /**
  * DELETE
  * @package JSONAPI
