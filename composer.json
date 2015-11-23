@@ -1,6 +1,7 @@
 {
   "name": "phramework/jsonapi",
   "description": "jsonapi for Phramework",
+  "license": "Apache-2.0",
   "homepage": "https://nohponex.gr",
   "authors": [{
     "name": "Xenophon Spafaridis",

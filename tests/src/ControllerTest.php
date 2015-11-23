@@ -13,15 +13,6 @@ class Controller extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $reflector = new \ReflectionClass(
-            \Phramework\JSONAPI\Controller::class
-        );
-        var_dump(
-            $reflector->isSubclassOf(
-                \Phramework\JSONAPI\Controller\DELETE::class
-            )
-        );
-        die();
     }
 
     /**
