@@ -645,7 +645,7 @@ abstract class Controller
 
         //Force JSONAPI content-type header
         if (!headers_sent()) {
-            header('Content-type: application/vnd.api+json;charset=utf-8');
+            header('Content-Type: application/vnd.api+json;charset=utf-8');
         }
 
         \Phramework\Models\Response::noContent();
