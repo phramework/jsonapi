@@ -49,7 +49,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $modelClass,
         $additionalGetArguments = []
     ) {
-        $validationModel = new \Phramework\Validate\Object(
+        $validationModel = new \Phramework\Validate\ObjectValidator(
             [],
             [],
             false

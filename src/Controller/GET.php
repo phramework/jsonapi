@@ -226,13 +226,13 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
             if (isset($params['page']['offset'])) {
                 $tempPage['offset'] =
-                    (new \Phramework\Validate\UnsignedInteger())
+                    (new \Phramework\Validate\UnsignedIntegerValidator())
                         ->parse($params['page']['offset']);
             }
 
             if (isset($params['page']['limit'])) {
                 $tempPage['limit'] =
-                    (new \Phramework\Validate\UnsignedInteger())
+                    (new \Phramework\Validate\UnsignedIntegerValidator())
                         ->parse($params['page']['limit']);
             }
 

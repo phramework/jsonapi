@@ -5,7 +5,7 @@ namespace Phramework\JSONAPI\Viewers;
 /**
  * Implementation of IViewer for jsonapi
  *
- * Sends `Content-type: application/vnd.api+json` response to client
+ * Sends `Content-Type: application/vnd.api+json` response to client
  *
  * JSONP Support is disabled
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
