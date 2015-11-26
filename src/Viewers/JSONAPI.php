@@ -23,7 +23,7 @@ class JSONAPI implements \Phramework\Viewers\IViewer
     public function view($parameters)
     {
         if (!headers_sent()) {
-            header('Content-type: application/vnd.api+json;charset=utf-8');
+            header('Content-Type: application/vnd.api+json;charset=utf-8');
         }
 
         //include JSON API Object
