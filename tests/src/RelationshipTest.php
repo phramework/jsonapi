@@ -26,4 +26,8 @@ class Relationship extends \PHPUnit_Framework_TestCase
     {
 
     }
+    public function testExtends()
+    {
+        $this->assertTrue(true);
+    }
 }

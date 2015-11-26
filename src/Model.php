@@ -22,7 +22,6 @@ use \Phramework\JSONAPI\Relationship;
 
 /**
  * Base JSONAPI Model
- * @package JSONAPI
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Spafaridis Xenophon <nohponex@gmail.com>
@@ -206,7 +205,7 @@ abstract class Model
 
     /**
      * Get resource's validation model
-     * @return \Phramework\Validate\Object
+     * @return \Phramework\Validate\ObjectValidator
      */
     public static function getValidationModel()
     {
@@ -217,27 +216,11 @@ abstract class Model
      * Get validation model used for filters, if set for a property, this
      * will override the validation model defined in getValidationModel for this
      * property
-     * @return \Phramework\Validate\Object
+     * @return \Phramework\Validate\ObjectValidator
      */
     public static function getFilterValidationModel()
     {
         return null;
-    }
-
-    /**
-     * Use resource's validationModel to validate attributes
-     *
-     * Filtered and fixed values will be updated on original $attributes
-     * argument
-     * @param array $attributes [description]
-     * @uses \Phramework\Validate\Validate
-     */
-    public static function validate(&$attributes)
-    {
-        \Phramework\Validate\Validate::model(
-            $attributes,
-            static::getValidationModel()
-        );
     }
 
     /**
@@ -387,16 +370,16 @@ abstract class Model
     /**
      * Create a record in database
      * @param  array $attributes
-     * @param  \Phramework\Models\SCRUD\Create::RETURN_ID Return type,
+     * @param  \Phramework\Database\Operations\Create::RETURN_ID Return type,
      * default is RETURN_ID
      * @return mixed
      * @todo disable post ?
      */
     public static function post(
         $attributes,
-        $return = \Phramework\Models\SCRUD\Create::RETURN_ID
+        $return = \Phramework\Database\Operations\Create::RETURN_ID
     ) {
-        return \Phramework\Models\SCRUD\Create::create(
+        return \Phramework\Database\Operations\Create::create(
             $attributes,
             static::getTable(),
             static::getSchema(),
@@ -413,7 +396,7 @@ abstract class Model
      */
     public static function patch($id, $attributes)
     {
-        return \Phramework\Models\SCRUD\Update::update(
+        return \Phramework\Database\Operations\Update::update(
             $id,
             (array)$attributes,
             static::getTable(),
@@ -430,7 +413,7 @@ abstract class Model
      */
     public static function delete($id, $additionalAttributes = [])
     {
-        return \Phramework\Models\SCRUD\Delete::delete(
+        return \Phramework\Database\Operations\Delete::delete(
             $id,
             (array)$additionalAttributes,
             static::getTable(),
