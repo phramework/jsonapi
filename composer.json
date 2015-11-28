@@ -9,10 +9,6 @@
     "email": "nohponex@gmail.com",
     "homepage": "https://nohponex.gr"
   }],
-  "repositories": [{
-    "type": "vcs",
-    "url": "git@gitlab.mathlogic.eu:Phramework/Phramework.git"
-  }],
   "require": {
     "php": ">=5.6",
     "phramework/phramework": "^1.0.0",
