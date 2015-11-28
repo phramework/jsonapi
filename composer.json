@@ -2,9 +2,10 @@
   "name": "phramework/jsonapi",
   "description": "jsonapi for Phramework",
   "license": "Apache-2.0",
-  "homepage": "https://nohponex.gr",
+  "homepage": "https://phramework.github.io/",
+  "type": "library",
   "authors": [{
-    "name": "Xenophon Spafaridis",
+    "name": "Xenofon Spafaridis",
     "email": "nohponex@gmail.com",
     "homepage": "https://nohponex.gr"
   }],
@@ -14,14 +15,13 @@
   }],
   "require": {
     "php": ">=5.6",
-    "phramework/phramework": "dev-master",
+    "phramework/phramework": "^1.0.0",
     "ext-json": "*"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
     "phpunit/phpunit": "5.*"
   },
-  "minimum-stability": "alpha",
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
