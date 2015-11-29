@@ -40,13 +40,25 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $headers,
         $modelClass
     ) {
-        $validationModel = $modelClass::getValidationModel();
-
         $requestAttributes = static::getRequestAttributes($params);
+
+        $validationModel = $modelClass::getValidationModel();
 
         $attributes = $validationModel->parse($requestAttributes);
 
         $id = $modelClass::post((array)$attributes);
+
+        $relationships = $modelClass::getRelationships();
+
+        $requestRelationships = static::getRequestRelationships($params);
+
+        foreach ($requestRelationships as $relationship => $value) {
+            //Check if relationship exists
+            static::exists(
+                $modelClass::relationshipExists($relationship),
+                'Relationship not found'
+            );
+        }
 
         //Prepare response with 201 Created status code
         \Phramework\Models\Response::created(

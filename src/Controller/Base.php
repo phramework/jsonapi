@@ -171,6 +171,30 @@ abstract class Base
         return (object)$params['data']['attributes'];
     }
 
+
+    /**
+     * Get request relationships if any attributes.
+     * @param  array|object $params Request parameters
+     * @return \stdClass
+     */
+    protected static function getRequestRelationships($params = [])
+    {
+        //work with arrays
+        if (!is_array($params) && is_object($params)) {
+            $params = array($params);
+        }
+
+        //Require data
+        Request::requireParameters($params, ['data']);
+
+        //Require data['relationships']
+        if (isset($params['data']['relationships'])) {
+            return (object)$params['data']['relationships'];
+        } else {
+            return new \stdClass();
+        }
+    }
+
     /**
      * Throw a Forbidden exception if resource's id is set.
      *
