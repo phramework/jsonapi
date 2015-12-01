@@ -37,7 +37,7 @@ abstract class Model
      * Model's method prefix
      */
     const GET_BY_PREFIX = 'getBy';
-    
+
     /**
      * Resource's type, used to describe resource objects that share
      * common attributes and relationships
@@ -101,20 +101,6 @@ abstract class Model
             return static::$cast;
         }
 
-        //Use validationModel's attributes to extract the cast chema
-        /*if (($validationModel = static::getValidationModel()) != []) {
-            $cast = [];
-
-            foreach ($validationModel as $key => $attribute) {
-                if (isset($attribute['type'])) {
-                    //Push to cast array
-                    $cast[$key] = $attribute['type'];
-                }
-            }
-
-            return $cast;
-        }*/
-
         return [];
     }
 
@@ -167,7 +153,7 @@ abstract class Model
      * Get link to resource's self
      * @param  string $append [description]
      * @return string
-     * @uses Phramework::getSetting
+     * @uses Phramework::getSetting base
      */
     public static function getSelfLink($append = '')
     {
@@ -303,7 +289,7 @@ abstract class Model
 
                 $attribute = $relationshipObject->getAttribute();
                 $relationshipType = $relationshipObject->getRelationshipType();
-                $type = $relationshipObject->getType();
+                $type = $relationshipObject->getResourceType();
 
                 if (isset($record->{$attribute}) && $record->{$attribute}) {
                     //If relationship data exists in record's attributes use them
@@ -450,7 +436,11 @@ abstract class Model
      */
     public static function getSort()
     {
-        return (object)['attributes' => [], 'default' => null, 'ascending' => true];
+        return (object)[
+            'attributes' => [],
+            'default' => null,
+            'ascending' => true
+        ];
     }
 
     /**
@@ -538,6 +528,7 @@ abstract class Model
      * @param  string[] $include     An array with the keys of relationships to include
      * @return object[]              An array with all included related data
      * @todo handle Relationship resource cannot be accessed
+     * @todo include second level relationships
      */
     public static function getIncludedData(
         $primaryData,
@@ -550,9 +541,10 @@ abstract class Model
         //check if relationship exists
         foreach ($include as $relationshipKey) {
             if (!static::relationshipExists($relationshipKey)) {
-                throw new \Phramework\Exceptions\RequestException(
-                    'Include relationship not found'
-                );
+                throw new \Phramework\Exceptions\RequestException(sprintf(
+                    'Relationship "%s" not found',
+                    $relationshipKey
+                ));
             }
 
             //Will hold ids of related data

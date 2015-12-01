@@ -15,8 +15,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        return;
-        ob_start();
+        //ob_start();
         $_SERVER['REQUEST_URI'] = '/article/';
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_POST;
 
@@ -46,9 +45,9 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         $this->phramework = \Phramework\JSONAPI\APP\Bootstrap::prepare();
 
         // clean the output buffer
-        ob_clean();
+        //ob_clean();
         $this->phramework->invoke();
-        ob_end_clean();
+        //ob_end_clean();
     }
 
     /**

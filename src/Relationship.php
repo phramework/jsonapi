@@ -45,7 +45,7 @@ class Relationship
      * Relationship's resource type
      * @var string
      */
-    protected $relationshipResourceType;
+    protected $resourceType;
 
     /**
      * Relationship's class
@@ -62,7 +62,7 @@ class Relationship
     /**
      * Create a new relationship from this resource to a relationship resource
      * @param string $attribute        Relationship's attribute in this resource
-     * @param string $relationshipResourceType Relationship's resource type
+     * @param string $resourceType Relationship's resource type
      * @param Relationship::TYPE_TO_ONE|Relationship::TYPE_TO_MANY
      * $relationshipType Relationship type
      * @param string|class|null $relationshipClass [optional]
@@ -72,13 +72,13 @@ class Relationship
      */
     public function __construct(
         $attribute,
-        $relationshipResourceType,
+        $resourceType,
         $relationshipType = self::TYPE_TO_ONE,
         $relationshipClass = null,
         $relationshipIdAttribute = 'id'
     ) {
         $this->attribute = $attribute;
-        $this->relationshipResourceType = $relationshipResourceType;
+        $this->resourceType = $resourceType;
         $this->relationshipType = $relationshipType;
         $this->relationshipClass = $relationshipClass;
         $this->relationshipIdAttribute = $relationshipIdAttribute;
@@ -109,9 +109,9 @@ class Relationship
      *
      * @return string
      */
-    public function getType()
+    public function getResourceType()
     {
-        return $this->relationshipResourceType;
+        return $this->resourceType;
     }
 
     /**

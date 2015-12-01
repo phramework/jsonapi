@@ -42,14 +42,18 @@ class Article extends \Phramework\JSONAPI\Model
                 ],
                 ['title']
             ),
-            'relationships' => (object)[
-                'creator' => new UnsignedIntegerValidator(),
-                'tag' => new ArrayValidator(
-                    0,
-                    null,
-                    new UnsignedIntegerValidator() //items
-                )
-            ]
+            'relationships' => new ObjectValidator(
+                [
+                    'creator' => new UnsignedIntegerValidator(),
+                    'tag' => new ArrayValidator(
+                        0,
+                        null,
+                        new UnsignedIntegerValidator() //items
+                    )
+                ],
+                ['creator'],
+                false
+            )
         ];
     }
 
@@ -84,7 +88,7 @@ class Article extends \Phramework\JSONAPI\Model
             $id
         );
 
-        $resources = array_map('self::resource', $data);
+        $resources = array_map('static::resource', $data);
 
         if (!$is_array) {
 

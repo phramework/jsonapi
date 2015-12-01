@@ -34,13 +34,18 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
      * @param  string $modelClass                      Resource's primary model
-     * @todo use $additionalGetArguments
+     * @param  array $additionalGetArguments           [Optional] Array with any
+     * additional arguments that the primary data is requiring
+     * @param  array $additionalRelationshipsArguments [Optional] Array with any
+     * additional arguemnt primary data's relationships are requiring
      */
     protected static function handlePOST(
         $params,
         $method,
         $headers,
-        $modelClass
+        $modelClass,
+        $additionalGetArguments = [],
+        $additionalRelationshipsArguments = []
     ) {
 
         $requestAttributes = static::getRequestAttributes($params);
@@ -57,9 +62,32 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         $requestRelationships = static::getRequestRelationships($params);
 
+        /**
+         * Format, object with
+         * - relationshipKey1 -> id1
+         * - relationshipKey2 -> [id1, id2]
+         */
+        $relationshipAttributes = new \stdClass();
+
+        /**
+         * Foreach request relationship
+         * - check if relationship exists
+         * - if TYPE_TO_ONE check if data is object with type and id
+         * - if TYPE_TO_MANY check if data is an array of objects with type and id
+         * - check if types are correct
+         * - copy ids to $relationshipAttributes object
+         */
         foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
-            //MUST exists
+
+            if (!isset($relationshipValue['data'])) {
+                throw new RequestException(sprintf(
+                    'Relationship "%s" must have a member data defined',
+                    $relationshipKey
+                ));
+            }
+
             $relationshipData = $relationshipValue['data'];
+
             //Check if relationship exists
             static::exists(
                 $modelClass::relationshipExists($relationshipKey),
@@ -69,15 +97,27 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 )
             );
 
-            //check types
-
-            //if to ONE
             $relationship = $modelClass::getRelationship($relationshipKey);
-            $relationshipClass = $relationship->getRelationshipClass();
-            $relationshipResourceType = $relationship->getType();
+
+            $relationshipResourceType = $relationship->getResourceType();
 
             if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
+
                 $value = $relationshipData;
+
+                if (!is_array($value)) {
+                    throw new RequestException(sprinf(
+                        'Expected data to be an object for relationship "%s"',
+                        $relationshipKey
+                    ));
+                }
+
+                if (!isset($value['id']) || !isset($value['type'])) {
+                    throw new RequestException(sprintf(
+                        'Attributes "id" and "type" required for relationship "%s"',
+                        $relationshipKey
+                    ));
+                }
 
                 if ($value['type'] !== $relationshipResourceType) {
                     throw new RequestException(sprintf(
@@ -87,34 +127,30 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                     ));
                 }
 
-                //expect {type: "type", id: "id"}
-                $value['id'] = $validationModel->relationships->{$relationshipKey}->parse(
-                    $value['id']
-                );
-
-
-                //check if exists
-                self::exists(
-                    call_user_func_array(
-                        [
-                            $relationshipClass,
-                            $relationshipClass::GET_BY_PREFIX . ucfirst($relationshipClass::getIdAttribute())
-                        ],
-                        [$value['id']]
-                    ),
-                    sprintf(
-                        'Resource of type "%s" and id "%d" is not found',
-                        $value['type'],
-                        $value['id']
-                    )
-                );
-
-                //push attribute to primary data attributes
-                $attributes->{$relationship->getAttribute()} = $value['id'];
-            } else {
+                $relationshipAttributes->{$relationshipKey} = $value['id'];
+            } elseif ($relationship->getRelationshipType() == Relationship::TYPE_TO_MANY) {
                 $parsedValues = [];
 
+                if (!is_array($relationshipData)) {
+                    throw new RequestException(sprinf(
+                        'Expected data to be an array for relationship "%s"',
+                        $relationshipKey
+                    ));
+                }
+
                 foreach ($relationshipData as $value) {
+                    if (!is_array($value)) {
+                        throw new RequestException(sprinf(
+                            'Expected data to be an object for relationship "%s"',
+                            $relationshipKey
+                        ));
+                    }
+                    if (!isset($value['id']) || !isset($value['type'])) {
+                        throw new RequestException(sprintf(
+                            'Attributes "id" and "type" required for relationship "%s"',
+                            $relationshipKey
+                        ));
+                    }
                     if ($value['type'] !== $relationshipResourceType) {
                         throw new RequestException(sprintf(
                             'Invalid resource type "%s" for relationship "%s"',
@@ -125,35 +161,96 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                     $parsedValues[] = $value['id'];
                 }
 
-                $method = [
+                $relationshipAttributes->{$relationshipKey} = $parsedValues;
+            } else {
+                throw new \Exception('Unknown relationship type');
+            }
+        }
+
+        //Parse attributes using relationship's validation model
+        $parsedRelationshipAttributes = $validationModel->relationships->parse(
+            $relationshipAttributes
+        );
+
+        /**
+         * Foreach request relationship
+         * Check if requested relationshion resources exist
+         * Copy TYPE_TO_ONE attributes to primary data's attributes
+         */
+        foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
+
+            $relationship = $modelClass::getRelationship($relationshipKey);
+
+            $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
+
+            $tempIds = (
+                is_array($parsedRelationshipValue)
+                ? $parsedRelationshipValue
+                : [$parsedRelationshipValue]
+            );
+
+            //Check if relationship resources exists
+            foreach ($tempIds as $tempId) {
+
+                $relationship = $modelClass::getRelationship($relationshipKey);
+                $relationshipClass = $relationship->getRelationshipClass();
+
+                $relationshipCallMethod = [
                     $relationshipClass,
                     $relationshipClass::GET_BY_PREFIX . ucfirst($relationshipClass::getIdAttribute())
                 ];
-
-                $parsedValues = $validationModel->relationships->{$relationshipKey}->parse(
-                    $parsedValues
+                self::exists(
+                    call_user_func_array(
+                        $relationshipCallMethod,
+                        array_merge(
+                            [$tempId],
+                            (
+                                isset($additionalRelationshipsArguments[$relationshipKey])
+                                ? $additionalRelationshipsArguments[$relationshipKey]
+                                : []
+                            )
+                        )
+                    ),
+                    sprintf(
+                        'Resource of type "%s" and id "%d" is not found',
+                        $relationship->getResourceType(),
+                        $tempId
+                    )
                 );
+            }
 
+            if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
 
-                //check if each item in $parsedValues exists @TODO use additional
-                foreach ($parsedValues as $value) {
+                if ($parsedRelationshipValue) {
+                    //check if exists
                     self::exists(
                         call_user_func_array(
-                            $method,
-                            [$value]
+                            $relationshipCallMethod,
+                            array_merge(
+                                [$value['id']],
+                                (
+                                    isset($additionalRelationshipsArguments[$relationshipKey])
+                                    ? $additionalRelationshipsArguments[$relationshipKey]
+                                    : []
+                                )
+                            )
                         ),
                         sprintf(
                             'Resource of type "%s" and id "%d" is not found',
-                            $relationshipResourceType,
-                            $value
+                            $value['type'],
+                            $value['id']
                         )
                     );
                 }
 
-                //do something with this array
+                //Copy
+                $attributes->{$relationship->getAttribute()} = $parsedRelationshipValue;
             }
         }
 
+        print_r($attributes);
+        print_r($parsedRelationshipAttributes);
+        return;
         $id = $modelClass::post((array)$attributes);
 
         //Prepare response with 201 Created status code
