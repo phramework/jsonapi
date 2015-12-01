@@ -32,10 +32,12 @@ abstract class Model
      * Model's method prefix
      */
     const GET_RELATIONSHIP_BY_PREFIX = 'getRelationshipBy';
+
     /**
      * Model's method prefix
      */
     const GET_BY_PREFIX = 'getBy';
+    
     /**
      * Resource's type, used to describe resource objects that share
      * common attributes and relationships

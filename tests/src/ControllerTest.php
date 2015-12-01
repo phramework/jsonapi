@@ -4,7 +4,7 @@ namespace Phramework\JSONAPI;
 
 use \Phramework\Phramework;
 
-class Controller extends \PHPUnit_Framework_TestCase
+class ControllerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Sets up the fixture, for example, opens a network connection.

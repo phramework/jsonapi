@@ -4,10 +4,9 @@ namespace Phramework\JSONAPI;
 
 use \Phramework\Phramework;
 
-class RelationshipTest extends \PHPUnit_Framework_TestCase
+class POSTTest extends \PHPUnit_Framework_TestCase
 {
-
-    private $object;
+    protected $phramework;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -16,6 +15,10 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        $_SERVER['REQUEST_URI'] = '/article/1/';
+
+        $this->phramework = \Phramework\JSONAPI\APP\Bootstrap::prepare();
+        $this->phramework->invoke();
     }
 
     /**
@@ -26,8 +29,9 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     {
 
     }
+
     public function testExtends()
     {
-        $this->assertTrue(true);
+
     }
 }

@@ -40,10 +40,15 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $headers,
         $modelClass
     ) {
+
         $requestAttributes = static::getRequestAttributes($params);
 
         $validationModel = $modelClass::getValidationModel();
 
+        //force additionalProperties to false
+        $validationModel->additionalProperties = false;
+
+        //parse request attributes using $validationModel to validate the data
         $attributes = $validationModel->parse($requestAttributes);
 
         $id = $modelClass::post((array)$attributes);
