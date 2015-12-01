@@ -15,6 +15,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        return;
         ob_start();
         $_SERVER['REQUEST_URI'] = '/article/';
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_POST;
@@ -56,7 +57,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-
+        \Phramework\JSONAPI\APP\Viewers\Viewer::release(__CLASS__);
     }
 
     public function testExtends()

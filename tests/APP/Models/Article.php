@@ -63,17 +63,39 @@ class Article extends \Phramework\JSONAPI\Model
         );
     }
 
+    /**
+     * [getById description]
+     * @param  int|int[] $id [description]
+     * @return stdClass|stdClass[]
+     */
     public static function getById($id)
     {
-        return self::resource(
-            Database::executeAndFetch(
-                'SELECT * FROM "article"
-                WHERE "status" = 1
-                AND "id" = ?
-                LIMIT 1',
-                [$id]
-            )
+        $is_array = is_array($id);
+
+        if (!$is_array) {
+            $id = [$id];
+        }
+
+        $data = Database::executeAndFetchAll(
+            'SELECT * FROM "article"
+            WHERE "status" = 1
+            AND "id" IN (' . implode(',', array_fill(0, count($id), '?')) . ')
+            LIMIT ' . count($id),
+            $id
         );
+
+        $resources = array_map('self::resource', $data);
+
+        if (!$is_array) {
+
+            if (!$data) {
+                return null;
+            }
+
+            return $resources[0];
+        } else {
+            return $resources;
+        }
     }
 
     public static function getRelationships()

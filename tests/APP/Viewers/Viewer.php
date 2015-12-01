@@ -18,12 +18,20 @@ class Viewer implements \Phramework\Viewers\IViewer
         static::$buffer[] = $parameters;
     }
 
-    public function __destruct()
+    public static function release($class)
     {
+        echo PHP_EOL . 'Class output:' . $class;
+
         foreach (static::$buffer as $parameters) {
             echo PHP_EOL;
-            echo json_encode($parameters, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-            echo PHP_EOL;
+            echo json_encode(
+                $parameters,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            );
         }
+
+        echo PHP_EOL;
+
+        static::$buffer = [];
     }
 }
