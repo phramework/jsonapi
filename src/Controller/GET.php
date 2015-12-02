@@ -21,9 +21,8 @@ use \Phramework\Models\Operator;
 use \Phramework\Exceptions\RequestException;
 
 /**
- * DELETE
- * @package JSONAPI
- * @since 1.0.0
+ * GET related methods
+ * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */

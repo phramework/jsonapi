@@ -21,9 +21,8 @@ use \Phramework\Exceptions\RequestException;
 use \Phramework\JSONAPI\Relationship;
 
 /**
- * DELETE
- * @package JSONAPI
- * @since 1.0.0
+ * POST related methods
+ * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */

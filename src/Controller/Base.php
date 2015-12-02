@@ -20,9 +20,8 @@ use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 
 /**
- * DELETE
- * @package JSONAPI
- * @since 1.0.0
+ * Common methods
+ * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
@@ -88,26 +87,25 @@ abstract class Base
         $meta = null,
         $included = null
     ) {
-        $temp = [];
+        $parameters = new \stdClass();
 
         if ($links) {
-            $temp['links'] = $links;
+            $parameters->links = $links;
         }
 
-        $temp['data'] = $data;
-
+        $parameters->data = $data;
 
         if ($included !== null) {
-            $temp['included'] = $included;
+            $parameters->included = $included;
         }
 
         if ($meta) {
-            $temp['meta'] = $meta;
+            $parameters->meta = $meta;
         }
 
-        \Phramework\Phramework::view($temp);
+        \Phramework\Phramework::view($parameters);
 
-        unset($temp);
+        unset($parameters);
     }
 
     /**
