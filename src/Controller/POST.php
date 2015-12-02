@@ -188,16 +188,16 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 : [$parsedRelationshipValue]
             );
 
+            $relationship = $modelClass::getRelationship($relationshipKey);
+            $relationshipClass = $relationship->getRelationshipClass();
+
+            $relationshipCallMethod = [
+                $relationshipClass,
+                $relationshipClass::GET_BY_PREFIX . ucfirst($relationshipClass::getIdAttribute())
+            ];
+
             //Check if relationship resources exists
             foreach ($tempIds as $tempId) {
-
-                $relationship = $modelClass::getRelationship($relationshipKey);
-                $relationshipClass = $relationship->getRelationshipClass();
-
-                $relationshipCallMethod = [
-                    $relationshipClass,
-                    $relationshipClass::GET_BY_PREFIX . ucfirst($relationshipClass::getIdAttribute())
-                ];
                 self::exists(
                     call_user_func_array(
                         $relationshipCallMethod,
@@ -249,10 +249,48 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         $id = $modelClass::post((array)$attributes);
 
+        self::testUnknownError($id);
+
+        /**
+         * Call POST_RELATIONSHIP_BY_PREFIX handler for TO_MANY relationships
+         * This handler should post into database these relationships
+         */
+        foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
+            $relationship = $modelClass::getRelationship($relationshipKey);
+
+            if ($relationship->getRelationshipType() == Relationship::TYPE_TO_MANY) {
+
+                $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
+
+                $relationship = $modelClass::getRelationship($relationshipKey);
+                $relationshipClass = $relationship->getRelationshipClass();
+
+                $relationshipCallMethod = [
+                    $relationshipClass,
+                    $relationshipClass::POST_RELATIONSHIP_BY_PREFIX . ucfirst($modelClass::getType())
+                ];
+
+                if (!is_callable($relationshipCallMethod)) {
+                    throw new \Phramework\Exceptions\ServerException(
+                        $relationshipCallMethod[0] . '::' . $relationshipCallMethod[1]
+                        . ' is not implemented'
+                    );
+                }
+
+                foreach ($parsedRelationshipValue as $tempId) {
+                    call_user_func(
+                        $relationshipCallMethod,
+                        $tempId,
+                        $id
+                    );
+                }
+            }
+        }
+
         //Prepare response with 201 Created status code
-        //\Phramework\Models\Response::created(
-        //    $modelClass::getSelfLink($id)
-        //);
+        \Phramework\Models\Response::created(
+            $modelClass::getSelfLink($id)
+        );
 
         return static::viewData(
             $modelClass::resource(['id' => $id]),

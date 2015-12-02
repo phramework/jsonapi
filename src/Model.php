@@ -29,9 +29,11 @@ use \Phramework\JSONAPI\Relationship;
 abstract class Model
 {
     /**
-     * Model's method prefix
+     * Model's method prefix, following by ucfirst(Class)
      */
     const GET_RELATIONSHIP_BY_PREFIX = 'getRelationshipBy';
+
+    const POST_RELATIONSHIP_BY_PREFIX = 'postRelationshipBy';
 
     /**
      * Model's method prefix

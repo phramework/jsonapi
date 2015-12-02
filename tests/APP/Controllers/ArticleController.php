@@ -39,7 +39,7 @@ class ArticleController extends \Phramework\JSONAPI\Controller
     public static function GETById($params, $method, $headers, $id)
     {
         $id = \Phramework\Validate\UnsignedIntegerValidator::parseStatic($id);
-        
+
         return self::handleGETById(
             $params,
             $id,
@@ -87,7 +87,7 @@ class ArticleController extends \Phramework\JSONAPI\Controller
 
     /**
      * Manage resource's relationships
-     * `/test/{id}/relationships/{relationship}` handler
+     * `/article/{id}/relationships/{relationship}` handler
      * @param  array  $params  Request parameters
      * @param  string $method  Request method
      * @param  array $headers  Request headers

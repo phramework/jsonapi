@@ -56,6 +56,32 @@ class Tag extends \Phramework\JSONAPI\Model
         );
     }
 
+    /**
+     * post article-tag relationship
+     * @param  integer $tagId                [description]
+     * @param  integer $articleId            [description]
+     * @param  null|object|array $additionalAttributes    Will be ignored
+     * @param  integer $return               [description]
+     * @return integer                       [description]
+     */
+    public static function postRelationshipByArticle(
+        $tagId,
+        $articleId,
+        $additionalAttributes = null,
+        $return = \Phramework\Database\Operations\Create::RETURN_NUMBER_OF_RECORDS
+    ) {
+        return \Phramework\Database\Operations\Create::create(
+            [
+                'tag-id' => $tagId,
+                'article-id' => $articleId,
+                'status' => 1
+            ],
+            'article-tag',
+            static::getSchema(),
+            $return
+        );
+    }
+
     public static function getRelationshipByArticle($articleId)
     {
         return Database::executeAndFetchAllArray(

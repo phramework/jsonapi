@@ -1,18 +1,50 @@
 <?php
-
+/**
+ * Copyright 2015 Xenofon Spafaridis
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 namespace Phramework\JSONAPI;
 
 use \Phramework\Phramework;
 
+/**
+ * @todo test wrong relationship
+ * @todo test validation error
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+ * @author Xenofon Spafaridis <nohponex@gmail.com>
+ */
 class POSTTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Phramework
+     */
     protected $phramework;
+
+    /**
+     * @var object
+     */
     protected $params;
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
-     * @todo update base
      */
+    protected function setUp()
+    {
+        
+    }
+
     protected function prepare()
     {
         //ob_start();
@@ -81,10 +113,13 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     public function testPOSTSuccess()
     {
-        $this->prepare();
 
+
+        $this->prepare();
+        //ob_clean();
         $this->phramework->invoke();
 
+        //ob_end_clean();
         //Access parameters writen by invoked phramework's viewer
         $params = $this->params;
 
@@ -113,7 +148,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
     {
         $this->prepare();
 
-        //Set a non existing id
+        //Set a non existing id for creator relationship
         $_POST['data']['relationships']['creator']['data']['id'] = 4235454365434;
 
         $this->phramework->invoke();
@@ -139,7 +174,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
     {
         $this->prepare();
 
-        //Set a non existing id
+        //Set a non existing id for tag relationship
         $_POST['data']['relationships']['tag']['data'][0]['id'] = 4235454365434;
 
         $this->phramework->invoke();
