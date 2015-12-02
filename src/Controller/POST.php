@@ -248,15 +248,12 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
         }
 
-        print_r($attributes);
-        print_r($parsedRelationshipAttributes);
-        return;
         $id = $modelClass::post((array)$attributes);
 
         //Prepare response with 201 Created status code
-        \Phramework\Models\Response::created(
-            $modelClass::getSelfLink($id)
-        );
+        //\Phramework\Models\Response::created(
+        //    $modelClass::getSelfLink($id)
+        //);
 
         return static::viewData(
             $modelClass::resource(['id' => $id]),

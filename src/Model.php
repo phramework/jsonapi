@@ -264,6 +264,9 @@ abstract class Model
         $resource->type = static::getType();
         $resource->id   = (string)$record->{static::getIdAttribute()};
 
+        //Delete IdAttribute from attributes
+        unset($record->{static::getIdAttribute()});
+
         //Initialize attributes object (used for represantation order)
         $resource->attributes = (object)[];
 
