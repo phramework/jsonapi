@@ -288,9 +288,9 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         }
 
         //Prepare response with 201 Created status code
-        \Phramework\Models\Response::created(
-            $modelClass::getSelfLink($id)
-        );
+        //\Phramework\Models\Response::created(
+        //    $modelClass::getSelfLink($id)
+        //);
 
         return static::viewData(
             $modelClass::resource(['id' => $id]),

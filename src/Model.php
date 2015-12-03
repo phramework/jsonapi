@@ -275,7 +275,7 @@ abstract class Model
         //Attach relationships if resource's relationships are set
         if (($relationships = static::getRelationships())) {
             //Initialize relationships object
-            $resource->relationships = [];
+            $resource->relationships = new \stdClass();
 
             //Parse relationships
             foreach ($relationships as $relationship => $relationshipObject) {
@@ -349,7 +349,7 @@ abstract class Model
                 unset($record->{$attribute});
 
                 //Push reletionship to relationships
-                $resource->relationships[$relationship] = $relationshipEntry;
+                $resource->relationships->{$relationship} = $relationshipEntry;
             }
         }
 

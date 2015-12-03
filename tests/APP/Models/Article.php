@@ -22,6 +22,7 @@ use \Phramework\Validate\ArrayValidator;
 use \Phramework\Validate\ObjectValidator;
 use \Phramework\Validate\StringValidator;
 use \Phramework\Validate\UnsignedIntegerValidator;
+use \Phramework\Validate\BooleanValidator;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -38,7 +39,9 @@ class Article extends \Phramework\JSONAPI\Model
         return (object)[
             'attributes' => new ObjectValidator(
                 [
-                    'title' => new StringValidator(2, 32)
+                    'title' => new StringValidator(2, 32),
+                    'status' => (new BooleanValidator())
+                        ->setDefault(true)
                 ],
                 ['title']
             ),

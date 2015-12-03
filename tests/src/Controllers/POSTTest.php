@@ -42,7 +42,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        
+
     }
 
     protected function prepare()
@@ -113,8 +113,6 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     public function testPOSTSuccess()
     {
-
-
         $this->prepare();
         //ob_clean();
         $this->phramework->invoke();
@@ -133,11 +131,30 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInternalType('string', $params->data->id);
 
-        $this->markTestIncomplete(
-            'Use id, to check if relationships are actually saved'
-        );
+        $id = $params->data->id;
 
-        //$id = $params->data->id;
+        //Required, to reinitialize db adapter connection
+        $this->prepare();
+
+        $article = \Phramework\JSONAPI\APP\Models\Article::getById($id);
+
+        $this->assertInternalType('object', $article);
+
+        $this->assertObjectHasAttribute('attributes', $article);
+        $this->assertObjectHasAttribute('relationships', $article);
+
+        $relationships = $article->relationships;
+
+        $this->assertObjectHasAttribute('creator', $relationships);
+        $this->assertObjectHasAttribute('tag', $relationships);
+
+        $this->assertInternalType('object', $relationships->creator->data);
+        $this->assertInternalType('array', $relationships->tag->data);
+
+        $this->assertEquals('1', $relationships->creator->data->id);
+
+        $this->assertEquals('2', $relationships->tag->data[0]->id);
+        $this->assertEquals('3', $relationships->tag->data[1]->id);
     }
 
     /**
