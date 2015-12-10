@@ -267,16 +267,20 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
                 $relationshipCallMethod = [
                     $relationshipClass,
-                    $relationshipClass::POST_RELATIONSHIP_BY_PREFIX . ucfirst($modelClass::getType())
+                    $relationshipClass::POST_RELATIONSHIP_BY_PREFIX
+                    . ucfirst($modelClass::getType())
                 ];
 
                 if (!is_callable($relationshipCallMethod)) {
                     throw new \Phramework\Exceptions\ServerException(
-                        $relationshipCallMethod[0] . '::' . $relationshipCallMethod[1]
+                        $relationshipCallMethod[0]
+                        . '::'
+                        . $relationshipCallMethod[1]
                         . ' is not implemented'
                     );
                 }
-
+                
+                //Call post relationship method to post each of relationships pairs
                 foreach ($parsedRelationshipValue as $tempId) {
                     call_user_func(
                         $relationshipCallMethod,

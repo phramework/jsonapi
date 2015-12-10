@@ -743,113 +743,115 @@ abstract class Model
 
         $relationships = static::getRelationships();
 
-        foreach ($filter->relationships as $key => $value) {
-            if (!static::relationshipExists($key)) {
-                throw new \Exception(sprintf(
-                    'Relationship "%s" not found',
-                    $key
-                ));
-            }
-            $relationship = $relationships[$key];
-            $relationshipClass = $relationship->getRelationshipClass();
+        if ($filter) {
+            foreach ($filter->relationships as $key => $value) {
+                if (!static::relationshipExists($key)) {
+                    throw new \Exception(sprintf(
+                        'Relationship "%s" not found',
+                        $key
+                    ));
+                }
+                $relationship = $relationships[$key];
+                $relationshipClass = $relationship->getRelationshipClass();
 
-            if ($relationship->getRelationshipType() === Relationship::TYPE_TO_ONE) {
-                $additionalFilter[] = sprintf(
-                    '%s "%s"."%s" IN (%s)',
-                    ($hasWhere ? 'AND' : 'WHERE'),
-                    static::$table, //$relationshipclass::getTable(),
-                    $relationship->getAttribute(),
-                    implode(',', $filter->relationships[$key])
-                );
+                if ($relationship->getRelationshipType() === Relationship::TYPE_TO_ONE) {
+                    $additionalFilter[] = sprintf(
+                        '%s "%s"."%s" IN (%s)',
+                        ($hasWhere ? 'AND' : 'WHERE'),
+                        static::$table, //$relationshipclass::getTable(),
+                        $relationship->getAttribute(),
+                        implode(',', $filter->relationships[$key])
+                    );
+                    $hasWhere = true;
+                } else {
+                    throw new \Phramework\Exceptions\NotImplementedException(
+                        'Filtering by TYPE_TO_MANY relationships are not implemented'
+                    );
+                }
+            }
+
+            foreach ($filter->attributes as $value) {
+                list($key, $operator, $operant) = $value;
+                if (in_array($operator, Operator::getOrderableOperators())) {
+                    $additionalFilter[] = sprintf(
+                        '%s "%s"."%s" %s %s',
+                        ($hasWhere ? 'AND' : 'WHERE'),
+                        static::$table,
+                        $key,
+                        $operator,
+                        $operant
+                    );
+                } elseif (in_array($operator, Operator::getNullableOperators())) {
+                    //Define a transformation matrix, operator to SQL operator
+                    $transformation = [
+                        Operator::OPERATOR_NOT_ISNULL => 'IS NOT NULL'
+                    ];
+
+                    $additionalFilter[] = sprintf(
+                        '%s "%s"."%s" %s \'%s\'',
+                        ($hasWhere ? 'AND' : 'WHERE'),
+                        static::$table,
+                        $key,
+                        (
+                            array_key_exists($operator, $transformation)
+                            ? $transformation[$operator]
+                            : $operator
+                        )
+                    );
+                } elseif (in_array($operator, Operator::getLikeOperators())) {
+                    //Define a transformation matrix, operator to SQL operator
+                    $transformation = [
+                        Operator::OPERATOR_LIKE => 'LIKE',
+                        Operator::OPERATOR_NOT_LIKE => 'NOT LIKE'
+                    ];
+
+                    //LIKE '%text%', force lower - case insensitive
+                    $additionalFilter[] = sprintf(
+                        '%s LOWER("%s"."%s") %s \'%%%s%%\'',
+                        ($hasWhere ? 'AND' : 'WHERE'),
+                        static::$table,
+                        $key,
+                        (
+                            array_key_exists($operator, $transformation)
+                            ? $transformation[$operator]
+                            : $operator
+                        ),
+                        strtolower($operant)
+                    );
+                } else {
+                    throw new \Phramework\Exceptions\NotImplementedException(sprintf(
+                        'Filtering by operator "%s" is not implemented',
+                        $operator
+                    ));
+                }
+
                 $hasWhere = true;
-            } else {
-                throw new \Phramework\Exceptions\NotImplementedException(
-                    'Filtering by TYPE_TO_MANY relationships are not implemented'
-                );
-            }
-        }
-
-        foreach ($filter->attributes as $value) {
-            list($key, $operator, $operant) = $value;
-            if (in_array($operator, Operator::getOrderableOperators())) {
-                $additionalFilter[] = sprintf(
-                    '%s "%s"."%s" %s %s',
-                    ($hasWhere ? 'AND' : 'WHERE'),
-                    static::$table,
-                    $key,
-                    $operator,
-                    $operant
-                );
-            } elseif (in_array($operator, Operator::getNullableOperators())) {
-                //Define a transformation matrix, operator to SQL operator
-                $transformation = [
-                    Operator::OPERATOR_NOT_ISNULL => 'IS NOT NULL'
-                ];
-
-                $additionalFilter[] = sprintf(
-                    '%s "%s"."%s" %s \'%s\'',
-                    ($hasWhere ? 'AND' : 'WHERE'),
-                    static::$table,
-                    $key,
-                    (
-                        array_key_exists($operator, $transformation)
-                        ? $transformation[$operator]
-                        : $operator
-                    )
-                );
-            } elseif (in_array($operator, Operator::getLikeOperators())) {
-                //Define a transformation matrix, operator to SQL operator
-                $transformation = [
-                    Operator::OPERATOR_LIKE => 'LIKE',
-                    Operator::OPERATOR_NOT_LIKE => 'NOT LIKE'
-                ];
-
-                //LIKE '%text%', force lower - case insensitive
-                $additionalFilter[] = sprintf(
-                    '%s LOWER("%s"."%s") %s \'%%%s%%\'',
-                    ($hasWhere ? 'AND' : 'WHERE'),
-                    static::$table,
-                    $key,
-                    (
-                        array_key_exists($operator, $transformation)
-                        ? $transformation[$operator]
-                        : $operator
-                    ),
-                    strtolower($operant)
-                );
-            } else {
-                throw new \Phramework\Exceptions\NotImplementedException(sprintf(
-                    'Filtering by operator "%s" is not implemented',
-                    $operator
-                ));
             }
 
-            $hasWhere = true;
-        }
+            $filterJSON = $filter->attributesJSON;
+            //hack.
 
-        $filterJSON = $filter->attributesJSON;
-        //hack.
+            foreach ($filterJSON as $value) {
+                list($attribute, $key, $operator, $operant) = $value;
 
-        foreach ($filterJSON as $value) {
-            list($attribute, $key, $operator, $operant) = $value;
-
-            if (in_array($operator, Operator::getOrderableOperators())) {
-                $additionalFilter[] = sprintf(
-                    '%s "%s"."%s"->>\'%s\' %s \'%s\'',
-                    ($hasWhere ? 'AND' : 'WHERE'),
-                    static::$table,
-                    $attribute,
-                    $key,
-                    $operator,
-                    $operant
-                );
-            } else {
-                throw new \Phramework\Exceptions\NotImplementedException(sprintf(
-                    'Filtering JSON by operator "%s" is not implemented',
-                    $operator
-                ));
+                if (in_array($operator, Operator::getOrderableOperators())) {
+                    $additionalFilter[] = sprintf(
+                        '%s "%s"."%s"->>\'%s\' %s \'%s\'',
+                        ($hasWhere ? 'AND' : 'WHERE'),
+                        static::$table,
+                        $attribute,
+                        $key,
+                        $operator,
+                        $operant
+                    );
+                } else {
+                    throw new \Phramework\Exceptions\NotImplementedException(sprintf(
+                        'Filtering JSON by operator "%s" is not implemented',
+                        $operator
+                    ));
+                }
+                $hasWhere = true;
             }
-            $hasWhere = true;
         }
 
         $query = str_replace(
@@ -882,7 +884,7 @@ abstract class Model
         $sort,
         $hasWhere = true
     ) {
-        return self::handlePagination(
+        return trim(self::handlePagination(
             self::handleSort(
                 self::handleFilter(
                     $query,
@@ -892,6 +894,6 @@ abstract class Model
                 $sort
             ),
             $page
-        );
+        ));
     }
 }
