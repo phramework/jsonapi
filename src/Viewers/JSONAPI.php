@@ -25,9 +25,11 @@ class JSONAPI implements \Phramework\Viewers\IViewer
         if (!headers_sent()) {
             header('Content-Type: application/vnd.api+json;charset=utf-8');
         }
-
+        if (!is_object($parameters)) {
+            $parameters = (object)$parameters;
+        }
         //include JSON API Object
-        $parameters['jsonapi'] = ['version' => '1.0'];
+        $parameters->jsonapi = (object)['version' => '1.0'];
 
         echo json_encode($parameters);
     }
