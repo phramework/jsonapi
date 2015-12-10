@@ -55,6 +55,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         );
 
         $classValidationModel = $modelClass::getValidationModel();
+        $classValidationModel = $classValidationModel->attributes;
 
         foreach ($modelClass::getMutable() as $mutable) {
             if (!isset($classValidationModel->properties->{$mutable})) {

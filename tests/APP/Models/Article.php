@@ -107,7 +107,7 @@ class Article extends \Phramework\JSONAPI\Model
 
     public static function getRelationships()
     {
-        return [
+        return (object)[
             'creator' => new Relationship(
                 'creator-user-id',
                 'user',

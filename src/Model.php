@@ -164,22 +164,22 @@ abstract class Model
 
     /**
      * Get resource's relationships
-     * @return Relationship[]
+     * @return object Object with Relationshipn objects as values
      */
     public static function getRelationships()
     {
-        return [];
+        return new \stdClass();
     }
 
     public static function getRelationship($relationshipKey)
     {
         $relationships = static::getRelationships();
 
-        if (!isset($relationships[$relationshipKey])) {
+        if (!isset($relationships->{$relationshipKey})) {
             throw new \Exception('Not a valid relationship key');
         }
 
-        return $relationships[$relationshipKey];
+        return $relationships->{$relationshipKey};
     }
     /**
      * Check if relationship exists
@@ -190,7 +190,7 @@ abstract class Model
     {
         $relationships = static::getRelationships();
 
-        return isset($relationships[$relationshipKey]);
+        return isset($relationships->{$relationshipKey});
     }
 
     /**
@@ -497,8 +497,9 @@ abstract class Model
                 if (!$resource) {
                     return null;
                 }
+
                 //And use it's relationships data for this relationship
-                return $resource->relationships[$relationshipKey]->data;
+                return $resource->relationships->{$relationshipKey}->data;
 
                 break;
             case Relationship::TYPE_TO_MANY:
@@ -575,12 +576,12 @@ abstract class Model
 
             foreach ($include as $relationshipKey) {
                 //ignore if this relationship is not set
-                if (!isset($resource->relationships[$relationshipKey])) {
+                if (!isset($resource->relationships->{$relationshipKey})) {
                     continue;
                 }
 
                 //if single
-                $relationshipData = $resource->relationships[$relationshipKey]->data;
+                $relationshipData = $resource->relationships->{$relationshipKey}->data;
 
                 if (!$relationshipData || empty($relationshipData)) {
                     continue;
