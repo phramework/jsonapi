@@ -102,7 +102,9 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                     //when TYPE_TO_ONE it's easy to filter
                 } else {
                     $validationModel = $modelClass::getValidationModel();
+                    $validationModelAttributes = $validationModel->attributes;
                     $filterValidationModel = $modelClass::getFilterValidationModel();
+
                     $filterable = $modelClass::getFilterable();
 
                     $isJSONFilter = false;
@@ -178,8 +180,8 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                         if ((in_array($operator, Operator::getNullableOperators()))) {
                             //Do nothing for nullable operators
                         } else {
-                            if (!$validationModel
-                                || !isset($validationModel->properties->{$filterKey})
+                            if (!$validationModelAttributes
+                                || !isset($validationModelAttributes->properties->{$filterKey})
                             ) {
                                 throw new \Exception(sprintf(
                                     'Attribute "%s" doesn\'t have a validation model',
@@ -201,7 +203,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                                         ->{$filterKey}->parse($operant);
                                 } else {
                                     //Validate operant value
-                                    $operant = $validationModel->properties
+                                    $operant = $validationModelAttributes->properties
                                         ->{$filterKey}->parse($operant);
                                 }
                             }

@@ -22,7 +22,7 @@ use \Phramework\JSONAPI\Relationship;
 
 /**
  * Base JSONAPI Model
- * @since 1.0.0
+ * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
@@ -775,7 +775,7 @@ abstract class Model
                 list($key, $operator, $operant) = $value;
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalFilter[] = sprintf(
-                        '%s "%s"."%s" %s %s',
+                        '%s "%s"."%s" %s \'%s\'',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         static::$table,
                         $key,
