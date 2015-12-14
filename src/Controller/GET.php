@@ -102,6 +102,14 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                     //when TYPE_TO_ONE it's easy to filter
                 } else {
                     $validationModel = $modelClass::getValidationModel();
+
+                    if (!$validationModel || !isset( $validationModel->attributes)) {
+                        throw new \Exception(sprintf(
+                            'Model "%s" doesn\'t have a validation model for attributes',
+                            $modelClass::getType()
+                        ));
+                    }
+
                     $validationModelAttributes = $validationModel->attributes;
                     $filterValidationModel = $modelClass::getFilterValidationModel();
 
@@ -301,6 +309,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         $requestInclude = static::getRequestInclude($params);
 
+        //Get included data
         $includedData = $modelClass::getIncludedData(
             $data,
             $requestInclude,
