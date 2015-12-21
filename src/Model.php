@@ -311,11 +311,17 @@ abstract class Model
                         $relationshipEntry->data = [];
 
                         foreach ($record->{$attribute} as $k => $d) {
-                            //Push object
-                            $relationshipEntry->data[] = (object)[
-                                'id' => (string)$d,
-                                'type' => $type
-                            ];
+                            if (!is_array($d)) {
+                                $d = [$d];
+                            }
+
+                            foreach ($d as $dd) {
+                                //Push object
+                                $relationshipEntry->data[] = (object)[
+                                    'id' => (string)$dd,
+                                    'type' => $type
+                                ];
+                            }
                         }
                     }
                 } else {
