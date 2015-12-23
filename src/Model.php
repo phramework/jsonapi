@@ -758,7 +758,7 @@ abstract class Model
                         $key
                     ));
                 }
-                $relationship = $relationships[$key];
+                $relationship = $relationships->{$key};
                 $relationshipClass = $relationship->getRelationshipClass();
 
                 if ($relationship->getRelationshipType() === Relationship::TYPE_TO_ONE) {
@@ -767,7 +767,7 @@ abstract class Model
                         ($hasWhere ? 'AND' : 'WHERE'),
                         static::$table, //$relationshipclass::getTable(),
                         $relationship->getAttribute(),
-                        implode(',', $filter->relationships[$key])
+                        implode(',', $value)
                     );
                     $hasWhere = true;
                 } else {
