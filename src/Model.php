@@ -216,9 +216,11 @@ abstract class Model
     /**
      * Prepare a collection of resources
      * @param  array[]|\stdClass[] $records Multiple records fetched from database
+     * @param  boolean $links
+     * [Optional] Write resource and relationship links, defauls is false
      * @return \stdClass[]
      */
-    public static function collection($records = [])
+    public static function collection($records = [], $links = true)
     {
         if (!$records) {
             return [];
@@ -228,14 +230,16 @@ abstract class Model
 
         foreach ($records as $record) {
             //Convert this record to resource object
-            $resource = static::resource($record);
+            $resource = static::resource($record, $links);
 
             //Attach links.self to this resource
             if ($resource) {
-                //Inlude links object
-                $resource->links = [
-                    'self' => static::getSelfLink($resource->id)
-                ];
+                if ($links) {
+                    //Inlude links object
+                    $resource->links = [
+                        'self' => static::getSelfLink($resource->id)
+                    ];
+                }
 
                 //Push to collection
                 $collection[] = $resource;
@@ -249,9 +253,11 @@ abstract class Model
     /**
      * Prepare an individual resource
      * @param  array|\stdClass $record An individual record fetched from database
+     * @param  boolean $links
+     * [Optional] Write resource and relationship links, defauls is false
      * @return \stdClass|null
      */
-    public static function resource($record)
+    public static function resource($record, $links = true)
     {
         if (!$record) {
             return null;
@@ -282,15 +288,17 @@ abstract class Model
                 //Initialize an new relationship entry object
                 $relationshipEntry = new \stdClass();
 
-                //Set relationship links
-                $relationshipEntry->links = [
-                    'self' => static::getSelfLink(
-                        $resource->id . '/relationships/' . $relationship
-                    ),
-                    'related' => static::getSelfLink(
-                        $resource->id . '/' . $relationship
-                    )
-                ];
+                if ($links) {
+                    //Set relationship links
+                    $relationshipEntry->links = [
+                        'self' => static::getSelfLink(
+                            $resource->id . '/relationships/' . $relationship
+                        ),
+                        'related' => static::getSelfLink(
+                            $resource->id . '/' . $relationship
+                        )
+                    ];
+                }
 
                 $attribute = $relationshipObject->getAttribute();
                 $relationshipType = $relationshipObject->getRelationshipType();
@@ -431,7 +439,7 @@ abstract class Model
 
     /**
      * Get attributes that can be updated using PATCH
-     * @return array
+     * @return string[]
      */
     public static function getMutable()
     {
