@@ -103,7 +103,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                 } else {
                     $validationModel = $modelClass::getValidationModel();
 
-                    if (!$validationModel || !isset( $validationModel->attributes)) {
+                    if (!$validationModel || !isset($validationModel->attributes)) {
                         throw new \Exception(sprintf(
                             'Model "%s" doesn\'t have a validation model for attributes',
                             $modelClass::getType()

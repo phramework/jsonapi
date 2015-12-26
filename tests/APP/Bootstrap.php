@@ -39,7 +39,12 @@ class Bootstrap
             ['article/{id}', NS . 'ArticleController', 'GETById', Phramework::METHOD_GET],
             ['article/{id}', NS . 'ArticleController', 'PATCH', Phramework::METHOD_PATCH],
             ['article/{id}', NS . 'ArticleController', 'DELETE', Phramework::METHOD_DELETE],
-            ['article/{id}/relationships/{relationship}', NS . 'ArticleController', 'byIdRelationships', Phramework::METHOD_ANY],
+            [
+                'article/{id}/relationships/{relationship}',
+                NS . 'ArticleController',
+                'byIdRelationships',
+                Phramework::METHOD_ANY
+            ],
         ]);
 
         //Initialize API

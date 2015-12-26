@@ -37,6 +37,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * additional arguments that the primary data is requiring
      * @param  array $additionalRelationshipsArguments [Optional] Array with any
      * additional arguemnt primary data's relationships are requiring
+     * @todo Remove force additionalProperties to false since the default is now false
      */
     protected static function handlePOST(
         $params,
@@ -77,7 +78,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
          * - copy ids to $relationshipAttributes object
          */
         foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
-
             if (!isset($relationshipValue['data'])) {
                 throw new RequestException(sprintf(
                     'Relationship "%s" must have a member data defined',
@@ -101,7 +101,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $relationshipResourceType = $relationship->getResourceType();
 
             if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
-
                 $value = $relationshipData;
 
                 if (!is_array($value)) {
@@ -279,7 +278,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                         . ' is not implemented'
                     );
                 }
-                
+
                 //Call post relationship method to post each of relationships pairs
                 foreach ($parsedRelationshipValue as $tempId) {
                     call_user_func(
