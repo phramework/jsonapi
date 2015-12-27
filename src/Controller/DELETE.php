@@ -30,7 +30,7 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
     /**
      * Handle DELETE method
      * On success will respond with 204 No Content
-     * @param  array  $params                          Request parameters
+     * @param  object $params                          Request parameters
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
      * @param  integer|string $id                      Requested resource's id

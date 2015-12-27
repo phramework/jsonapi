@@ -6,7 +6,7 @@ $settings = [
     /**
      * Database configuration
      */
-    'db' => [
+    'database' => [
         'adapter' => 'mysql',
         'host' => '',
         'username' => '',

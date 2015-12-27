@@ -29,15 +29,18 @@ use \Phramework\JSONAPI\Relationship;
 abstract class POST extends \Phramework\JSONAPI\Controller\GET
 {
     /**
-     * @param  array  $params                          Request parameters
+     * @param  object $params                          Request parameters
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
-     * @param  string $modelClass                      Resource's primary model
-     * @param  array $additionalGetArguments           [Optional] Array with any
+     * @param  \Phramework\JSONAPI\Model $modelClass   Resource's primary model
+     * @param  array $additionalGetArguments           *[Optional]* Array with any
      * additional arguments that the primary data is requiring
-     * @param  array $additionalRelationshipsArguments [Optional] Array with any
+     * @param  array $additionalRelationshipsArguments *[Optional]* Array with any
      * additional arguemnt primary data's relationships are requiring
-     * @todo Remove force additionalProperties to false since the default is now false
+     * @param  callable[] $$validationCallbacks
+     * @todo handle as transaction queue, Since models usualy are not producing exceptions.
+     * Prepare data until last possible moment,
+     * so that any exceptions can be thrown, and finaly invoke the execution of the queue.
      */
     protected static function handlePOST(
         $params,
@@ -45,22 +48,104 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $headers,
         $modelClass,
         $additionalGetArguments = [],
-        $additionalRelationshipsArguments = []
+        $additionalRelationshipsArguments = [],
+        $validationCallbacks = []
     ) {
+        $queue = new \SplQueue();
 
-        $requestAttributes = static::getRequestAttributes($params);
+        $data = static::getRequestData($params);
 
+        if (!is_array($data)) {
+            $data = [$data];
+        }
+
+        $requestRelationships = new \stdClass();
+
+        foreach ($data as $resource) {
+            if (is_array($resource)) {
+                $resource = (object)$resource;
+            }
+
+            $requestAttributes = $resource->attributes;
+
+            if (property_exists($resource, 'relationships')) {
+                $requestRelationships = $resource->relationships;
+            }
+
+            list($id) = static::handlePOSTResource(
+                $params,
+                $method,
+                $headers,
+                $modelClass,
+                $additionalGetArguments,
+                $additionalRelationshipsArguments,
+                $requestAttributes,
+                $validationCallbacks,
+                $requestRelationships,
+                $queue
+            );
+        }
+
+        //proccess queue
+        while (!$queue->isEmpty()) {
+            $item = $queue->pop();
+
+            //POST item's attributes
+            $id = $modelClass::post((array)$item->getAttributes());
+
+            //Just to be sure
+            self::testUnknownError($id);
+
+            //POST item's relationships
+            $relationships = $item->getRelationships();
+
+            foreach ($relationships as $key => $relationship) {
+                //Call post relationship method to post each of relationships pairs
+                foreach ($relationship->resources as $resourceId) {
+                    call_user_func(
+                        $relationship->callback,
+                        $resourceId,
+                        $id
+                    );
+                }
+            }
+
+            unset($item);
+        }
+
+        //Prepare response with 201 Created status code
+        //\Phramework\Models\Response::created(
+        //    $modelClass::getSelfLink($id)
+        //);
+
+        //return static::viewData(
+        //    $modelClass::resource(['id' => $id]),
+        //    ['self' => $modelClass::getSelfLink($id)]
+        //);
+        return \Phramework\Models\Response::noContent();
+    }
+
+    /**
+     * Helper method
+     */
+    private static function handlePOSTResource(
+        $params,
+        $method,
+        $headers,
+        $modelClass,
+        $additionalGetArguments,
+        $additionalRelationshipsArguments,
+        $requestAttributes,
+        $validationCallbacks,
+        $requestRelationships,
+        &$queue
+    ) {
         $validationModel = $modelClass::getValidationModel();
-
-        //force additionalProperties to false
-        $validationModel->attributes->additionalProperties = false;
 
         //parse request attributes using $validationModel to validate the data
         $attributes = $validationModel->attributes->parse($requestAttributes);
 
         $relationships = $modelClass::getRelationships();
-
-        $requestRelationships = static::getRequestRelationships($params);
 
         /**
          * Format, object with
@@ -78,14 +163,14 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
          * - copy ids to $relationshipAttributes object
          */
         foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
-            if (!isset($relationshipValue['data'])) {
+            if (!isset($relationshipValue->data)) {
                 throw new RequestException(sprintf(
                     'Relationship "%s" must have a member data defined',
                     $relationshipKey
                 ));
             }
 
-            $relationshipData = $relationshipValue['data'];
+            $relationshipData = $relationshipValue->data;
 
             //Check if relationship exists
             static::exists(
@@ -103,34 +188,34 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
                 $value = $relationshipData;
 
-                if (!is_array($value)) {
-                    throw new RequestException(sprinf(
+                if (!is_object($value)) {
+                    throw new RequestException(sprintf(
                         'Expected data to be an object for relationship "%s"',
                         $relationshipKey
                     ));
                 }
 
-                if (!isset($value['id']) || !isset($value['type'])) {
+                if (!isset($value->id) || !isset($value->type)) {
                     throw new RequestException(sprintf(
                         'Attributes "id" and "type" required for relationship "%s"',
                         $relationshipKey
                     ));
                 }
 
-                if ($value['type'] !== $relationshipResourceType) {
+                if ($value->type !== $relationshipResourceType) {
                     throw new RequestException(sprintf(
                         'Invalid resource type "%s" for relationship "%s"',
-                        $value['type'],
+                        $value->type,
                         $relationshipKey
                     ));
                 }
-
-                $relationshipAttributes->{$relationshipKey} = $value['id'];
+                //Push relationship attributes for this $relationshipKey
+                $relationshipAttributes->{$relationshipKey} = $value->id;
             } elseif ($relationship->getRelationshipType() == Relationship::TYPE_TO_MANY) {
                 $parsedValues = [];
 
                 if (!is_array($relationshipData)) {
-                    throw new RequestException(sprinf(
+                    throw new RequestException(sprintf(
                         'Expected data to be an array for relationship "%s"',
                         $relationshipKey
                     ));
@@ -138,27 +223,28 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
                 foreach ($relationshipData as $value) {
                     if (!is_array($value)) {
-                        throw new RequestException(sprinf(
+                        throw new RequestException(sprintf(
                             'Expected data to be an object for relationship "%s"',
                             $relationshipKey
                         ));
                     }
-                    if (!isset($value['id']) || !isset($value['type'])) {
+                    if (!isset($value->id) || !isset($value->type)) {
                         throw new RequestException(sprintf(
                             'Attributes "id" and "type" required for relationship "%s"',
                             $relationshipKey
                         ));
                     }
-                    if ($value['type'] !== $relationshipResourceType) {
+                    if ($value->type !== $relationshipResourceType) {
                         throw new RequestException(sprintf(
                             'Invalid resource type "%s" for relationship "%s"',
                             $relationshipResourceType,
                             $relationshipKey
                         ));
                     }
-                    $parsedValues[] = $value['id'];
+                    $parsedValues[] = $value->id;
                 }
 
+                //Push relationship attributes for this $relationshipKey
                 $relationshipAttributes->{$relationshipKey} = $parsedValues;
             } else {
                 throw new \Exception('Unknown relationship type');
@@ -166,8 +252,13 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         }
 
         //Parse attributes using relationship's validation model
-        $parsedRelationshipAttributes = $validationModel->relationships->parse(
-            $relationshipAttributes
+        $parsedRelationshipAttributes =
+        (
+            isset($validationModel->relationships)
+            ? $validationModel->relationships->parse(
+                $relationshipAttributes
+            )
+            : new \stdClass()
         );
 
         /**
@@ -176,8 +267,11 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
          * Copy TYPE_TO_ONE attributes to primary data's attributes
          */
         foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
-
             $relationship = $modelClass::getRelationship($relationshipKey);
+
+            if (!isset($parsedRelationshipAttributes->{$relationshipKey})) {
+                continue;
+            }
 
             $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
 
@@ -218,14 +312,13 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
 
             if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
-
                 if ($parsedRelationshipValue) {
                     //check if exists
                     self::exists(
                         call_user_func_array(
                             $relationshipCallMethod,
                             array_merge(
-                                [$value['id']],
+                                [$value->id],
                                 (
                                     isset($additionalRelationshipsArguments[$relationshipKey])
                                     ? $additionalRelationshipsArguments[$relationshipKey]
@@ -235,8 +328,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                         ),
                         sprintf(
                             'Resource of type "%s" and id "%d" is not found',
-                            $value['type'],
-                            $value['id']
+                            $value->type,
+                            $value->id
                         )
                     );
                 }
@@ -246,9 +339,21 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
         }
 
-        $id = $modelClass::post((array)$attributes);
+        //Call Validation callbacks
+        foreach ($validationCallbacks as $callback) {
+            call_user_func(
+                $callback,
+                $requestAttributes,
+                $requestRelationships,
+                $attributes
+            );
+        }
 
-        self::testUnknownError($id);
+        //Q//$id = $modelClass::post((array)$attributes);
+
+        //Q//self::testUnknownError($id);
+
+        $queueRelationships = new \stdClass();
 
         /**
          * Call POST_RELATIONSHIP_BY_PREFIX handler for TO_MANY relationships
@@ -258,7 +363,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $relationship = $modelClass::getRelationship($relationshipKey);
 
             if ($relationship->getRelationshipType() == Relationship::TYPE_TO_MANY) {
-
                 $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
 
                 $relationship = $modelClass::getRelationship($relationshipKey);
@@ -279,26 +383,31 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                     );
                 }
 
+
+                //Push to queueRelationships
+                $queueRelationships->{$relationshipKey} = (object)[
+                    'callback' => $relationshipCallMethod, //callable
+                    'resources' => $parsedRelationshipValue //array
+                ];
+
                 //Call post relationship method to post each of relationships pairs
-                foreach ($parsedRelationshipValue as $tempId) {
-                    call_user_func(
-                        $relationshipCallMethod,
-                        $tempId,
-                        $id
-                    );
-                }
+                //foreach ($parsedRelationshipValue as $tempId) {
+                //    call_user_func(
+                //        $relationshipCallMethod,
+                //        $tempId,
+                //        $id
+                //    );
+                //}
             }
         }
 
-        //Prepare response with 201 Created status code
-        //\Phramework\Models\Response::created(
-        //    $modelClass::getSelfLink($id)
-        //);
-
-        return static::viewData(
-            $modelClass::resource(['id' => $id]),
-            ['self' => $modelClass::getSelfLink($id)]
+        $queue->push(
+            new \Phramework\JSONAPI\Controller\POST\QueueItem(
+                $attributes,
+                $queueRelationships
+            )
         );
 
+        //return [$id];
     }
 }

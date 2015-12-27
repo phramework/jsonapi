@@ -51,11 +51,12 @@ class Bootstrap
         $phramework = new Phramework($settings, $URIStrategy);
 
         \Phramework\Database\Database::setAdapter(
-            new \Phramework\Database\MySQL($settings['db'])
+            new \Phramework\Database\MySQL($settings['database'])
         );
 
+        var_dump($settings);
+
         Phramework::setViewer(
-            //\Phramework\JSONAPI\Viewers\JSONAPI::class
             \Phramework\JSONAPI\APP\Viewers\Viewer::class
         );
 

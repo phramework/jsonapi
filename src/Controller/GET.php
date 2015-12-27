@@ -30,7 +30,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 {
     /**
      * handles GET requests
-     * @param  array  $params  Request parameters
+     * @param  object $params  Request parameters
      * @param  string $modelClass                      Resource's primary model
      * to be used
      * @param  array $additionalGetArguments           [Optional] Array with any
@@ -65,8 +65,8 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         $sort = null;
 
-        if ($filterable && isset($params['filter'])) {
-            foreach ($params['filter'] as $filterKey => $filterValue) {
+        if ($filterable && isset($params->filter)) {
+            foreach ($params->filter as $filterKey => $filterValue) {
                 //todo validate as int
 
                 if ($filterKey === $modelClass::getType()) {
@@ -230,19 +230,19 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
         }
 
         //Parse pagination
-        if (isset($params['page'])) {
+        if (isset($params->page)) {
             $tempPage = [];
 
-            if (isset($params['page']['offset'])) {
+            if (isset($params->page['offset'])) {
                 $tempPage['offset'] =
                     (new \Phramework\Validate\UnsignedIntegerValidator())
-                        ->parse($params['page']['offset']);
+                        ->parse($params->page['offset']);
             }
 
-            if (isset($params['page']['limit'])) {
+            if (isset($params->page['limit'])) {
                 $tempPage['limit'] =
                     (new \Phramework\Validate\UnsignedIntegerValidator())
-                        ->parse($params['page']['limit']);
+                        ->parse($params->page['limit']);
             }
 
             if (!empty($tempPage)) {
@@ -270,8 +270,8 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                 $sort->ascending = $modelSort->ascending;
 
                 //Don't accept arrays
-                if (isset($params['sort'])) {
-                    if (!is_string($params['sort'])) {
+                if (isset($params->sort)) {
+                    if (!is_string($params->sort)) {
                         throw new RequestException(
                             'String expected for sort'
                         );
@@ -282,7 +282,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                         . implode('|', $modelSort->attributes)
                         . ')$/';
 
-                    if (!!preg_match($validateExpression, $params['sort'], $matches)) {
+                    if (!!preg_match($validateExpression, $params->sort, $matches)) {
                         $sort->attribute = $matches['attribute'];
                         $sort->ascending = (
                             isset($matches['descending']) && $matches['descending']

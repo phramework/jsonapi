@@ -30,7 +30,7 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
 
     /**
      * handles GETById requests
-     * @param  array  $params                          Request parameters
+     * @param  object $params                          Request parameters
      * @param  integer|string $id                      Requested resource's id
      * @param  string $modelClass                      Resource's primary model
      * to be used

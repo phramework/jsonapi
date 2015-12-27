@@ -110,24 +110,24 @@ abstract class Base
 
     /**
      * Extract included related resources from parameters
-     * @param  array|object $params Request parameters
-     * @return null|string[]
+     * @param  object $params Request parameters
+     * @return string[]
      */
     protected static function getRequestInclude($params = [])
     {
         //work with arrays
-        if (!is_array($params) && is_object($params)) {
-            $params = array($params);
+        if (!is_object($params) && is_array($params)) {
+            $params = (object)$params;
         }
 
-        if (!isset($params['include']) || empty($params['include'])) {
+        if (!isset($params->include) || empty($params->include)) {
             return [];
         }
 
         $include = [];
 
         //split parameter using , (for multiple values)
-        foreach (explode(',', $params['include']) as $i) {
+        foreach (explode(',', $params->include) as $i) {
             $include[] = trim($i);
         }
 
@@ -149,45 +149,63 @@ abstract class Base
      *    ]
      * ]
      * ```
-     * @param  array|object $params Request parameters
+     * @param  object $params Request parameters
      * @uses Request::requireParameters
      * @return \stdClass
      */
     protected static function getRequestAttributes($params = [])
     {
-        //work with arrays
-        if (!is_array($params) && is_object($params)) {
-            $params = array($params);
+        //work with objects
+        if (!is_object($params) && is_array($params)) {
+            $params = (object)$params;
         }
 
         //Require data
         Request::requireParameters($params, ['data']);
 
         //Require data['attributes']
-        Request::requireParameters($params['data'], ['attributes']);
+        Request::requireParameters($params->data, ['attributes']);
 
-        return (object)$params['data']['attributes'];
+        return (object)$params->data->attributes;
     }
 
-
-    /**
-     * Get request relationships if any attributes.
-     * @param  array|object $params Request parameters
-     * @return \stdClass
+    /*
+     * Get request primary data
+     * @param  object $params Request parameters
+     * @uses Request::requireParameters
+     * @return \stdClass|\stdClass[]
      */
-    protected static function getRequestRelationships($params = [])
+    protected static function getRequestData($params = [])
     {
-        //work with arrays
-        if (!is_array($params) && is_object($params)) {
-            $params = array($params);
+        //work with objects
+        if (!is_object($params) && is_array($params)) {
+            $params = (object)$params;
         }
 
         //Require data
         Request::requireParameters($params, ['data']);
 
+        return $params->data;
+    }
+
+    /**
+     * Get request relationships if any attributes.
+     * @param  object $params Request parameters
+     * @return \stdClass
+     */
+    protected static function getRequestRelationships($params = [])
+    {
+        //work with objects
+        if (!is_object($params) && is_array($params)) {
+            $params = (object)$params;
+        }
+
+        //Require data
+        Request::requireParameters($params, ['relationships']);
+
         //Require data['relationships']
-        if (isset($params['data']['relationships'])) {
-            return (object)$params['data']['relationships'];
+        if (isset($params->data->relationships)) {
+            return (object)$params->data->relationships;
         } else {
             return new \stdClass();
         }
