@@ -102,16 +102,36 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                     //when TYPE_TO_ONE it's easy to filter
                 } else {
                     $validationModel = $modelClass::getValidationModel();
+                    $filterValidationModel = $modelClass::getFilterValidationModel();
+                    //if (!$validationModel || !isset($validationModel->attributes)) {
+                    //    throw new \Exception(sprintf(
+                    //        'Model "%s" doesn\'t have a validation model for attributes',
+                    //        $modelClass::getType()
+                    //    ));
+                    //}
+                    $attributeValidationModel = null;
 
-                    if (!$validationModel || !isset($validationModel->attributes)) {
+                    if ($filterValidationModel
+                        && isset($filterValidationModel)
+                        && isset($filterValidationModel->properties->{$filterKey})
+                    ) {
+                        $attributeValidationModel =
+                            $filterValidationModel->properties->{$filterKey};
+                    } elseif ($validationModel
+                        && isset($validationModel->attributes)
+                        && isset($validationModel->attributes->properties->{$filterKey})
+                    ) {
+                        $attributeValidationModel =
+                            $validationModel->attributes->properties->{$filterKey};
+                    } else {
                         throw new \Exception(sprintf(
-                            'Model "%s" doesn\'t have a validation model for attributes',
-                            $modelClass::getType()
+                            'Attribute "%s" doesn\'t have a validation model',
+                            $filterKey
                         ));
                     }
 
-                    $validationModelAttributes = $validationModel->attributes;
-                    $filterValidationModel = $modelClass::getFilterValidationModel();
+                    //$validationModelAttributes = $validationModel->attributes;
+
 
                     $filterable = $modelClass::getFilterable();
 
@@ -188,32 +208,34 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                         if ((in_array($operator, Operator::getNullableOperators()))) {
                             //Do nothing for nullable operators
                         } else {
-                            if (!$validationModelAttributes
-                                || !isset($validationModelAttributes->properties->{$filterKey})
-                            ) {
-                                throw new \Exception(sprintf(
-                                    'Attribute "%s" doesn\'t have a validation model',
-                                    $filterKey
-                                ));
-                            }
+                            //if (!$validationModelAttributes
+                            //    || !isset($validationModelAttributes->properties->{$filterKey})
+                            //) {
+                            //    throw new \Exception(sprintf(
+                            //        'Attribute "%s" doesn\'t have a validation model',
+                            //        $filterKey
+                            //    ));
+                            //}
 
                             if ($isJSONFilter) {
                                 //unparsable
                             } else {
                                 //use filterValidationModel for this property
                                 //if defined and operator is a CLASS_LIKE operator
-                                if (in_array($operator, Operator::getLikeOperators())
-                                    && $filterValidationModel
-                                    && isset($filterValidationModel->properties->{$filterKey})
-                                ) {
-                                    //Validate operant value
-                                    $operant = $filterValidationModel->properties
-                                        ->{$filterKey}->parse($operant);
-                                } else {
-                                    //Validate operant value
-                                    $operant = $validationModelAttributes->properties
-                                        ->{$filterKey}->parse($operant);
-                                }
+                                //if (in_array($operator, Operator::getLikeOperators())
+                                //    && $filterValidationModel
+                                //    && isset($filterValidationModel->properties->{$filterKey})
+                                //) {
+                                //    //Validate operant value
+                                //    $operant = $filterValidationModel->properties
+                                //        ->{$filterKey}->parse($operant);
+                                //} else {
+                                //    //Validate operant value
+                                //    $operant = $validationModelAttributes->properties
+                                //        ->{$filterKey}->parse($operant);
+                                //}
+                                //
+                                $operant = $attributeValidationModel->parse($operant);
                             }
                         }
                         if ($isJSONFilter) {

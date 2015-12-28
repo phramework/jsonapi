@@ -222,9 +222,9 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 }
 
                 foreach ($relationshipData as $value) {
-                    if (!is_array($value)) {
+                    if (!is_object($value)) {
                         throw new RequestException(sprintf(
-                            'Expected data to be an object for relationship "%s"',
+                            'Expected data properties to be object for relationship "%s"',
                             $relationshipKey
                         ));
                     }
