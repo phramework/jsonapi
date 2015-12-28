@@ -312,7 +312,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
 
             if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
-                if ($parsedRelationshipValue) {
+                /*if ($parsedRelationshipValue) {
                     //check if exists
                     self::exists(
                         call_user_func_array(
@@ -332,9 +332,9 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                             $value->id
                         )
                     );
-                }
+                }*/
 
-                //Copy
+                //Copy to primary attributes
                 $attributes->{$relationship->getAttribute()} = $parsedRelationshipValue;
             }
         }

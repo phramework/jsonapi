@@ -594,6 +594,10 @@ abstract class Model
                     continue;
                 }
 
+                if (!isset($resource->relationships->{$relationshipKey}->data)) {
+                    continue;
+                }
+                
                 //if single
                 $relationshipData = $resource->relationships->{$relationshipKey}->data;
 
