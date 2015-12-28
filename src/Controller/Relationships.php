@@ -58,7 +58,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
     ) {
         $id = Request::requireId($params);
 
-        $relationship = Filter::string($params['relationship']);
+        $relationship = Filter::string($params->relationship);
 
         //Check if relationship exists
         static::exists(
