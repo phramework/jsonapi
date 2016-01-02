@@ -1,8 +1,7 @@
 jsonapi
 ==
-jsonapi for Phramework
-
-http://jsonapi.org/
+jsonapi for phramework
+based on specifications from http://jsonapi.org/
 
 ## Install
 ```bash
