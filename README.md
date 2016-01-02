@@ -3,12 +3,21 @@ jsonapi
 jsonapi for phramework
 based on specifications from http://jsonapi.org/
 
-## Install
+
+## Usage
+Require package using composer 
+```bash
+composer require phramework/jsonapi
+```
+
+## Development 
+
+### Install
 ```bash
 composer update
 ```
 
-## Test and lint code
+### Test and lint code
 ```bash
 composer lint
 composer test
