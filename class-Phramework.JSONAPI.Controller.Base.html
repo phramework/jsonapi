@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class Phramework\JSONAPI\Controller\Base | phramework/jsonapi doc</title>
+
+	<link rel="stylesheet" href="resources/bootstrap.min.css?973e37a8502921d56bc02bb55321f45b072b6f71">
+	<link rel="stylesheet" href="resources/style.css?70c1d062672daa3f906b72e4f5d03d4bc5c4174d">
+
+</head>
+
+<body>
+	<nav id="navigation" class="navbar navbar-default navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a href="index.html" class="navbar-brand">phramework/jsonapi doc</a>
+			</div>
+			<div class="collapse navbar-collapse">
+
+                <form id="search" class="navbar-form navbar-left" role="search">
+                    <input type="hidden" name="cx" value="">
+                    <input type="hidden" name="ie" value="UTF-8">
+                    <div class="form-group">
+                        <input type="text" name="q" class="search-query form-control" placeholder="Search">
+					</div>
+				</form>
+
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="namespace-Phramework.JSONAPI.Controller.html" title="Summary of Phramework\JSONAPI\Controller"><span>Namespace</span></a>
+					</li>
+					<li class="active">
+<span>Class</span>					</li>
+
+					<li class="divider-vertical"></li>
+
+					<li>
+						<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+					</li>
+
+						<li>
+							<a href="annotation-group-deprecated.html" title="List of elements with deprecated annotation">
+								<span>Deprecated</span>
+							</a>
+						</li>
+						<li>
+							<a href="annotation-group-todo.html" title="List of elements with todo annotation">
+								<span>Todo</span>
+							</a>
+						</li>
+
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div id="left">
+	<div id="menu">
+
+		<div id="groups">
+				<h3>Namespaces</h3>
+			<ul>
+					<li class="active">
+						<a href="namespace-Phramework.html">
+							Phramework<span></span>
+						</a>
+							<ul>
+					<li class="active">
+						<a href="namespace-Phramework.JSONAPI.html">
+							JSONAPI<span></span>
+						</a>
+							<ul>
+					<li class="active">
+						<a href="namespace-Phramework.JSONAPI.Controller.html">
+							Controller<span></span>
+						</a>
+							<ul>
+					<li>
+						<a href="namespace-Phramework.JSONAPI.Controller.POST.html">
+							POST						</a>
+							</li>
+								</ul></li>
+					<li>
+						<a href="namespace-Phramework.JSONAPI.Viewers.html">
+							Viewers						</a>
+							</li>
+								</ul></li></ul></li>
+			</ul>
+		</div>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li class="active"><a href="class-Phramework.JSONAPI.Controller.Base.html">Base</a></li>
+				<li><a href="class-Phramework.JSONAPI.Controller.DELETE.html">DELETE</a></li>
+				<li><a href="class-Phramework.JSONAPI.Controller.GET.html">GET</a></li>
+				<li><a href="class-Phramework.JSONAPI.Controller.GETById.html">GETById</a></li>
+				<li><a href="class-Phramework.JSONAPI.Controller.PATCH.html">PATCH</a></li>
+				<li><a href="class-Phramework.JSONAPI.Controller.POST.html">POST</a></li>
+				<li><a href="class-Phramework.JSONAPI.Controller.Relationships.html">Relationships</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+	<div id="rightInner">
+<div id="content" class="class">
+	<h1>Class Base</h1>
+
+
+	<div class="description">
+	<p>Common methods</p>
+	</div>
+
+
+
+	<div>
+		<h3>Direct known subclasses</h3>
+		<p class="elementList">
+			<code><a href="class-Phramework.JSONAPI.Controller.Relationships.html">Phramework\JSONAPI\Controller\Relationships</a></code>
+		</p>
+	</div>
+
+	<div>
+		<h3>Indirect known subclasses</h3>
+		<p class="elementList">
+			<code><a href="class-Phramework.JSONAPI.Controller.html">Phramework\JSONAPI\Controller</a></code>, 
+			<code><a href="class-Phramework.JSONAPI.Controller.DELETE.html">Phramework\JSONAPI\Controller\DELETE</a></code>, 
+			<code><a href="class-Phramework.JSONAPI.Controller.GET.html">Phramework\JSONAPI\Controller\GET</a></code>, 
+			<code><a href="class-Phramework.JSONAPI.Controller.GETById.html">Phramework\JSONAPI\Controller\GETById</a></code>, 
+			<code><a href="class-Phramework.JSONAPI.Controller.PATCH.html">Phramework\JSONAPI\Controller\PATCH</a></code>, 
+			<code><a href="class-Phramework.JSONAPI.Controller.POST.html">Phramework\JSONAPI\Controller\POST</a></code>
+		</p>
+	</div>
+
+
+
+
+
+	<div class="alert alert-info">
+		<b>Abstract</b><br>
+		
+		<b>Namespace:</b> <a href="namespace-Phramework.html">Phramework</a>\<a href="namespace-Phramework.JSONAPI.html">JSONAPI</a>\<a href="namespace-Phramework.JSONAPI.Controller.html">Controller</a><br>
+		
+
+				<b>License:</b>
+				<a href="https://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a><br>
+				<b>Author:</b>
+				Xenofon Spafaridis <a href="&#109;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#x6e;o&#104;&#112;&#x6f;&#x6e;&#101;&#120;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;.&#99;&#111;&#x6d;">&#x6e;o&#104;&#112;&#x6f;&#x6e;&#101;&#120;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;.&#99;&#111;&#x6d;</a><br>
+				<b>Since:</b>
+				0.0.0<br>
+			<b>Located at</b> Controller/Base.php		<br>
+	</div>
+
+
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><h2>Methods summary</h2></div>
+			<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="view" id="_view">
+
+			<td class="attributes"><code>
+				 protected static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_view">#</a>
+			<code>view( <span>array|object <var>$parameters</var> = []</span> )</code>
+
+			<div class="description short">
+				<p>Shortcut to \Phramework\Phramework::view.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Shortcut to \Phramework\Phramework::view.</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$parameters</var></dt>
+						<dd>Response parameters</dd>
+					</dl></div>
+
+
+
+					<h4>Uses</h4>
+					<div class="list">
+							\Phramework\Phramework::view<br>
+							\Phramework\Phramework::view<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="exists" id="_exists">
+
+			<td class="attributes"><code>
+				 protected static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_exists">#</a>
+			<code>exists( <span>mixed <var>$assert</var></span>, <span>string <var>$exceptionMessage</var> = <span class="php-quote">'Resource not found'</span> </span> )</code>
+
+			<div class="description short">
+				<p>If !assert then a NotFoundException exceptions is thrown.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>If !assert then a NotFoundException exceptions is thrown.</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$assert</var></dt>
+						<dd></dd>
+						<dt><var>$exceptionMessage</var></dt>
+						<dd><p>[Optional] Default is
+'Resource not found'</p></dd>
+					</dl></div>
+
+
+					<h4>Throws</h4>
+					<div class="list">
+						Phramework\Exceptions\NotFoundException
+					</div>
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="testUnknownError" id="_testUnknownError">
+
+			<td class="attributes"><code>
+				 protected static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_testUnknownError">#</a>
+			<code>testUnknownError( <span>mixed <var>$assert</var></span>, <span>string <var>$exceptionMessage</var> = <span class="php-quote">'Unknown error'</span> </span> )</code>
+
+			<div class="description short">
+				<p>If !assert then a Exception exception is thrown.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>If !assert then a Exception exception is thrown.</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$assert</var></dt>
+						<dd></dd>
+						<dt><var>$exceptionMessage</var></dt>
+						<dd>[Optional] Default is 'unknown_error'</dd>
+					</dl></div>
+
+
+					<h4>Throws</h4>
+					<div class="list">
+						Exception
+					</div>
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="viewData" id="_viewData">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_viewData">#</a>
+			<code>viewData( <span>stdClass <var>$data</var></span>, <span> <var>$links</var> = <span class="php-keyword1">null</span></span>, <span> <var>$meta</var> = <span class="php-keyword1">null</span></span>, <span> <var>$included</var> = <span class="php-keyword1">null</span> </span> )</code>
+
+			<div class="description short">
+				<p>View JSONAPI data</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>View JSONAPI data</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$data</var></dt>
+						<dd></dd>
+						<dt><var>$links</var></dt>
+						<dd></dd>
+						<dt><var>$meta</var></dt>
+						<dd></dd>
+						<dt><var>$included</var></dt>
+						<dd></dd>
+					</dl></div>
+
+
+
+					<h4>Uses</h4>
+					<div class="list">
+							\Phramework\Viewers\JSONAPI<br>
+					</div>
+					<h4>Todo</h4>
+					<div class="list">
+							use \Phramework\Phramework::view<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getRequestInclude" id="_getRequestInclude">
+
+			<td class="attributes"><code>
+				 protected static
+				string[]
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getRequestInclude">#</a>
+			<code>getRequestInclude( <span>object <var>$params</var> = []</span> )</code>
+
+			<div class="description short">
+				<p>Extract included related resources from parameters</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Extract included related resources from parameters</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$params</var></dt>
+						<dd>Request parameters</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						string[]
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getRequestAttributes" id="_getRequestAttributes">
+
+			<td class="attributes"><code>
+				 protected static
+				stdClass
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getRequestAttributes">#</a>
+			<code>getRequestAttributes( <span>object <var>$params</var> = []</span> )</code>
+
+			<div class="description short">
+				<p>Get request data attributes.
+The request is expected to have json api structure
+Like the following example:</p>
+
+<pre><code>[
+   data =&gt; [
+       'type' =&gt; 'user',
+       'attributes' =&gt; [
+           'email'    =&gt; 'nohponex@gmail.com',
+           'password' =&gt; 'XXXXXXXXXXXXXXXXXX'
+       ]
+   ]
+]
+</code></pre>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Get request data attributes.
+The request is expected to have json api structure
+Like the following example:</p>
+
+<pre><code>[ data =&gt; [ 'type' =&gt; 'user', 'attributes' =&gt; [ 'email'    =&gt; 'nohponex@gmail.com', 'password' =&gt; 'XXXXXXXXXXXXXXXXXX' ] ]
+]
+</code></pre>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$params</var></dt>
+						<dd>Request parameters</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						stdClass
+					</div>
+
+
+					<h4>Uses</h4>
+					<div class="list">
+							Request::requireParameters<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getRequestData" id="_getRequestData">
+
+			<td class="attributes"><code>
+				 protected static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getRequestData">#</a>
+			<code>getRequestData( <span> <var>$params</var> = []</span> )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getRequestRelationships" id="_getRequestRelationships">
+
+			<td class="attributes"><code>
+				 protected static
+				stdClass
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getRequestRelationships">#</a>
+			<code>getRequestRelationships( <span>object <var>$params</var> = []</span> )</code>
+
+			<div class="description short">
+				<p>Get request relationships if any attributes.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Get request relationships if any attributes.</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$params</var></dt>
+						<dd>Request parameters</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						stdClass
+					</div>
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="checkIfUnsupportedRequestWithId" id="_checkIfUnsupportedRequestWithId">
+
+			<td class="attributes"><code>
+				 public static
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_checkIfUnsupportedRequestWithId">#</a>
+			<code>checkIfUnsupportedRequestWithId( <span>object <var>$resource</var></span> )</code>
+
+			<div class="description short">
+				<p>Throw a Forbidden exception if resource's id is set.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Throw a Forbidden exception if resource's id is set.</p>
+
+<p>Unsupported request to create a resource with a client-generated ID</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$resource</var></dt>
+						<dd>[description]</dd>
+					</dl></div>
+
+
+					<h4>Throws</h4>
+					<div class="list">
+						Phamework\Phramework\Exceptions\ForbiddenException
+					</div>
+
+
+
+			</div>
+			</div></td>
+		</tr>
+			</table>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+	</div>
+
+	<div id="footer">
+		phramework/jsonapi doc API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
