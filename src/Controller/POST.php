@@ -122,6 +122,9 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         //    $modelClass::resource(['id' => $id]),
         //    ['self' => $modelClass::getSelfLink($id)]
         //);
+
+        \Phramework\JSONAPI\Viewers\JSONAPI::header();
+
         return \Phramework\Models\Response::noContent();
     }
 

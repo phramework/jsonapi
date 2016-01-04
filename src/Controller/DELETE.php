@@ -69,10 +69,7 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
             );
         }
 
-        //Force JSONAPI content-type header
-        if (!headers_sent()) {
-            header('Content-Type: application/vnd.api+json;charset=utf-8');
-        }
+        \Phramework\JSONAPI\Viewers\JSONAPI::header();
 
         \Phramework\Models\Response::noContent();
     }

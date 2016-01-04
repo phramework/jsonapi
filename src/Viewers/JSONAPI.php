@@ -16,19 +16,35 @@ namespace Phramework\JSONAPI\Viewers;
 class JSONAPI implements \Phramework\Viewers\IViewer
 {
     /**
-     * Display output
+     * Send JSONAPI headers
+     * @see header https://secure.php.net/manual/en/function.header.php
+     * @return boolean Returns false if headers are already sent, else true
+     */
+    public static function header()
+    {
+        if (headers_sent()) {
+            return false;
+        }
+
+        header('Content-Type: application/vnd.api+json;charset=utf-8');
+
+        return true;
+    }
+
+    /**
+     * Send output
      *
-     * @param array $parameters Output to display as json
+     * @param object|array $parameters Output to display as json
      */
     public function view($parameters)
     {
-        if (!headers_sent()) {
-            header('Content-Type: application/vnd.api+json;charset=utf-8');
-        }
+        self::header();
+
         if (!is_object($parameters)) {
             $parameters = (object)$parameters;
         }
-        //include JSON API Object
+
+        //Include jsonapi version object
         $parameters->jsonapi = (object)['version' => '1.0'];
 
         echo json_encode($parameters);
