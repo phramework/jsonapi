@@ -41,6 +41,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @todo handle as transaction queue, Since models usualy are not producing exceptions.
      * Prepare data until last possible moment,
      * so that any exceptions can be thrown, and finaly invoke the execution of the queue.
+     * @uses $modelClass::post method to create resources
      */
     protected static function handlePOST(
         $params,

@@ -44,6 +44,8 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
      * additional arguments that the primary data is requiring
      * @param array  $additionalRelationshipsArguments [Optional] Array with any
      * additional arguments primary data's relationships are requiring
+     * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to
+     *     fetch resources, for example `getById`
      */
     protected static function handleByIdRelationships(
         $params,

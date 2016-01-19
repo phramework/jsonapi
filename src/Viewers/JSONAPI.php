@@ -3,9 +3,9 @@
 namespace Phramework\JSONAPI\Viewers;
 
 /**
- * Implementation of IViewer for jsonapi
+ * Implementation of IViewer for JSON API
  *
- * Sends `Content-Type: application/vnd.api+json` response to client
+ * Also sends `Content-Type: application/vnd.api+json;charset=utf-8` header as response
  *
  * JSONP Support is disabled
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -16,7 +16,7 @@ namespace Phramework\JSONAPI\Viewers;
 class JSONAPI implements \Phramework\Viewers\IViewer
 {
     /**
-     * Send JSONAPI headers
+     * Send JSON API headers
      * @see header https://secure.php.net/manual/en/function.header.php
      * @return boolean Returns false if headers are already sent, else true
      */
@@ -44,7 +44,7 @@ class JSONAPI implements \Phramework\Viewers\IViewer
             $parameters = (object)$parameters;
         }
 
-        //Include jsonapi version object
+        //Include JSON API version object
         $parameters->jsonapi = (object)['version' => '1.0'];
 
         echo json_encode($parameters);

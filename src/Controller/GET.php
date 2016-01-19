@@ -44,6 +44,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
      * for JSON encoded fields
      * @param  boolean $sortable                       [Optional] Deafult is
      * true, if true allowes sorting
+     * @uses $modelClass::get method to fetch resource collection
      */
     protected static function handleGET(
         $params,

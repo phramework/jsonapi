@@ -39,6 +39,10 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
      * additional arguments that the primary data is requiring
      * @throws \Phramework\Exceptions\NotFound         If resource not found
      * @throws \Phramework\Exceptions\RequestException If no fields are changed
+     * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to
+     *     fetch resources, for example `getById`
+     * @uses $modelClass::patch method to
+     *     update resources
      */
     protected static function handlePATCH(
         $params,

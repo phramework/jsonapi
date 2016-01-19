@@ -38,6 +38,8 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
      * additional arguments that the primary data is requiring
      * @param  array $additionalRelationshipsArguments [Optional] Array with any
      * additional arguemnt primary data's relationships are requiring
+     * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to 
+     *     fetch resources, for example `getById`
      */
     protected static function handleGETByid(
         $params,

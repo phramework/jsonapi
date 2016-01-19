@@ -597,7 +597,7 @@ abstract class Model
                 if (!isset($resource->relationships->{$relationshipKey}->data)) {
                     continue;
                 }
-                
+
                 //if single
                 $relationshipData = $resource->relationships->{$relationshipKey}->data;
 
@@ -903,9 +903,9 @@ abstract class Model
         $sort,
         $hasWhere = true
     ) {
-        return trim(self::handlePagination(
-            self::handleSort(
-                self::handleFilter(
+        return trim(static::handlePagination(
+            static::handleSort(
+                static::handleFilter(
                     $query,
                     $filter,
                     $hasWhere

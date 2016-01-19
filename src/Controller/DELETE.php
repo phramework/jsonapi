@@ -40,6 +40,10 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
      * additional arguments that the primary data is requiring
      * @throws \Phramework\Exceptions\NotFound If resource not found
      * @throws \Phramework\Exceptions\RequestException If unable to delete
+     * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to
+     *     fetch resources, for example `getById`
+     * @uses $modelClass::delete method to 
+     *     delete resources
      */
     protected static function handleDELETE(
         $params,
