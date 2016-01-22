@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\JSONAPI\Controller\GET\Filter;
+use Phramework\JSONAPI\Controller\GET\Sort;
 use \Phramework\Models\Request;
 use \Phramework\Models\Operator;
 use \Phramework\Exceptions\RequestException;
@@ -36,15 +38,17 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
      * @param  array $additionalGetArguments           [Optional] Array with any
      * additional arguments that the primary data is requiring
      * @param  array $additionalRelationshipsArguments [Optional] Array with any
-     * additional arguemnt primary data's relationships are requiring
+     * additional argument primary data's relationships are requiring
      * @param  boolean $filterable                     [Optional] Deafult is
-     * true, if true allowes `filter` URI parameters to be parsed for filtering
+     * true, if true allows `filter` URI parameters to be parsed for filtering
      * @param  boolean $filterableJSON                 [Optional] Deafult is
-     * false, if true allowes `filter` URI parameters to be parsed for filtering
+     * false, if true allows `filter` URI parameters to be parsed for filtering
      * for JSON encoded fields
      * @param  boolean $sortable                       [Optional] Deafult is
-     * true, if true allowes sorting
+     * true, if true allows sorting
      * @uses $modelClass::get method to fetch resource collection
+     * @throws \Exception
+     * @throws RequestException
      */
     protected static function handleGET(
         $params,
@@ -57,12 +61,14 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
     ) {
         $page = null;
 
-        $filter = (object)[
+        $filter = new Filter();
+
+        /*= (object)[
             'primary' => null,
             'relationships' => [],
             'attributes' => [],
             'attributesJSON' => []
-        ];
+        ];*/
 
         $sort = null;
 
@@ -132,7 +138,6 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                     }
 
                     //$validationModelAttributes = $validationModel->attributes;
-
 
                     $filterable = $modelClass::getFilterable();
 
@@ -254,22 +259,18 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         //Parse pagination
         if (isset($params->page)) {
-            $tempPage = [];
+            $page = new Page();
 
             if (isset($params->page['offset'])) {
-                $tempPage['offset'] =
+                $page->offset =
                     (new \Phramework\Validate\UnsignedIntegerValidator())
                         ->parse($params->page['offset']);
             }
 
             if (isset($params->page['limit'])) {
-                $tempPage['limit'] =
+                $page->limit =
                     (new \Phramework\Validate\UnsignedIntegerValidator())
                         ->parse($params->page['limit']);
-            }
-
-            if (!empty($tempPage)) {
-                $page = (object)$tempPage;
             }
         }
 
@@ -287,7 +288,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
             $sort = null;
 
             if ($modelSort->default !== null) {
-                $sort = new \stdClass();
+                $sort = new Sort();
                 $sort->table = $modelClass::getTable();
                 $sort->attribute = $modelSort->default;
                 $sort->ascending = $modelSort->ascending;
@@ -300,10 +301,10 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                         );
                     }
 
-                    $validateExpression =
-                        '/^(?P<descending>\-)?(?P<attribute>'
-                        . implode('|', $modelSort->attributes)
-                        . ')$/';
+                    $validateExpression = sprintf(
+                        '/^(?P<descending>\-)?(?P<attribute>%s)$/',
+                        implode('|', $modelSort->attributes)
+                    );
 
                     if (!!preg_match($validateExpression, $params->sort, $matches)) {
                         $sort->attribute = $matches['attribute'];

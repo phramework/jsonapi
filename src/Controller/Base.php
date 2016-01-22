@@ -64,7 +64,7 @@ abstract class Base
      * @param mixed  $assert
      * @param string $exceptionMessage [Optional] Default is 'unknown_error'
      *
-     * @throws Exception
+     * @throws \Exception
      */
     protected static function testUnknownError(
         $assert,
@@ -113,7 +113,7 @@ abstract class Base
      * @param  object $params Request parameters
      * @return string[]
      */
-    protected static function getRequestInclude($params = [])
+    protected static function getRequestInclude($params)
     {
         //work with arrays
         if (!is_object($params) && is_array($params)) {
@@ -153,7 +153,7 @@ abstract class Base
      * @uses Request::requireParameters
      * @return \stdClass
      */
-    protected static function getRequestAttributes($params = [])
+    protected static function getRequestAttributes($params)
     {
         //work with objects
         if (!is_object($params) && is_array($params)) {
@@ -175,7 +175,7 @@ abstract class Base
      * @uses Request::requireParameters
      * @return \stdClass|\stdClass[]
      */
-    protected static function getRequestData($params = [])
+    protected static function getRequestData($params)
     {
         //work with objects
         if (!is_object($params) && is_array($params)) {
@@ -193,7 +193,7 @@ abstract class Base
      * @param  object $params Request parameters
      * @return \stdClass
      */
-    protected static function getRequestRelationships($params = [])
+    protected static function getRequestRelationships($params)
     {
         //work with objects
         if (!is_object($params) && is_array($params)) {
@@ -216,13 +216,13 @@ abstract class Base
      *
      * Unsupported request to create a resource with a client-generated ID
      * @package JSONAPI
-     * @throws \Phamework\Phramework\Exceptions\ForbiddenException
+     * @throws \Phramework\Exceptions\ForbiddenException
      * @param  object $resource [description]
      */
     public static function checkIfUnsupportedRequestWithId($resource)
     {
         if (isset($resource->id)) {
-            throw new \Phamework\Phramework\Exceptions\ForbiddenException(
+            throw new \Phramework\Exceptions\ForbiddenException(
                 'Unsupported request to create a resource with a client-generated ID'
             );
         }
