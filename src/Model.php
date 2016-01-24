@@ -513,7 +513,11 @@ abstract class Model
                 }
 
                 //And use it's relationships data for this relationship
-                return $resource->relationships->{$relationshipKey}->data;
+                return (
+                    isset($resource->relationships->{$relationshipKey}->data)
+                    ? $resource->relationships->{$relationshipKey}->data
+                    : null
+                );
 
                 break;
             case Relationship::TYPE_TO_MANY:
