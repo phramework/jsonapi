@@ -9,3 +9,4 @@ composer.lock
 npm-debug.log
 build/
 localsettings.php
+.idea/**

@@ -37,7 +37,7 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
      * @param  array $additionalGetArguments           [Optional] Array with any
      * additional arguments that the primary data is requiring
      * @param  array $additionalRelationshipsArguments [Optional] Array with any
-     * additional arguemnt primary data's relationships are requiring
+     * additional argument primary data's relationships are requiring
      * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to 
      *     fetch resources, for example `getById`
      */
@@ -51,10 +51,19 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
         //Rewrite resource's id
         $id = Request::requireId($params);
 
+        $idAttribute = $modelClass::getIdAttribute();
+
+        $filterValidationModel = $modelClass::getFilterValidationModel();
+
+        if (!empty($filterValidationModel) && isset($filterValidationModel->{$idAttribute})) {
+            $id = $filterValidationModel->{$idAttribute}->parse($id);
+        }
+
+        //validate if set
         $data = call_user_func_array(
             [
                 $modelClass,
-                $modelClass::GET_BY_PREFIX . ucfirst($modelClass::getIdAttribute())
+                $modelClass::GET_BY_PREFIX . ucfirst($idAttribute)
             ],
             array_merge([$id], $additionalGetArguments)
         );
