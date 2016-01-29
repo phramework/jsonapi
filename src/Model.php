@@ -43,42 +43,42 @@ abstract class Model
     /**
      * Resource's type, used to describe resource objects that share
      * common attributes and relationships
-     * **Must** be overwriten
+     * **Must** be overwritten
      * @var string
      */
     protected static $type = null;
 
     /**
      * Resource's table name
-     * Can be overwriten, default is null (no database)
+     * Can be overwritten, default is null (no database)
      * @var string|null
      */
     protected static $table = null;
 
     /**
      * Resource's table's schema name
-     * Can be overwriten, default is null (no schema)
+     * Can be overwritten, default is null (no schema)
      * @var string|null
      */
     protected static $schema = null;
 
     /**
      * Resource's identification attribute (Primary key in database).
-     * Can be overwriten, default is id
+     * Can be overwritten, default is id
      * @var string
      */
     protected static $idAttribute = 'id';
 
     /**
      * Resource's endpoint, usually it the same as type
-     * **Must** be overwriten
+     * **Must** be overwritten
      * @var string
      */
     protected static $endpoint = null;
 
     /**
      * Records's type casting schema for database rectods
-     * Can be overwriten
+     * Can be overwritten
      * Also it can be set to empty array to disable type
      * casting for this resource.
      * @var array|null
@@ -92,7 +92,7 @@ abstract class Model
      * order to have correct data types.
      * @uses static::$cast If cast is not null
      * @uses static::getValidationModel If static::$cast is null, it uses
-     * validationModel's attributes to extract the cast chema
+     * validationModel's attributes to extract the cast schema
      * @return array
      * @todo Rewrite validationModel's attributes
      */
@@ -183,7 +183,7 @@ abstract class Model
     }
     /**
      * Check if relationship exists
-     * @param  string $relationship Relationship's key (alias)
+     * @param  string $relationshipKey Relationship's key (alias)
      * @return Boolean
      */
     public static function relationshipExists($relationshipKey)
@@ -235,7 +235,7 @@ abstract class Model
             //Attach links.self to this resource
             if ($resource) {
                 if ($links) {
-                    //Inlude links object
+                    //Include links object
                     $resource->links = [
                         'self' => static::getSelfLink($resource->id)
                     ];
@@ -254,7 +254,7 @@ abstract class Model
      * Prepare an individual resource
      * @param  array|\stdClass $record An individual record fetched from database
      * @param  boolean $links
-     * [Optional] Write resource and relationship links, defauls is false
+     * [Optional] Write resource and relationship links, default is false
      * @return \stdClass|null
      */
     public static function resource($record, $links = true)
@@ -275,7 +275,7 @@ abstract class Model
         //Delete IdAttribute from attributes
         unset($record->{static::getIdAttribute()});
 
-        //Initialize attributes object (used for represantation order)
+        //Initialize attributes object (used for representation order)
         $resource->attributes = (object)[];
 
         //Attach relationships if resource's relationships are set
@@ -333,7 +333,7 @@ abstract class Model
                         }
                     }
                 } else {
-                    //Else try to use realtionship's class method to retrieve data
+                    //Else try to use relationship`s class method to retrieve data
                     if ($relationshipType == Relationship::TYPE_TO_MANY) {
                         $callMethod = [
                             $relationshipObject->getRelationshipClass(),
@@ -359,10 +359,10 @@ abstract class Model
                     }
                 }
 
-                //Unset this attribute (MUST not be visible in resource's attibutes)
+                //Unset this attribute (MUST not be visible in resource's attributes)
                 unset($record->{$attribute});
 
-                //Push reletionship to relationships
+                //Push relationship to relationships
                 $resource->relationships->{$relationship} = $relationshipEntry;
             }
         }
@@ -377,7 +377,7 @@ abstract class Model
     /**
      * Create a record in database
      * @param  array $attributes
-     * @param  \Phramework\Database\Operations\Create::RETURN_ID Return type,
+     * @param  \Phramework\Database\Operations\Create::RETURN_ID $return Return type,
      * default is RETURN_ID
      * @return mixed
      * @todo disable post ?
@@ -396,7 +396,7 @@ abstract class Model
 
     /**
      * Update selected attributes of a database record
-     * @param  mixex $id id attribute's value
+     * @param  mixed $id id attribute's value
      * @param  array $attributes Key-value array with fields to update
      * @return number of updated rows
      * @todo add query limit
@@ -413,7 +413,7 @@ abstract class Model
 
     /**
      * Delete a database record
-     * @param  mixex $id id attribute's value
+     * @param  mixed $id id attribute's value
      * @param  array $additionalAttributes Key-value array with addiotnal fields
      * to use in WHERE clause
      * @return boolean Returns true on success, false on failure
@@ -547,6 +547,7 @@ abstract class Model
      * @param  object $primaryData Primary data object
      * @param  string[] $include     An array with the keys of relationships to include
      * @return object[]              An array with all included related data
+     * @throws \Phramework\Exceptions\RequestException
      * @todo handle Relationship resource cannot be accessed
      * @todo include second level relationships
      */
@@ -700,18 +701,18 @@ abstract class Model
      */
     protected static function handlePagination($query, $page = null)
     {
-        $additionallPagination = [];
+        $additionalPagination = [];
 
         if ($page !== null) {
             if (isset($page->limit)) {
-                $additionallPagination[] = sprintf(
+                $additionalPagination[] = sprintf(
                     'LIMIT %s',
                     $page->limit
                 );
             }
 
             if (isset($page->offset)) {
-                $additionallPagination[] = sprintf(
+                $additionalPagination[] = sprintf(
                     'OFFSET %s',
                     $page->offset
                 );
@@ -720,7 +721,7 @@ abstract class Model
 
         $query = str_replace(
             '{{pagination}}',
-            implode("\n", $additionallPagination),
+            implode("\n", $additionalPagination),
             $query
         );
 
@@ -790,7 +791,7 @@ abstract class Model
             }
 
             foreach ($filter->attributes as $value) {
-                list($key, $operator, $operant) = $value;
+                list($key, $operator, $operand) = $value;
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalFilter[] = sprintf(
                         '%s "%s"."%s" %s \'%s\'',
@@ -798,7 +799,7 @@ abstract class Model
                         static::$table,
                         $key,
                         $operator,
-                        $operant
+                        $operand
                     );
                 } elseif (in_array($operator, Operator::getNullableOperators())) {
                     //Define a transformation matrix, operator to SQL operator
@@ -835,7 +836,7 @@ abstract class Model
                             ? $transformation[$operator]
                             : $operator
                         ),
-                        strtolower($operant)
+                        strtolower($operand)
                     );
                 } else {
                     throw new \Phramework\Exceptions\NotImplementedException(sprintf(
@@ -851,7 +852,7 @@ abstract class Model
             //hack.
 
             foreach ($filterJSON as $value) {
-                list($attribute, $key, $operator, $operant) = $value;
+                list($attribute, $key, $operator, $operand) = $value;
 
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalFilter[] = sprintf(
@@ -861,7 +862,7 @@ abstract class Model
                         $attribute,
                         $key,
                         $operator,
-                        $operant
+                        $operand
                     );
                 } else {
                     throw new \Phramework\Exceptions\NotImplementedException(sprintf(
@@ -889,18 +890,18 @@ abstract class Model
      * @uses Model::handlePagination
      * @uses Model::handleSort
      * @uses Model::handleFilter
-     * @param  string  $query    Query
-     * @param  object  $page     See handlePagination $page parameter
-     * @param  object  $filter   See handleFilter $filter parameter
-     * @param  null|object $sort See handleSort $sort parameter
+     * @param  string       $query    Query
+     * @param  Page|null    $page     See handlePagination $page parameter
+     * @param  Filter|null  $filter   See handleFilter $filter parameter
+     * @param  Sort|null    $sort See handleSort $sort parameter
      * @param  boolean $hasWhere If query already has an WHERE, default is true
      * @return string       Query
      */
     protected static function handleGet(
         $query,
-        $page,
-        $filter,
-        $sort,
+        Page $page,
+        Filter $filter,
+        Sort $sort,
         $hasWhere = true
     ) {
         return trim(static::handlePagination(

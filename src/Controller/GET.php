@@ -340,7 +340,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
             $additionalRelationshipsArguments
         );
 
-        static::viewData(
+        return static::viewData(
             $data,
             ['self' => $modelClass::getSelfLink()],
             null,

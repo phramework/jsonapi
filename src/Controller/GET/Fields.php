@@ -17,40 +17,12 @@
 namespace Phramework\JSONAPI\Controller\GET;
 
 /**
- * Filter helper methods
+ * Fields helper methods
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class Filter
+class Fields
 {
-    public $primary = null;
-    public $relationships = [];
-    public $attributes = [];
-    public $attributesJSON = [];
-
-    /**
-     * @param object $parameters Request parameters
-     * @return Filter
-     */
-    public static function parseFromParameters($parameters)
-    {
-        $filter = new Filter();
-
-        return $filter;
-    }
-
-    public function __construct(
-        $primary = null,
-        $relationships= [],
-        $attributes = [],
-        $attributesJSON = []
-    ) {
-
-        $this->primary = $primary;
-        $this->relationships = $relationships;
-        $this->attributes = $attributes;
-        $this->attributesJSON = $attributesJSON;
-    }
 
 }

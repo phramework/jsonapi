@@ -76,5 +76,7 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
         \Phramework\JSONAPI\Viewers\JSONAPI::header();
 
         \Phramework\Models\Response::noContent();
+
+        return;
     }
 }

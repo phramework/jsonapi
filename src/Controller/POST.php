@@ -413,5 +413,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         );
 
         //return [$id];
+        return;
     }
 }

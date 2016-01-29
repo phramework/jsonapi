@@ -102,6 +102,6 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
                 $modelClass::getSelfLink($id) . '/' . $relationship
         ];
 
-        static::viewData($data, $links);
+        return static::viewData($data, $links);
     }
 }

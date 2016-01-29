@@ -70,7 +70,7 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
             $additionalRelationshipsArguments
         );
 
-        static::viewData(
+        return static::viewData(
             $data,
             ['self' => $modelClass::getSelfLink($id)],
             null,
