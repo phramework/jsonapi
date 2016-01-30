@@ -43,11 +43,22 @@ class Resource
      */
     public $relationships;
 
+    /**
+     * @var object
+     */
+    public $links;
+
+    /**
+     * Resource constructor.
+     * @param string $type
+     * @param string $id
+     */
     public function __construct($type, $id)
     {
         $this->type = $type;
         $this->id   = $id;
 
+        $this->links         = new \stdClass();
         $this->attributes    = new \stdClass();
         $this->relationships = new \stdClass();
     }

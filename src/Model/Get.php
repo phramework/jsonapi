@@ -31,7 +31,7 @@ use \Phramework\JSONAPI\Relationship;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @todo add cache
  */
-abstract class Get extends \Phramework\JSONAPI\Model\Model
+abstract class Get extends \Phramework\JSONAPI\Model\Cache
 {
     /**
      * @param Page|null $page       *[Optional]*
@@ -55,12 +55,74 @@ abstract class Get extends \Phramework\JSONAPI\Model\Model
     /**
      * @param string|string[] $id An id of a single resource or ids of multiple resources
      * @param mixed ...$additionalParameters
-     * @return Resource|Object
+     * @return Resource|object
+     * @todo make sure call to get method with multiple $additionalParameters will work
      */
     public static function getById($id, ...$additionalParameters)
     {
+        if (!is_array($id) && ($cached = static::getCache($id)) !== null) {
+            return $cached;
+        } elseif (is_array($id)) {
+            $collectionObject = new \stdClass();
 
+            $originalId = $id;
+
+            foreach ($originalId as $resourceId) {
+                $collectionObject->{$resourceId} = null;
+                if (($cached = static::getCache($resourceId)) !== null) {
+                    $collectionObject->{$resourceId} = $cached;
+                    //remove $resourceId from id array, so we wont request the same item again,
+                    //but it will be returned in $collectionObject
+                    $id = array_diff($id, [$resourceId]);
+                }
+            }
+        }
+
+        $filter = new Filter();
+
+        $filter->primary = (
+            is_array($id)
+            ? $id
+            : [$id]
+        );
+
+        $collection = static::get(
+            new Page(0, count($id)), //limit requested resources
+            $filter,
+            null, //sort
+            null, //fields
+            $additionalParameters
+        );
+
+        if (!is_array($id)) {
+            if (empty($collection)) {
+                return null;
+            }
+
+            //Store resource
+            static::setCache($id, $collection[0]);
+
+            //Return a resource
+            return $collection[0];
+        } else { //if array
+            //$collectionObject = new \stdClass();
+//
+            //foreach ($id as $resourceId) {
+            //    $collectionObject->{$resourceId} = null;
+            //}
+
+            foreach ($collection as $resource) {
+                $collectionObject->{$resource->id} = $resource;
+                static::setCache($resource->id, $resource);
+            }
+
+            unset($collection);
+
+            return $collectionObject;
+        }
     }
+
+
 
     /**
      * Create a filter instance by parsing request parameters and using current implementation model's rules.
