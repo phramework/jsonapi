@@ -42,10 +42,10 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
      * @return Resource[]
      */
     public static function get(
-        Page   $page    = null,
-        Filter $filter  = null,
-        Sort   $sort    = null,
-        Fields $fields  = null,
+        Page   $page = null,
+        Filter $filter = null,
+        Sort   $sort = null,
+        Fields $fields = null,
         ...$additionalParameters
     ) {
         throw new NotImplementedException('This resource model doesn\'t have a get method');
@@ -123,6 +123,15 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
         }
     }
 
+    /**
+     * Parse page for pagination by parsing request parameters and using current implementation model's rules.
+     * @param object $parameters Request parameters
+     * @return null|Page
+     */
+    public static function parsePage($parameters)
+    {
+        return Page::parseFromParameters($parameters, self::class);
+    }
 
     /**
      * Parse sort by parsing request parameters and using current implementation model's rules.

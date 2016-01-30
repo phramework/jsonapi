@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI\Controller\GET;
 
+use Phramework\Exceptions\IncorrectParametersException;
+
 /**
  * Page helper methods
  * @since 1.0.0
@@ -37,6 +39,7 @@ class Page
     /**
      * @param object $parameters Request parameters
      * @return Page|null
+     * @throws IncorrectParametersException
      * @todo add default pagination based on $modelClass
      */
     public static function parseFromParameters($parameters, $modelClass)

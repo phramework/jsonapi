@@ -3,6 +3,10 @@ jsonapi
 jsonapi for phramework
 based on specifications from http://jsonapi.org/
 
+[![Coverage Status](https://coveralls.io/repos/phramework/jsonapi/badge.svg?branch=master&service=github)](https://coveralls.io/github/phramework/jsonapi?branch=master)
+[![Build Status](https://travis-ci.org/phramework/jsonapi.svg?branch=master)](https://travis-ci.org/phramework/jsonapi)
+[![Stories in Ready](https://badge.waffle.io/phramework/jsonapi.svg?label=ready&title=Ready)](http://waffle.io/phramework/jsonapi)
+
 
 ## Usage
 Require package using composer 

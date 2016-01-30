@@ -23,7 +23,6 @@ use Phramework\JSONAPI\Model;
 use \Phramework\Models\Request;
 use \Phramework\Models\Operator;
 use \Phramework\Exceptions\RequestException;
-use Phramework\Phramework;
 
 /**
  * GET related methods
@@ -67,8 +66,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         $sort = null;
 
-        if ($filterable){
-
+        if ($filterable) {
             $filter = $modelClass::parseFilter($parameters);
         }
 
@@ -82,7 +80,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
             $page,
             $filter,
             $sort,
-            null,//fields
+            null, //fields
             $primaryDataParameters
         );
 

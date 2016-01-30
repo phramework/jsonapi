@@ -258,7 +258,7 @@ class Filter
 
     public function __construct(
         $primary = null,
-        $relationships= [],
+        $relationships = [],
         $attributes = [],
         $attributesJSON = []
     ) {
@@ -268,5 +268,4 @@ class Filter
         $this->attributes = $attributes;
         $this->attributesJSON = $attributesJSON;
     }
-
 }

@@ -37,48 +37,49 @@ abstract class Model
 
     /**
      * Model's method prefix
+     * @deprecated
      */
     const GET_BY_PREFIX = 'getBy';
 
     /**
      * Resource's type, used to describe resource objects that share
      * common attributes and relationships
-     * **Must** be overwritten
+     * **SHOULD** be overwritten
      * @var string
      */
     protected static $type = null;
 
     /**
      * Resource's table name
-     * Can be overwritten, default is null (no database)
+     * **MAY** be overwritten, default is null (no database)
      * @var string|null
      */
     protected static $table = null;
 
     /**
      * Resource's table's schema name
-     * Can be overwritten, default is null (no schema)
+     * **MAY** be overwritten, default is null (no schema)
      * @var string|null
      */
     protected static $schema = null;
 
     /**
      * Resource's identification attribute (Primary key in database).
-     * Can be overwritten, default is id
+     * **MAY** be overwritten, default is id
      * @var string
      */
     protected static $idAttribute = 'id';
 
     /**
      * Resource's endpoint, usually it the same as type
-     * **Must** be overwritten
+     * **SHOULD** be overwritten
      * @var string
      */
     protected static $endpoint = null;
 
     /**
-     * Records's type casting schema for database rectods
-     * Can be overwritten
+     * Records's type casting schema for database records
+     * **MAY** be overwritten
      * Also it can be set to empty array to disable type
      * casting for this resource.
      * @var array|null
@@ -99,7 +100,7 @@ abstract class Model
     public static function getCast()
     {
         //If cast is not null
-        if (static::$cast != null) {
+        if (static::$cast !== null) {
             return static::$cast;
         }
 
@@ -155,7 +156,7 @@ abstract class Model
      * Get link to resource's self
      * @param  string $append
      * @return string
-     * @uses Phramework::getSetting base
+     * @uses Phramework::getSetting with key `"base"`
      */
     public static function getSelfLink($append = '')
     {

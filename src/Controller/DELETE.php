@@ -41,7 +41,7 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
      * @throws \Phramework\Exceptions\NotFound If resource not found
      * @throws \Phramework\Exceptions\RequestException If unable to delete
      * @uses model's `getById` method to fetch resource
-     * @uses $modelClass::delete method to 
+     * @uses $modelClass::delete method to
      *     delete resources
      * @return void
      */

@@ -8,7 +8,6 @@
 
 namespace Phramework\JSONAPI\Model;
 
-
 use Phramework\JSONAPI\Resource;
 
 abstract class Relationship extends Get
@@ -56,7 +55,7 @@ abstract class Relationship extends Get
     public static function getRelationshipData(
         $relationshipKey,
         $id,
-        $primaryDataParameters  = [],
+        $primaryDataParameters = [],
         $relationshipParameters = []
     ) {
         if (!static::relationshipExists($relationshipKey)) {
@@ -141,8 +140,17 @@ abstract class Relationship extends Get
         $include = [],
         $additionalResourceParameters = []
     ) {
-        //Store relationshipKeys as key and ids of their related data as value
-        $temp = [];
+        /**
+         * Store relationshipKeys as key and ids of their related data as value
+         * @example
+         * ```php
+         * (object) [
+         *     'author'  => [1],
+         *     'comment' => [1, 2, 3, 4]
+         * ]
+         * ```
+         */
+        $tempRelationshipIds = new \stdClass();
 
         //check if relationship exists
         foreach ($include as $relationshipKey) {
@@ -154,7 +162,7 @@ abstract class Relationship extends Get
             }
 
             //Will hold ids of related data
-            $temp[$relationshipKey] = [];
+            $tempRelationshipIds[$relationshipKey] = [];
         }
 
         if (empty($include) || empty($primaryData)) {
@@ -163,42 +171,45 @@ abstract class Relationship extends Get
 
         //iterate through all primary data
 
-        //if a single resource
+        //if a single resource convert it to array
+        //so it can be iterated in the same way
         if (!is_array($primaryData)) {
             $primaryData = [$primaryData];
         }
 
         foreach ($primaryData as $resource) {
-            //ignore if relationships are not set
-            if (!property_exists($resource, 'relationships')) {
+            //Ignore resource if it's relationships are not set or empty
+            if (empty($resource->relationships)) {
                 continue;
             }
 
             foreach ($include as $relationshipKey) {
-                //ignore if this relationship is not set
+                //ignore if requested relationship is not set
                 if (!isset($resource->relationships->{$relationshipKey})) {
                     continue;
                 }
 
+                //ignore if requested relationship data are not set
                 if (!isset($resource->relationships->{$relationshipKey}->data)) {
                     continue;
                 }
 
-                //if single
                 $relationshipData = $resource->relationships->{$relationshipKey}->data;
 
                 if (!$relationshipData || empty($relationshipData)) {
                     continue;
                 }
 
-                //if a single resource
+                //if single relationship resource convert it to array
+                //so it can be iterated in the same way
                 if (!is_array($relationshipData)) {
                     $relationshipData = [$relationshipData];
                 }
 
+                //Push relationship id for this requested relationship
                 foreach ($relationshipData as $primaryKeyAndType) {
                     //push primary key (use type? $primaryKeyAndType->type)
-                    $temp[$relationshipKey][] = $primaryKeyAndType->id;
+                    $tempRelationshipIds->{$relationshipKey}[] = $primaryKeyAndType->id;
                 }
             }
         }
@@ -221,7 +232,7 @@ abstract class Relationship extends Get
                 );
             }*/
 
-            foreach (array_unique($temp[$relationshipKey]) as $idAttribute) {
+            foreach (array_unique($tempRelationshipIds->{$relationshipKey}) as $idAttribute) {
                 $additionalArgument = (
                 isset($additionalResourceParameters[$relationshipKey])
                     ? $additionalResourceParameters[$relationshipKey]

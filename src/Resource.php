@@ -30,7 +30,8 @@ class Resource
     public $type;
 
     /**
-     * *NOTE* The id member is not required when the resource object originates at the client and represents a new resource to be created on the server.
+     * *NOTE* The id member is not required when the resource object originates
+     * at the client and represents a new resource to be created on the server.
      * @var string
      */
     public $id;
