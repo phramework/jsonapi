@@ -87,7 +87,7 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
         );
 
         $collection = static::get(
-            new Page(0, count($id)), //limit requested resources
+            new Page(count($id)), //limit requested resources
             $filter,
             null, //sort
             null, //fields

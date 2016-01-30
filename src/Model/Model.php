@@ -134,7 +134,7 @@ abstract class Model
     }
 
     /**
-     * Resource's identification attribute (Primary key in database)
+     * Resource's identification attribute (Primary key column in database)
      * @return string
      */
     public static function getIdAttribute()
@@ -153,7 +153,7 @@ abstract class Model
 
     /**
      * Get link to resource's self
-     * @param  string $append [description]
+     * @param  string $append
      * @return string
      * @uses Phramework::getSetting base
      */

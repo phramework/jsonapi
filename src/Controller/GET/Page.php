@@ -24,12 +24,55 @@ namespace Phramework\JSONAPI\Controller\GET;
  */
 class Page
 {
+    /**
+     * @var int
+     */
     public $offset;
+
+    /**
+     * @var null|int
+     */
     public $limit;
 
-    public function __construct($offset = null, $limit = null)
+    /**
+     * @param object $parameters Request parameters
+     * @return Page|null
+     * @todo add default pagination based on $modelClass
+     */
+    public static function parseFromParameters($parameters, $modelClass)
     {
-        $this->offset = offset;
+        if (!isset($parameters->page)) {
+            return null;
+        }
+
+        $limit  = null;
+
+        $offset = 0;
+
+        if (isset($parameters->page['limit'])) {
+            $limit =
+                (new UnsignedIntegerValidator())
+                    ->parse($parameters->page['limit']);
+        }
+
+        if (isset($parameters->page['offset'])) {
+            $offset =
+                (new UnsignedIntegerValidator())
+                    ->parse($parameters->page['offset']);
+        }
+
+        $page = new Page($limit, $offset);
+
+        return $page;
+    }
+
+    /**
+     * @param int|null $limit
+     * @param int $offset
+     */
+    public function __construct($limit = null, $offset = 0)
+    {
         $this->limit  = $limit;
+        $this->offset = offset;
     }
 }

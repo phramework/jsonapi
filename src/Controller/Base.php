@@ -77,9 +77,10 @@ abstract class Base
 
     /**
      * View JSONAPI data
-     * @param stdClass $data
+     * @param object $data
      * @uses \Phramework\Viewers\JSONAPI
      * @todo use \Phramework\Phramework::view
+     * @return boolean
      */
     public static function viewData(
         $data,
@@ -87,25 +88,27 @@ abstract class Base
         $meta = null,
         $included = null
     ) {
-        $parameters = new \stdClass();
+        $viewParameters = new \stdClass();
 
         if ($links) {
-            $parameters->links = $links;
+            $viewParameters->links = $links;
         }
 
-        $parameters->data = $data;
+        $viewParameters->data = $data;
 
         if ($included !== null) {
-            $parameters->included = $included;
+            $viewParameters->included = $included;
         }
 
         if ($meta) {
-            $parameters->meta = $meta;
+            $viewParameters->meta = $meta;
         }
 
-        \Phramework\Phramework::view($parameters);
+        \Phramework\Phramework::view($viewParameters);
 
-        unset($parameters);
+        unset($viewParameters);
+
+        return true;
     }
 
     /**

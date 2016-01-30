@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI\Controller\GET;
 
+use Phramework\Exceptions\RequestException;
+
 /**
  * Sort helper methods
  * @since 1.0.0
@@ -30,5 +32,55 @@ class Sort
 
     public function __construct()
     {
+    }
+
+    /**
+     * @param object $parameters Request parameters
+     * @return Sort
+     * @todo rewrite
+     * @throws RequestException
+     */
+    public static function parseFromParameters($parameters, $modelClass)
+    {
+        $modelSort = self::getSort();
+
+        $sort = null;
+
+        if ($modelSort->default !== null) {
+            $sort = new Sort();
+            $sort->table = $modelClass::getTable();
+            $sort->attribute = $modelSort->default;
+            $sort->ascending = $modelSort->ascending;
+
+            //Don't accept arrays
+            if (isset($parameters->sort)) {
+                if (!is_string($parameters->sort)) {
+                    throw new RequestException(
+                        'String expected for sort'
+                    );
+                }
+
+                $validateExpression = sprintf(
+                    '/^(?P<descending>\-)?(?P<attribute>%s)$/',
+                    implode('|', $modelSort->attributes)
+                );
+
+                if (!!preg_match($validateExpression, $parameters->sort, $matches)) {
+                    $sort->attribute = $matches['attribute'];
+                    $sort->ascending = (
+                    isset($matches['descending']) && $matches['descending']
+                        ? false
+                        : true
+                    );
+
+                } else {
+                    throw new RequestException(
+                        'Invalid value for sort'
+                    );
+                }
+            }
+        }
+
+        return $sort;
     }
 }
