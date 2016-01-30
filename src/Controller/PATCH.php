@@ -35,14 +35,14 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
      * @param  integer|string $id                      Requested resource's id
      * @param  string $modelClass                      Resource's primary model
      * to be used
-     * @param  array $additionalGetArguments           [Optional] Array with any
+     * @param  array $primaryDataParameters           [Optional] Array with any
      * additional arguments that the primary data is requiring
      * @throws \Phramework\Exceptions\NotFound         If resource not found
      * @throws \Phramework\Exceptions\RequestException If no fields are changed
-     * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to
-     *     fetch resources, for example `getById`
+     * @uses model's `getById` method to fetch resource
      * @uses $modelClass::patch method to
      *     update resources
+     * @todo clear call to getById
      */
     protected static function handlePATCH(
         $params,
@@ -50,7 +50,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $headers,
         $id,
         $modelClass,
-        $additionalGetArguments = []
+        $primaryDataParameters = []
     ) {
         $validationModel = new \Phramework\Validate\ObjectValidator(
             [],
@@ -93,9 +93,9 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $data = call_user_func_array(
             [
                 $modelClass,
-                $modelClass::GET_BY_PREFIX . ucfirst($modelClass::getIdAttribute())
+                'getById'
             ],
-            array_merge([$id], $additionalGetArguments)
+            array_merge([$id], $primaryDataParameters)
         );
 
         //Check if resource exists

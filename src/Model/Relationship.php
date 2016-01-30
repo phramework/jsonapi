@@ -54,8 +54,8 @@ abstract class Relationship extends Get
     public static function getRelationshipData(
         $relationshipKey,
         $id,
-        $additionalGetArguments = [],
-        $additionalArguments = []
+        $primaryDataParameters  = [],
+        $relationshipParameters = []
     ) {
         if (!static::relationshipExists($relationshipKey)) {
             throw new \Phramework\Exceptions\ServerException(
@@ -82,7 +82,7 @@ abstract class Relationship extends Get
                 //We have to get this type's resource
                 $resource = call_user_func_array(
                     $callMethod,
-                    array_merge([$id], $additionalGetArguments)
+                    array_merge([$id], $primaryDataParameters)
                 );
 
                 if (!$resource) {
@@ -90,7 +90,11 @@ abstract class Relationship extends Get
                 }
 
                 //And use it's relationships data for this relationship
-                return $resource->relationships->{$relationshipKey}->data;
+                return (
+                isset($resource->relationships->{$relationshipKey}->data)
+                    ? $resource->relationships->{$relationshipKey}->data
+                    : null
+                );
 
                 break;
             case Relationship::TYPE_TO_MANY:
@@ -106,12 +110,13 @@ abstract class Relationship extends Get
                         . ' is not implemented'
                     );
                 }
-                //also we could attempt to use GetById like the above TO_ONE
+
+                //also we could attempt to use getById like the above TO_ONE
                 //to use relationships data
 
                 return call_user_func_array(
                     $callMethod,
-                    array_merge([$id], $additionalArguments)
+                    array_merge([$id], $relationshipParameters)
                 );
                 break;
         }
@@ -132,7 +137,7 @@ abstract class Relationship extends Get
     public static function getIncludedData(
         $primaryData,
         $include = [],
-        $additionalArguments = []
+        $additionalResourceParameters = []
     ) {
         //Store relationshipKeys as key and ids of their related data as value
         $temp = [];
@@ -216,8 +221,8 @@ abstract class Relationship extends Get
 
             foreach (array_unique($temp[$relationshipKey]) as $idAttribute) {
                 $additionalArgument = (
-                isset($additionalArguments[$relationshipKey])
-                    ? $additionalArguments[$relationshipKey]
+                isset($additionalResourceParameters[$relationshipKey])
+                    ? $additionalResourceParameters[$relationshipKey]
                     : []
                 );
 

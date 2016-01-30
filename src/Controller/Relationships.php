@@ -16,9 +16,11 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\Exceptions\IncorrectParametersException;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 use \Phramework\Models\Filter;
+use Phramework\Validate\EnumValidator;
 use \Phramework\Validate\Validate;
 
 /**
@@ -40,12 +42,13 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
      * @param string $modelClass                      Resource's primary model
      * to be used
      * @param string[] $allowedMethods                 Allowed methods
-     * @param array  $additionalGetArguments           [Optional] Array with any
+     * @param array  $primaryDataParameters           [Optional] Array with any
      * additional arguments that the primary data is requiring
-     * @param array  $additionalRelationshipsArguments [Optional] Array with any
+     * @param array  $relationshipParameters [Optional] Array with any
      * additional arguments primary data's relationships are requiring
-     * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to
-     *     fetch resources, for example `getById`
+     * @uses model's `getById` method to fetch primary data resource
+     * @return void
+     * @throws IncorrectParametersException When request method is not allowed
      */
     protected static function handleByIdRelationships(
         $params,
@@ -55,41 +58,44 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
         $relationship,
         $modelClass,
         $allowedMethods,
-        $additionalGetArguments = [],
-        $additionalRelationshipsArguments = []
+        $primaryDataParameters = [],
+        $relationshipParameters = []
     ) {
         $id = Request::requireId($params);
 
-        $relationship = Filter::string($params->relationship);
+        $relationship = Filter::string($relationship);
 
         //Check if relationship exists
         static::exists(
             $modelClass::relationshipExists($relationship),
-            'Relationship not found'
+            sprintf(
+                'Relationship "$relationship" not found',
+                $relationship
+            )
         );
 
         $object = call_user_func_array(
             [
                 $modelClass,
-                $modelClass::GET_BY_PREFIX . ucfirst($modelClass::getIdAttribute())
+                'getById'
             ],
-            array_merge([$id], $additionalGetArguments)
+            array_merge([$id], $primaryDataParameters)
         );
 
         //Check if object exists
         static::exists($object);
 
         //Check if requested method is allowed
-        Validate::enum($method, $allowedMethods);
+        (new EnumValidator($allowedMethods))->parse($method);
 
         //Fetch relationship data
         $data = $modelClass::getRelationshipData(
             $relationship,
             $id,
-            $additionalGetArguments,
+            $primaryDataParameters,
             (
-                isset($additionalRelationshipsArguments[$relationship])
-                ? $additionalRelationshipsArguments[$relationship]
+                isset($relationshipParameters[$relationship])
+                ? $relationshipParameters[$relationship]
                 : []
             )
         );

@@ -34,39 +34,33 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
      * @param  integer|string $id                      Requested resource's id
      * @param  string $modelClass                      Resource's primary model
      * to be used
-     * @param  array $additionalGetArguments           [Optional] Array with any
+     * @param  array $primaryDataParameters           [Optional] Array with any
      * additional arguments that the primary data is requiring
-     * @param  array $additionalRelationshipsArguments [Optional] Array with any
+     * @param  array $relationshipParameters [Optional] Array with any
      * additional argument primary data's relationships are requiring
-     * @uses model's `GET_BY_PREFIX . ucfirst(idAttribute)` method to 
-     *     fetch resources, for example `getById`
+     * @uses model's `getById` method to fetch resource
+     * @return boolean
      */
     protected static function handleGETByid(
         $params,
         $id,
         $modelClass,
-        $additionalGetArguments = [],
-        $additionalRelationshipsArguments = []
+        $primaryDataParameters = [],
+        $relationshipParameters = []
     ) {
         //Rewrite resource's id
         $id = Request::requireId($params);
 
-        $idAttribute = $modelClass::getIdAttribute();
-
         $filterValidationModel = $modelClass::getFilterValidationModel();
 
+        //Filter id attribute value
         if (!empty($filterValidationModel) && isset($filterValidationModel->{$idAttribute})) {
             $id = $filterValidationModel->{$idAttribute}->parse($id);
         }
 
         //validate if set
-        $data = call_user_func_array(
-            [
-                $modelClass,
-                $modelClass::GET_BY_PREFIX . ucfirst($idAttribute)
-            ],
-            array_merge([$id], $additionalGetArguments)
-        );
+
+        $data = $modelClass::getById($id, $primaryDataParameters);
 
         //Check if resource exists
         static::exists($data);
@@ -76,12 +70,14 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
         $includedData = $modelClass::getIncludedData(
             $data,
             $requestInclude,
-            $additionalRelationshipsArguments
+            $relationshipParameters
         );
 
         return static::viewData(
             $data,
-            ['self' => $modelClass::getSelfLink($id)],
+            (object)[
+                'self' => $modelClass::getSelfLink($id)
+            ],
             null,
             (empty($requestInclude) ? null : $includedData)
         );

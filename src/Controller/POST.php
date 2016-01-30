@@ -33,14 +33,14 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
      * @param  \Phramework\JSONAPI\Model $modelClass   Resource's primary model
-     * @param  array $additionalGetArguments           *[Optional]* Array with any
+     * @param  array $primaryDataParameters           *[Optional]* Array with any
      * additional arguments that the primary data is requiring
-     * @param  array $additionalRelationshipsArguments *[Optional]* Array with any
-     * additional arguemnt primary data's relationships are requiring
-     * @param  callable[] $$validationCallbacks
-     * @todo handle as transaction queue, Since models usualy are not producing exceptions.
+     * @param  array $relationshipParameters *[Optional]* Array with any
+     * additional argument primary data's relationships are requiring
+     * @param  callable[] $validationCallbacks
+     * @todo handle as transaction queue, Since models usually are not producing exceptions.
      * Prepare data until last possible moment,
-     * so that any exceptions can be thrown, and finaly invoke the execution of the queue.
+     * so that any exceptions can be thrown, and finally invoke the execution of the queue.
      * @uses $modelClass::post method to create resources
      */
     protected static function handlePOST(
@@ -48,8 +48,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $method,
         $headers,
         $modelClass,
-        $additionalGetArguments = [],
-        $additionalRelationshipsArguments = [],
+        $primaryDataParameters = [],
+        $relationshipParameters = [],
         $validationCallbacks = []
     ) {
         $queue = new \SplQueue();
@@ -78,8 +78,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 $method,
                 $headers,
                 $modelClass,
-                $additionalGetArguments,
-                $additionalRelationshipsArguments,
+                $primaryDataParameters,
+                $relationshipParameters,
                 $requestAttributes,
                 $validationCallbacks,
                 $requestRelationships,
@@ -87,7 +87,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             );
         }
 
-        //proccess queue
+        //process queue
         while (!$queue->isEmpty()) {
             $item = $queue->pop();
 
@@ -131,14 +131,15 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
     /**
      * Helper method
+     * @todo clear call to getById
      */
     private static function handlePOSTResource(
         $params,
         $method,
         $headers,
         $modelClass,
-        $additionalGetArguments,
-        $additionalRelationshipsArguments,
+        $primaryDataParameters,
+        $relationshipParameters,
         $requestAttributes,
         $validationCallbacks,
         $requestRelationships,
@@ -267,7 +268,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         /**
          * Foreach request relationship
-         * Check if requested relationshion resources exist
+         * Check if requested relationships resources exist
          * Copy TYPE_TO_ONE attributes to primary data's attributes
          */
         foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
@@ -290,7 +291,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
             $relationshipCallMethod = [
                 $relationshipClass,
-                $relationshipClass::GET_BY_PREFIX . ucfirst($relationshipClass::getIdAttribute())
+                'getById'
             ];
 
             //Check if relationship resources exists
@@ -301,8 +302,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                         array_merge(
                             [$tempId],
                             (
-                                isset($additionalRelationshipsArguments[$relationshipKey])
-                                ? $additionalRelationshipsArguments[$relationshipKey]
+                                isset($relationshipParameters[$relationshipKey])
+                                ? $relationshipParameters[$relationshipKey]
                                 : []
                             )
                         )
@@ -352,10 +353,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 $attributes
             );
         }
-
-        //Q//$id = $modelClass::post((array)$attributes);
-
-        //Q//self::testUnknownError($id);
 
         $queueRelationships = new \stdClass();
 
@@ -413,6 +410,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         );
 
         //return [$id];
-        return;
+        //return;
     }
 }

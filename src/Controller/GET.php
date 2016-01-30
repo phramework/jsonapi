@@ -40,7 +40,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
      * to be used
      * @param  array $primaryDataParameters           *[Optional]* Array with any
      * additional arguments that the primary data is requiring
-     * @param  array $relationshipsParameters [Optional] Array with any
+     * @param  array $relationshipParameters [Optional] Array with any
      * additional argument primary data's relationships are requiring
      * @param  boolean $filterable                     *[Optional]* Default is
      * true, if true allows `filter` URI parameters to be parsed for filtering
@@ -58,7 +58,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
         $parameters,
         $modelClass,
         $primaryDataParameters = [],
-        $relationshipsParameters = [],
+        $relationshipParameters = [],
         $filterable = true,
         $filterableJSON = false,
         $sortable = true
@@ -92,7 +92,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
         $includedData = $modelClass::getIncludedData(
             $data,
             $requestInclude,
-            $relationshipsParameters
+            $relationshipParameters
         );
 
         return static::viewData(

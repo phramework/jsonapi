@@ -42,10 +42,10 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
      * @return Resource[]
      */
     public static function get(
-        Page   $page = null,
-        Filter $filter = null,
-        Sort   $sort = null,
-        Fields $fields = null,
+        Page   $page    = null,
+        Filter $filter  = null,
+        Sort   $sort    = null,
+        Fields $fields  = null,
         ...$additionalParameters
     ) {
         throw new NotImplementedException('This resource model doesn\'t have a get method');
@@ -60,6 +60,7 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
     public static function getById($id, ...$additionalParameters)
     {
         if (!is_array($id) && ($cached = static::getCache($id)) !== null) {
+            //Return immediately if cached
             return $cached;
         } elseif (is_array($id)) {
             $collectionObject = new \stdClass();
@@ -77,16 +78,17 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
             }
         }
 
+        //Prepare filter
         $filter = new Filter();
 
         $filter->primary = (
             is_array($id)
             ? $id
             : [$id]
-        );
+        ); //Force array for primary data
 
         $collection = static::get(
-            new Page(count($id)), //limit requested resources
+            new Page(count($id)), //limit number of requested resources
             $filter,
             null, //sort
             null, //fields

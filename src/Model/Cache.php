@@ -29,7 +29,7 @@ use \Phramework\JSONAPI\Relationship;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- */
+  */
 abstract class Cache extends \Phramework\JSONAPI\Model\Model
 {
     /**
@@ -106,5 +106,20 @@ abstract class Cache extends \Phramework\JSONAPI\Model\Model
         $collection->{$id} = $resource;
 
         return true;
+    }
+
+    /**
+     * Remove resource from cache, used by `PUT`, `PATCH` and `DELETE` methods when changing an object
+     * @param string $id
+     */
+    protected static function invalidateCache($id)
+    {
+        $type = static::getType();
+
+        static::initializeCache($type);
+
+        $collection = self::$cache->{$type};
+
+        unset($collection->{$id});
     }
 }
