@@ -16,8 +16,10 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Models\Operator;
+use Phramework\Validate\StringValidator;
 
 /**
  * Filter helper methods
@@ -27,6 +29,8 @@ use Phramework\Models\Operator;
  */
 class Filter
 {
+    const JSON_ATTRIBUTE_FILTER_PROPERTY_EXPRESSION = '/^[a-zA-Z_\-0-9]{1,32}$/';
+
     /**
      * @var string[]|int[]
      * @example
@@ -54,12 +58,6 @@ class Filter
      */
     public $attributes = [];
 
-    /**
-     * @var FilterJSONAttribute[]
-     * @todo merge with $attributes, since we can separate by class type
-     */
-    public $JSONAttributes = [];
-
 
     public function __construct(
         $primary = [],
@@ -83,25 +81,41 @@ class Filter
             throw new \Exception('Attributes filter MUST be an array');
         }
 
-        if (!is_array($JSONAttributes)) {
-            throw new \Exception('AttributesJSON filter MUST be an array');
-        }
-
         $this->primary = $primary;
         $this->relationships = $relationships;
         $this->attributes = $attributes;
-        $this->JSONAttributes = $JSONAttributes;
     }
 
     /**
      * @param object $parameters Request parameters
-     * @throws RequestException
      * @return Filter|null
      * @todo rewrite code
      * @todo define $filterableJSON
      * @todo allow strings and integers as id
+     * @todo Todo use filterValidation model for relationships
+     * @todo allowed operator for JSON properties
+     * @example
+     * ```php
+     * (object) [
+     *     'filter' => [
+     *         'article'   => '1, 2',
+     *         'tag'       => '4, 5, 7',
+     *         'creator'   => '1',
+     *         'status'    => [true, false],
+     *         'title'     => [
+     *             Operator::OPERATOR_LIKE . 'blog',
+     *             Operator::OPERATOR_NOT_LIKE . 'welcome'
+     *         ],
+     *         'updated'   => Operator::OPERATOR_NOT_ISNULL,
+     *         'meta.keywords' => 'blog'
+     *     ]
+     * ];
+     * @throws RequestException
+     * @throws Exception
+     * @throws IncorrectParametersException
+     * ```
      */
-    public static function parseFromParameters($parameters, $modelClass)
+    public static function parseFromParameters($parameters, $modelClass, $filterableJSON = true)
     {
         if (!isset($parameters->filter)) {
             return null;
@@ -113,11 +127,10 @@ class Filter
         $idAttribute = $modelClass::getIdAttribute();
 
         foreach ($parameters->filter as $filterKey => $filterValue) {
-            //todo validate as int
 
-            if ($filterKey === $modelClass::getType()) {
+            if ($filterKey === $modelClass::getType()) { //Filter primary data
                 //Check filter value type
-                if (!is_string($filterValue) && !is_numeric($filterValue)) {
+                if (!is_string($filterValue) && !is_integer($filterValue)) {
                     throw new RequestException(sprintf(
                         'String or integer value required for filter "%s"',
                         $filterKey
@@ -126,20 +139,24 @@ class Filter
 
                 //Use filterValidator for idAttribute if set else use intval to parse filtered values
                 $function = (
-                !empty($filterValidationModel) && isset($filterValidationModel->{$idAttribute})
-                    ? [$filterValidationModel->{$idAttribute}, 'parse']
+                    !empty($filterValidationModel) && isset($filterValidationModel->properties->{$idAttribute})
+                    ? [$filterValidationModel->properties->{$idAttribute}, 'parse']
                     : 'intval'
                 );
 
+                //Split multiples and trim additional spaces and force string
                 $values = array_map(
-                    $function,
-                    array_map('trim', explode(',', trim($filterValue)))
+                    'strval',
+                    array_map(
+                        $function,
+                        array_map('trim', explode(',', trim($filterValue)))
+                    )
                 );
 
                 $filter->primary = $values;
-            } elseif ($modelClass::relationshipExists($filterKey)) {
+            } elseif ($modelClass::relationshipExists($filterKey)) { //Filter relationship data
                 //Check filter value type
-                if (!is_string($filterValue) && !is_numeric($filterValue)) {
+                if (!is_string($filterValue) && !is_integer($filterValue)) {
                     throw new RequestException(sprintf(
                         'String or integer value required for filter "%s"',
                         $filterKey
@@ -147,51 +164,28 @@ class Filter
                 }
 
                 //Todo use filterValidation model
+                $function = 'intval';
 
+                //Split multiples and trim additional spaces and force string
                 $values = array_map(
-                    'intval',
-                    array_map('trim', explode(',', trim($filterValue)))
+                    'strval',
+                    array_map(
+                        $function,
+                        array_map('trim', explode(',', trim($filterValue)))
+                    )
                 );
 
                 $filter->relationships->{$filterKey} = $values;
 
-                //when TYPE_TO_ONE it's easy to filter
+                //when TYPE_TO_ONE it's easy to filter ??
             } else {
                 $validationModel = $modelClass::getValidationModel();
-                //if (!$validationModel || !isset($validationModel->attributes)) {
-                //    throw new \Exception(sprintf(
-                //        'Model "%s" doesn\'t have a validation model for attributes',
-                //        $modelClass::getType()
-                //    ));
-                //}
-                $attributeValidationModel = null;
-
-                if ($filterValidationModel
-                    && isset($filterValidationModel)
-                    && isset($filterValidationModel->properties->{$filterKey})
-                ) {
-                    $attributeValidationModel =
-                        $filterValidationModel->properties->{$filterKey};
-                } elseif ($validationModel
-                    && isset($validationModel->attributes)
-                    && isset($validationModel->attributes->properties->{$filterKey})
-                ) {
-                    $attributeValidationModel =
-                        $validationModel->attributes->properties->{$filterKey};
-                } else {
-                    throw new \Exception(sprintf(
-                        'Attribute "%s" is not allowed for filter',
-                        $filterKey
-                    ));
-                }
-
-                //$validationModelAttributes = $validationModel->attributes;
 
                 $filterable = $modelClass::getFilterable();
 
                 $isJSONFilter = false;
 
-                //Check if $filterKeyParts and key contains . dot character
+                //Check if $filterKeyParts and key contains . dot character (object dereference operator)
                 if ($filterableJSON && strpos($filterKey, '.') !== false) {
                     $filterKeyParts = explode('.', $filterKey);
 
@@ -203,12 +197,9 @@ class Filter
 
                     $filterSubkey = $filterKeyParts[1];
 
-                    //Hack check $filterSubkey if valid using regexp
-                    Validate::regexp(
-                        $filterSubkey,
-                        '/^[a-zA-Z_\-0-9]{1,30}$/',
-                        'filter[' . $filterKey . ']'
-                    );
+                    //Hack check $filterSubkey if valid using regular expression
+                    (new StringValidator(0, null, self::JSON_ATTRIBUTE_FILTER_PROPERTY_EXPRESSION))
+                        ->parse($filterSubkey);
 
                     $filterKey = $filterKeyParts[0];
 
@@ -218,6 +209,28 @@ class Filter
                 if (!key_exists($filterKey, $filterable)) {
                     throw new RequestException(sprintf(
                         'Filter key "%s" not allowed',
+                        $filterKey
+                    ));
+                }
+
+                $attributeValidator = null;
+
+                //Attempt to use filter validation model first
+                if ($filterValidationModel
+                    //&& isset($filterValidationModel)
+                    && isset($filterValidationModel->properties->{$filterKey})
+                ) {
+                    $attributeValidator =
+                        $filterValidationModel->properties->{$filterKey};
+                } elseif ($validationModel
+                    && isset($validationModel->attributes)
+                    && isset($validationModel->attributes->properties->{$filterKey})
+                ) { //Then attempt to use attribute validation model first
+                    $attributeValidator =
+                        $validationModel->attributes->properties->{$filterKey};
+                } else {
+                    throw new \Exception(sprintf(
+                        'Attribute "%s" has not a filter validator',
                         $filterKey
                     ));
                 }
@@ -272,7 +285,19 @@ class Filter
                         //}
 
                         if ($isJSONFilter) {
-                            //unparsable
+                            //If filter validator is set for dereference JSON object property
+                            if ($filterValidationModel
+                                && isset($filterValidationModel->properties->{$filterKey})
+                                && isset($filterValidationModel->properties->{$filterKey}->properties->{$filterSubkey})
+                            ) {
+
+                                $attributePropertyValidator = $filterValidationModel->properties
+                                    ->{$filterKey}->properties->{$filterSubkey};
+
+                                $operand = $attributePropertyValidator->parse($operand);
+                            } else {
+                                //**NOTE** Remain unparsed!
+                            }
                         } else {
                             //use filterValidationModel for this property
                             //if defined and operator is a CLASS_LIKE operator
@@ -280,23 +305,24 @@ class Filter
                             //    && $filterValidationModel
                             //    && isset($filterValidationModel->properties->{$filterKey})
                             //) {
-                            //    //Validate operant value
+                            //    //Validate operand value
                             //    $operand = $filterValidationModel->properties
                             //        ->{$filterKey}->parse($operand);
                             //} else {
-                            //    //Validate operant value
+                            //    //Validate operand value
                             //    $operand = $validationModelAttributes->properties
                             //        ->{$filterKey}->parse($operand);
                             //}
                             //
-                            $operand = $attributeValidationModel->parse($operand);
+                            $operand = $attributeValidator->parse($operand);
                         }
                     }
+
                     if ($isJSONFilter) {
-                        //Push tuple to attribute filters
-                        $filter->JSONAttributes[] =  new FilterJSONAttribute($filterKey, $filterSubkey, $operator, $operand);
+                        //Push to attribute filters
+                        $filter->attributes[] =  new FilterJSONAttribute($filterKey, $filterSubkey, $operator, $operand);
                     } else {
-                        //Push tuple to attribute filters
+                        //Push to attribute filters
                         $filter->attributes[] = new FilterAttribute($filterKey, $operator, $operand);
                     }
                 }

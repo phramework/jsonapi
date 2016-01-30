@@ -95,4 +95,17 @@ class Tag extends \Phramework\JSONAPI\Model
             [$articleId]
         );
     }
+
+    public static function getRelationships()
+    {
+        return (object)[
+            'article' => new Relationship(
+                'article-id',
+                'article',
+                Relationship::TYPE_TO_MANY,
+                Article::class,
+                'id'
+            ),
+        ];
+    }
 }

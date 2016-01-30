@@ -19,7 +19,9 @@ namespace Phramework\JSONAPI\APP\Models;
 use \Phramework\Database\Database;
 use \Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\ValidationModel;
+use Phramework\Models\Operator;
 use \Phramework\Validate\ArrayValidator;
+use Phramework\Validate\IntegerValidator;
 use \Phramework\Validate\ObjectValidator;
 use \Phramework\Validate\StringValidator;
 use \Phramework\Validate\UnsignedIntegerValidator;
@@ -65,6 +67,33 @@ class Article extends \Phramework\JSONAPI\Model
     }
 
     /**
+     * @return ObjectValidator
+     */
+    public static function getFilterValidationModel()
+    {
+        return new ObjectValidator([
+            'id'      => new UnsignedIntegerValidator(0, 10),
+            'title'   => new StringValidator(2, 32),
+            'updated' => new UnsignedIntegerValidator(),
+            'meta'    => new ObjectValidator([
+                'timestamp' => new UnsignedIntegerValidator(),
+                'keywords'  => new StringValidator()
+            ])
+        ]);
+    }
+
+    public static function getFilterable()
+    {
+        return [
+            'no-validator' => Operator::CLASS_COMPARABLE,
+            'status'       => Operator::CLASS_COMPARABLE,
+            'title'        => Operator::CLASS_COMPARABLE | Operator::CLASS_LIKE,
+            'updated'      => Operator::CLASS_ORDERABLE  | Operator::CLASS_NULLABLE,
+            'meta'         => Operator::CLASS_JSONOBJECT | Operator::CLASS_NULLABLE | Operator::CLASS_COMPARABLE
+        ];
+    }
+
+    /**
      * @param Page|null $page       *[Optional]*
      * @param Filter|null $filter   *[Optional]*
      * @param Sort|null $sort       *[Optional]*
@@ -85,12 +114,18 @@ class Article extends \Phramework\JSONAPI\Model
             [
                 'creator-user_id' => 1,
                 'status' => 1,
-                'title' => 'First post'
+                'title' => 'First post',
+                'updated' => null,
+                'meta' => (object) [
+                    'keywords' => 'blog'
+                ]
             ],
             [
                 'creator-user_id' => 1,
                 'status' => 1,
-                'title' => 'Second post'
+                'title' => 'Second post',
+                'updated' => time(),
+                'meta' => null
             ]
         ];
 

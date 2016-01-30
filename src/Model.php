@@ -301,7 +301,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
     /**
      * Get filterable attribute keys
-     * @return string[]
+     * @return array
      */
     public static function getFilterable()
     {

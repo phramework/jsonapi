@@ -16,6 +16,9 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\APP\Models\Article;
+use Phramework\Models\Operator;
+
 /**
  * @coversDefaultClass Phramework\JSONAPI\Filter
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -69,19 +72,38 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             5
         );
     }
+    /**
+     * @covers ::parseFromParameters
+     */
+    public function testParseFromParametersPrimaryUsingIntval()
+    {
+        $parameters = (object) [
+            'filter' => (object) [ //Will accept both arrays and object
+                'tag' => 4
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Tag::class //Use article resource model's filters
+        );
+
+        $this->assertInstanceOf(Filter::class, $filter);
+
+        $this->assertEquals([4], $filter->primary);
+    }
 
     /**
-     * @covers ::__construct
-     * @expectedException Exception
+     * @covers ::parseFromParameters
      */
-    public function testConstructFailure4()
+    public function testParseFromParametersEmpty()
     {
-        $filter = new Filter(
+        $filter = Filter::parseFromParameters(
             [],
-            [],
-            [],
-            2
+            Article::class
         );
+
+        $this->assertNull($filter);
     }
 
     /**
@@ -93,7 +115,14 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             'filter' => [
                 'article'   => '1, 2',
                 'tag'       => '4, 5, 7',
-                'creator'   => '1'
+                'creator'   => '1',
+                'status'    => [true, false],
+                'title'     => [
+                    Operator::OPERATOR_LIKE . 'blog',
+                    Operator::OPERATOR_NOT_LIKE . 'welcome'
+                ],
+                'updated'   => Operator::OPERATOR_NOT_ISNULL,
+                'meta.keywords' => 'blog'
             ]
          ];
 
@@ -104,8 +133,254 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(Filter::class, $filter);
 
-        $this->assertEquals([1, 2], $filter->primary);
-        $this->assertEquals([4, 5, 7], $filter->relationships->tag);
-        $this->assertEquals([1], $filter->relationships->creator);
+        $this->assertContainsOnly(
+            'string',
+            $filter->primary,
+            true
+        );
+
+        $this->assertInternalType(
+            'object',
+            $filter->relationships
+        );
+
+        $this->assertInternalType(
+            'array',
+            $filter->relationships->tag
+        );
+
+        $this->assertContainsOnly(
+            'string',
+            $filter->relationships->tag,
+            true
+        );
+
+        $this->assertContainsOnlyInstancesOf(
+            FilterAttribute::class,
+            $filter->attributes
+        );
+
+        $this->assertSame(['1', '2'], $filter->primary);
+        $this->assertSame(['4', '5', '7'], $filter->relationships->tag);
+        $this->assertSame(['1'], $filter->relationships->creator);
+
+        $this->assertCount(6, $filter->attributes);
+
+        $shouldContain1 = new FilterAttribute('title', Operator::OPERATOR_LIKE, 'blog');
+        $shouldContain2 = new FilterJSONAttribute('meta', 'keywords', Operator::OPERATOR_EQUAL, 'blog');
+
+        $found1 = false;
+        $found2 = false;
+
+        foreach ($filter->attributes as $filterAttribute) {
+
+            if ($shouldContain1 == $filterAttribute) {
+                $found1 = true;
+            } else if ($shouldContain2 == $filterAttribute) {
+                $found2 = true;
+            }
+        }
+
+        $this->assertTrue($found1);
+        $this->assertTrue($found2);
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailurePrimaryNotString()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'article'   => [1, 2]
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\IncorrectParametersException
+     */
+    public function testParseFromParametersFailurePrimaryToParse()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'article'   => 10000
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureRelationshipNotString()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'tag'   => [1, 2]
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureNotAllowedAttribute()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'not-found'   => 1
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException Exception
+     */
+    public function testParseFromParametersFailureAttributeWithoutValidator()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'no-validator'   => 1
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureAttributeIsArray()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'updated'   => [[Operator::OPERATOR_ISNULL]]
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\IncorrectParametersException
+     */
+    public function testParseFromParametersFailureAttributeToParse()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'updated'   => 'xxxxxasdadas'
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureAttributeNotAllowedOperator()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'status'   => Operator::OPERATOR_GREATER_EQUAL . '1'
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureAttributeNotAcceptingJSONOperator()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'status.ok'   => true
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\IncorrectParametersException
+     */
+    public function testParseFromParametersFailureAttributeUsingJSONPropertyValidator()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'meta.timestamp'   => 'xsadas'
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureAttributeJSONSecondLevel()
+    {
+        $parameters = (object) [
+            'filter' => [
+                'meta.timestamp.time'   => 123456789
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            APP\Models\Article::class //Use article resource model's filters
+        );
     }
 }
