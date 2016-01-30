@@ -17,7 +17,9 @@
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
     "phpunit/phpunit": "5.*",
-    "apigen/apigen": "^4.1"
+    "apigen/apigen": "^4.1",
+    "satooshi/php-coveralls": "dev-master",
+    "codacy/coverage": "^1.0"
   },
   "prefer-stable": true,
   "autoload": {

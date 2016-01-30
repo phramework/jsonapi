@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\Exceptions\IncorrectParametersException;
+use Phramework\Validate\UnsignedIntegerValidator;
 
 /**
  * Page helper methods
@@ -32,9 +33,20 @@ class Page
     public $offset;
 
     /**
-     * @var null|int
+     * @var int|null
      */
     public $limit;
+
+    /**
+     * @param int|null $limit
+     * @param int $offset
+     */
+    public function __construct($limit = null, $offset = 0)
+    {
+        $this->limit  = $limit;
+        $this->offset = $offset;
+    }
+
 
     /**
      * @param object $parameters Request parameters
@@ -52,6 +64,11 @@ class Page
 
         $offset = 0;
 
+        //Work with arrays
+        if (is_object($parameters->page)) {
+            $parameters->page = (array) $parameters->page;
+        }
+
         if (isset($parameters->page['limit'])) {
             $limit =
                 (new UnsignedIntegerValidator())
@@ -64,18 +81,6 @@ class Page
                     ->parse($parameters->page['offset']);
         }
 
-        $page = new Page($limit, $offset);
-
-        return $page;
-    }
-
-    /**
-     * @param int|null $limit
-     * @param int $offset
-     */
-    public function __construct($limit = null, $offset = 0)
-    {
-        $this->limit  = $limit;
-        $this->offset = offset;
+        return new Page($limit, $offset);
     }
 }

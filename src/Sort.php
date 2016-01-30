@@ -23,34 +23,75 @@ use Phramework\Exceptions\RequestException;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @todo allow multiple values for sort
  */
 class Sort
 {
+    /**
+     * @var string
+     */
     public $table;
+    /**
+     * @var string
+     */
     public $ascending;
+    /**
+     * @var bool
+     */
     public $attribute;
 
-    public function __construct()
+    /**
+     * @var
+     */
+    public $default;
+
+    /**
+     * Sort constructor.
+     * @param $table
+     * @param array $attribute
+     * @param bool $ascending
+     */
+    public function __construct(
+        $table,
+        $attribute = [],
+        $ascending = true
+    ) {
+        $this->table = $table;
+        $this->ascending = $attribute;
+        $this->attribute = $ascending;
+
+        $this->default = null;
+    }
+
+    /**
+     * @param $default
+     * @return $this
+     */
+    public function setDefault($default)
     {
+        $this->default = $default;
+        return $this;
     }
 
     /**
      * @param object $parameters Request parameters
+     * @param string $modelClass
      * @return Sort
      * @todo rewrite
      * @throws RequestException
      */
     public static function parseFromParameters($parameters, $modelClass)
     {
-        $modelSort = self::getSort();
+        $modelSort = $modelClass::getSort();
 
         $sort = null;
 
         if ($modelSort->default !== null) {
-            $sort = new Sort();
-            $sort->table = $modelClass::getTable();
-            $sort->attribute = $modelSort->default;
-            $sort->ascending = $modelSort->ascending;
+            $sort = new Sort(
+                $modelClass::getTable(),
+                [],
+                $modelSort->ascending
+            );
 
             //Don't accept arrays
             if (isset($parameters->sort)) {

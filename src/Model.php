@@ -326,11 +326,9 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      */
     public static function getSort()
     {
-        return (object)[
-            'attributes' => [],
-            'default' => null,
-            'ascending' => true
-        ];
+        return (new Sort(
+            self::$table
+        ))->setDefault(null);
     }
 
     /**
