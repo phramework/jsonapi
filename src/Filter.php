@@ -58,7 +58,13 @@ class Filter
      */
     public $attributes = [];
 
-
+    /**
+     * Filter constructor.
+     * @param array $primary
+     * @param array $relationships
+     * @param array $attributes
+     * @throws \Exception
+     */
     public function __construct(
         $primary = [],
         $relationships = [],
@@ -88,9 +94,9 @@ class Filter
 
     /**
      * @param object $parameters Request parameters
+     * @param string $modelClass
+     * @param bool   $filterableJSON *[Optional]*
      * @return Filter|null
-     * @todo rewrite code
-     * @todo define $filterableJSON
      * @todo allow strings and integers as id
      * @todo Todo use filterValidation model for relationships
      * @todo allowed operator for JSON properties
@@ -111,7 +117,7 @@ class Filter
      *     ]
      * ];
      * @throws RequestException
-     * @throws Exception
+     * @throws \Exception
      * @throws IncorrectParametersException
      * ```
      */
@@ -195,11 +201,11 @@ class Filter
                         );
                     }
 
-                    $filterSubkey = $filterKeyParts[1];
+                    $filterPropertyKey = $filterKeyParts[1];
 
-                    //Hack check $filterSubkey if valid using regular expression
+                    //Hack check $filterPropertyKey if valid using regular expression
                     (new StringValidator(0, null, self::JSON_ATTRIBUTE_FILTER_PROPERTY_EXPRESSION))
-                        ->parse($filterSubkey);
+                        ->parse($filterPropertyKey);
 
                     $filterKey = $filterKeyParts[0];
 
@@ -288,11 +294,11 @@ class Filter
                             //If filter validator is set for dereference JSON object property
                             if ($filterValidationModel
                                 && isset($filterValidationModel->properties->{$filterKey})
-                                && isset($filterValidationModel->properties->{$filterKey}->properties->{$filterSubkey})
+                                && isset($filterValidationModel->properties->{$filterKey}->properties->{$filterPropertyKey})
                             ) {
 
                                 $attributePropertyValidator = $filterValidationModel->properties
-                                    ->{$filterKey}->properties->{$filterSubkey};
+                                    ->{$filterKey}->properties->{$filterPropertyKey};
 
                                 $operand = $attributePropertyValidator->parse($operand);
                             } else {
@@ -320,7 +326,7 @@ class Filter
 
                     if ($isJSONFilter) {
                         //Push to attribute filters
-                        $filter->attributes[] =  new FilterJSONAttribute($filterKey, $filterSubkey, $operator, $operand);
+                        $filter->attributes[] =  new FilterJSONAttribute($filterKey, $filterPropertyKey, $operator, $operand);
                     } else {
                         //Push to attribute filters
                         $filter->attributes[] = new FilterAttribute($filterKey, $operator, $operand);

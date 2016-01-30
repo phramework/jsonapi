@@ -68,7 +68,7 @@ class Resource
     public function __construct($type, $id)
     {
         $this->type = $type;
-        $this->id   = $id;
+        $this->id   = (string)$id;
 
         $this->links         = new \stdClass();
         $this->attributes    = new \stdClass();

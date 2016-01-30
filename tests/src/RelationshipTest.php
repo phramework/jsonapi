@@ -16,35 +16,84 @@
  */
 namespace Phramework\JSONAPI;
 
-use \Phramework\Phramework;
+use Phramework\JSONAPI\APP\Models\Tag;
+use Phramework\JSONAPI\Relationship;
 
 /**
+ * @coversDefaultClass \Phramework\JSONAPI\Relationship
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
 class RelationshipTest extends \PHPUnit_Framework_TestCase
 {
-
-    private $object;
-
     /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
+     * @var Relationship
      */
-    protected function setUp()
+    protected $relationship;
+
+    public function setUp()
     {
+        $this->relationship = new Relationship(
+            'tag-id',
+            Tag::getType(),
+            Relationship::TYPE_TO_ONE,
+            Tag::class,
+            Tag::getIdAttribute()
+        );
     }
 
     /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
+     * @covers ::__construct
      */
-    protected function tearDown()
+    public function testConstruct()
     {
-
+        new Relationship(
+            'tag-id',
+            Tag::getType(),
+            Relationship::TYPE_TO_ONE,
+            Tag::class,
+            Tag::getIdAttribute()
+        );
     }
-    public function testExtends()
+
+    /**
+     * @covers ::getRelationshipType
+     */
+    public function testGetRelationshipType()
     {
-        $this->assertTrue(true);
+        $this->relationship->getRelationshipType();
+    }
+
+    /**
+     * @covers ::getAttribute
+     */
+    public function testGetAttribute()
+    {
+        $this->relationship->getAttribute();
+    }
+
+
+    /**
+     * @covers ::getResourceType
+     */
+    public function testGetResourceType()
+    {
+        $this->relationship->getResourceType();
+    }
+
+    /**
+     * @covers ::getRelationshipClass
+     */
+    public function testGetRelationshipClass()
+    {
+        $this->relationship->getRelationshipClass();
+    }
+
+    /**
+     * @covers ::getRelationshipIdAttribute
+     */
+    public function testGetRelationshipIdAttribute()
+    {
+        $this->relationship->getRelationshipIdAttribute();
     }
 }

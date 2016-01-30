@@ -45,7 +45,9 @@ class JSONAPI implements \Phramework\Viewers\IViewer
         }
 
         //Include JSON API version object
-        $parameters->jsonapi = (object)['version' => '1.0'];
+        $parameters->jsonapi = (object)[
+            'version' => '1.0'
+        ];
 
         echo json_encode($parameters);
     }

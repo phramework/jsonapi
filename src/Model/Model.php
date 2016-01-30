@@ -29,10 +29,15 @@ use \Phramework\JSONAPI\Relationship;
 abstract class Model
 {
     /**
-     * Model's method prefix, following by ucfirst(Class)
+     * Model's method prefix, following by ucfirst(type of resource)
+     * for example `getRelationshipByInput_template` if is was `input_template`
      */
     const GET_RELATIONSHIP_BY_PREFIX = 'getRelationshipBy';
 
+    /**
+     * Model's method prefix, following by ucfirst(type of resource)
+     * for example `postRelationshipByInput_template` if is was `input_template`
+     */
     const POST_RELATIONSHIP_BY_PREFIX = 'postRelationshipBy';
 
     /**
@@ -65,13 +70,13 @@ abstract class Model
 
     /**
      * Resource's identification attribute (Primary key in database).
-     * **MAY** be overwritten, default is id
+     * **MAY** be overwritten, default is `"id"`
      * @var string
      */
     protected static $idAttribute = 'id';
 
     /**
-     * Resource's endpoint, usually it the same as type
+     * Resource's endpoint, used for access by external request, usually it the same as type
      * **MUST** be overwritten
      * @var string
      */

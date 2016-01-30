@@ -197,7 +197,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -216,7 +216,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -234,7 +234,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -252,7 +252,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -270,7 +270,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -288,7 +288,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -306,7 +306,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -324,7 +324,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -342,7 +342,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -360,7 +360,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
@@ -378,7 +378,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $filter = Filter::parseFromParameters(
+        Filter::parseFromParameters(
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
