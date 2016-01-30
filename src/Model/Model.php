@@ -127,7 +127,7 @@ abstract class Model
 
     /**
      * Get resource's table schema name
-     * @return string
+     * @return string|null
      */
     public static function getSchema()
     {
@@ -154,12 +154,12 @@ abstract class Model
 
     /**
      * Get link to resource's self
-     * @param  string $append
+     * @param  string $appendString
      * @return string
      * @uses Phramework::getSetting with key `"base"`
      */
-    public static function getSelfLink($append = '')
+    public static function getSelfLink($appendString = '')
     {
-        return Phramework::getSetting('base') . static::getEndpoint() . '/' . $append;
+        return Phramework::getSetting('base') . static::getEndpoint() . '/' . $appendString;
     }
 }

@@ -63,12 +63,12 @@ class Relationship
      * Create a new relationship from this resource to a relationship resource
      * @param string $attribute        Relationship's attribute in this resource
      * @param string $resourceType Relationship's resource type
-     * @param Relationship::TYPE_TO_ONE|Relationship::TYPE_TO_MANY
-     * $relationshipType Relationship type
-     * @param string|class|null $relationshipClass [optional]
-     * Relationship's class, default is null
-     * @param string|null $relationshipIdAttribute [optional]
-     * Relationship's id attribute, default is `id`
+     * @param int    $relationshipType Relationship type
+     * `Relationship::TYPE_TO_ONE` `Relationship::TYPE_TO_MANY`
+     * @param string|null $relationshipClass *[Optional]*
+     * Relationship's class name, default is null
+     * @param string|null $relationshipIdAttribute *[Optional]*
+     * Relationship's id attribute, default is `"id"`
      */
     public function __construct(
         $attribute,

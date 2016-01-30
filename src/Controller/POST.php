@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\JSONAPI\Controller\POST\QueueItem;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 use \Phramework\JSONAPI\Relationship;
@@ -42,6 +43,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * Prepare data until last possible moment,
      * so that any exceptions can be thrown, and finally invoke the execution of the queue.
      * @uses $modelClass::post method to create resources
+     * @return int[]
      */
     protected static function handlePOST(
         $params,
@@ -56,11 +58,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         $data = static::getRequestData($params);
 
+        //Treat single requests as an array of resources
         if (!is_array($data)) {
             $data = [$data];
         }
-
-        $requestRelationships = new \stdClass();
 
         foreach ($data as $resource) {
             if (is_array($resource)) {
@@ -71,34 +72,43 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
             if (property_exists($resource, 'relationships')) {
                 $requestRelationships = $resource->relationships;
+            } else {
+                $requestRelationships = new \stdClass();
             }
 
-            list($id) = static::handlePOSTResource(
+            //Prepare queue item
+            $queueItem = static::handlePOSTResource(
                 $params,
                 $method,
                 $headers,
                 $modelClass,
-                $primaryDataParameters,
+                $primaryDataParameters, //unused ?
                 $relationshipParameters,
                 $requestAttributes,
                 $validationCallbacks,
-                $requestRelationships,
-                $queue
+                $requestRelationships
             );
+
+            $queue->push($queueItem);
         }
+
+        /**
+         * @var int[]
+         */
+        $ids = [];
 
         //process queue
         while (!$queue->isEmpty()) {
-            $item = $queue->pop();
+            $queueItem = $queue->pop();
 
             //POST item's attributes
-            $id = $modelClass::post((array)$item->getAttributes());
+            $id = $modelClass::post((array)$queueItem->getAttributes());
 
             //Just to be sure
             self::testUnknownError($id);
 
             //POST item's relationships
-            $relationships = $item->getRelationships();
+            $relationships = $queueItem->getRelationships();
 
             foreach ($relationships as $key => $relationship) {
                 //Call post relationship method to post each of relationships pairs
@@ -111,27 +121,43 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 }
             }
 
-            unset($item);
+            unset($queueItem);
+
+            $ids[] = $id;
         }
 
-        //Prepare response with 201 Created status code
-        //\Phramework\Models\Response::created(
-        //    $modelClass::getSelfLink($id)
-        //);
-
-        //return static::viewData(
-        //    $modelClass::resource(['id' => $id]),
-        //    ['self' => $modelClass::getSelfLink($id)]
-        //);
+        if (count($ids) === 1) {
+            //Prepare response with 201 Created status code
+            \Phramework\Models\Response::created(
+                $modelClass::getSelfLink($ids[0])
+            );
+        }
 
         \Phramework\JSONAPI\Viewers\JSONAPI::header();
 
-        return \Phramework\Models\Response::noContent();
+        //Will overwrite 201 with 204
+        \Phramework\Models\Response::noContent();
+
+        return $ids;
     }
 
     /**
      * Helper method
-     * @todo clear call to getById
+     * @param object $params
+     * @param $method
+     * @param $headers
+     * @param string $modelClass
+     * @param object $primaryDataParameters
+     * @param object $relationshipParameters
+     * @param object $requestAttributes
+     * @param $validationCallbacks
+     * @param $requestRelationships
+     * @return POST\QueueItem
+     * @throws RequestException
+     * @throws \Exception
+     * @throws \Phramework\Exceptions\NotFoundException
+     * @throws \Phramework\Exceptions\ServerException
+     * @todo validate request and resource's type
      */
     private static function handlePOSTResource(
         $params,
@@ -142,12 +168,11 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $relationshipParameters,
         $requestAttributes,
         $validationCallbacks,
-        $requestRelationships,
-        &$queue
+        $requestRelationships
     ) {
         $validationModel = $modelClass::getValidationModel();
 
-        //parse request attributes using $validationModel to validate the data
+        //Parse request attributes using $validationModel to validate the data
         $attributes = $validationModel->attributes->parse($requestAttributes);
 
         $relationships = $modelClass::getRelationships();
@@ -402,14 +427,9 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
         }
 
-        $queue->push(
-            new \Phramework\JSONAPI\Controller\POST\QueueItem(
-                $attributes,
-                $queueRelationships
-            )
+        return new \Phramework\JSONAPI\Controller\POST\QueueItem(
+            $attributes,
+            $queueRelationships
         );
-
-        //return [$id];
-        //return;
     }
 }

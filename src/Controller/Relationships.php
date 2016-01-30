@@ -47,7 +47,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
      * @param array  $relationshipParameters [Optional] Array with any
      * additional arguments primary data's relationships are requiring
      * @uses model's `getById` method to fetch primary data resource
-     * @return void
+     * @return boolean
      * @throws IncorrectParametersException When request method is not allowed
      */
     protected static function handleByIdRelationships(
