@@ -9,6 +9,8 @@
 namespace Phramework\JSONAPI\Model;
 
 
+use Phramework\JSONAPI\Resource;
+
 abstract class Relationship extends Get
 {
     /**
@@ -125,10 +127,10 @@ abstract class Relationship extends Get
     /**
      * Get jsonapi's included object, selected by include argument,
      * using id's of relationship's data from resources in primary data object
-     * @param  object $primaryData Primary data object
-     * @param  string[] $include     An array with the keys of relationships to include
-     * @return object[]              An array with all included related data
-     * @throws \Phramework\Exceptions\RequestException
+     * @param  Resource|Resource[]  $primaryData Primary data resource or resources
+     * @param  string[]             $include     An array with the keys of relationships to include
+     * @return Resource[]           An array with all included related data
+     * @throws \Phramework\Exceptions\RequestException When a relationship is not found
      * @throws \Phramework\Exceptions\ServerException
      * @todo handle Relationship resource cannot be accessed
      * @todo include second level relationships

@@ -20,7 +20,7 @@ use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 
 /**
- * Common methods
+ * Common controller internal methods
  * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
@@ -33,6 +33,7 @@ abstract class Base
      * @uses \Phramework\Phramework::view
      * @param array|object $parameters Response parameters
      * @uses \Phramework\Phramework::view
+     * @deprecated since 1.0.0
      */
     protected static function view($parameters = [])
     {
@@ -79,7 +80,6 @@ abstract class Base
      * View JSONAPI data
      * @param object $data
      * @uses \Phramework\Viewers\JSONAPI
-     * @todo use \Phramework\Phramework::view
      * @return boolean
      */
     public static function viewData(
@@ -154,7 +154,7 @@ abstract class Base
      * ```
      * @param  object $params Request parameters
      * @uses Request::requireParameters
-     * @return \stdClass
+     * @return object
      */
     protected static function getRequestAttributes($params)
     {
@@ -166,17 +166,17 @@ abstract class Base
         //Require data
         Request::requireParameters($params, ['data']);
 
-        //Require data['attributes']
+        //Require data attributes
         Request::requireParameters($params->data, ['attributes']);
 
         return (object)$params->data->attributes;
     }
 
-    /*
+    /**
      * Get request primary data
      * @param  object $params Request parameters
      * @uses Request::requireParameters
-     * @return \stdClass|\stdClass[]
+     * @return object|object[]
      */
     protected static function getRequestData($params)
     {
@@ -215,12 +215,10 @@ abstract class Base
     }
 
     /**
-     * Throw a Forbidden exception if resource's id is set.
-     *
+     * Throw a Forbidden exception if resource's id is set.     *
      * Unsupported request to create a resource with a client-generated ID
-     * @package JSONAPI
      * @throws \Phramework\Exceptions\ForbiddenException
-     * @param  object $resource [description]
+     * @param  object|resource $resource
      */
     public static function checkIfUnsupportedRequestWithId($resource)
     {

@@ -18,6 +18,7 @@ namespace Phramework\JSONAPI\Controller;
 
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
+use Phramework\Validate\ObjectValidator;
 
 /**
  * Patch related methods
@@ -28,7 +29,6 @@ use \Phramework\Exceptions\RequestException;
 abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
 {
     /**
-     * @todo allow null values
      * @param  object $params                          Request parameters
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
@@ -40,9 +40,13 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
      * @throws \Phramework\Exceptions\NotFound         If resource not found
      * @throws \Phramework\Exceptions\RequestException If no fields are changed
      * @uses model's `getById` method to fetch resource
-     * @uses $modelClass::patch method to
-     *     update resources
+     * @uses $modelClass::patch method to update resources
      * @todo clear call to getById
+     * @todo allow null values
+     * @todo patch relationship data
+     * @throws \Exception When Validation model for an attribute  is not set
+     * @return boolean
+     * @todo rethink output
      */
     protected static function handlePATCH(
         $params,
@@ -52,32 +56,37 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $modelClass,
         $primaryDataParameters = []
     ) {
-        $validationModel = new \Phramework\Validate\ObjectValidator(
-            [],
+        //Construct a validator
+        $validator = new ObjectValidator(
+            (object) [],
             [],
             false
         );
 
-        $classValidationModel = $modelClass::getValidationModel();
-        $classValidationModel = $classValidationModel->attributes;
+        $attributeValidator = $modelClass::getValidationModel()->attributes;
+
+        if ($attributeValidator === null) {
+
+        }
 
         foreach ($modelClass::getMutable() as $mutable) {
-            if (!isset($classValidationModel->properties->{$mutable})) {
+            if (!isset($attributeValidator->properties->{$mutable})) {
                 throw new \Exception(sprintf(
                     'Validation model for attribute "%s" is not set!',
                     $mutable
                 ));
             }
 
-            $validationModel->addProperty(
+            //Push property to validator
+            $validator->addProperty(
                 $mutable,
-                $classValidationModel->properties->{$mutable}
+                $attributeValidator->properties->{$mutable}
             );
         }
 
         $requestAttributes = static::getRequestAttributes($params);
 
-        $attributes = $validationModel->parse($requestAttributes);
+        $attributes = $validator->parse($requestAttributes);
 
         foreach ($attributes as $key => $attribute) {
             if ($attribute === null) {
@@ -90,22 +99,18 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         }
 
         //Fetch data, to check if resource exists
-        $data = call_user_func_array(
-            [
-                $modelClass,
-                'getById'
-            ],
-            array_merge([$id], $primaryDataParameters)
-        );
+        $data = $modelClass::getById(id, $primaryDataParameters);
 
         //Check if resource exists
         static::exists($data);
 
         $patch = $modelClass::patch($id, (array)$attributes);
 
-        return static::viewData(
+        static::viewData(
             $modelClass::resource(['id' => $id]),
             ['self' => $modelClass::getSelfLink($id)]
         );
+
+        return true;
     }
 }

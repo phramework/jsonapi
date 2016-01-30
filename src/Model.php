@@ -20,6 +20,7 @@ use Phramework\JSONAPI\Model\Get;
 use \Phramework\Phramework;
 use \Phramework\Models\Operator;
 use \Phramework\JSONAPI\Relationship;
+use Phramework\Validate\ObjectValidator;
 
 /**
  * Base JSONAPI Model
@@ -38,11 +39,17 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
     /**
      * Get resource's validation model
-     * @return \Phramework\Validate\ObjectValidator
+     * @return ValidationModel
      */
     public static function getValidationModel()
     {
-        return null;
+        return new ValidationModel(
+            new ObjectValidator(
+                (object) [],
+                [],
+                false //No additional properties
+            )
+        );
     }
 
     /**
@@ -53,15 +60,19 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      */
     public static function getFilterValidationModel()
     {
-        return null;
+        return new ObjectValidator(
+            (object) [],
+            [],
+            false //No additional properties
+        );
     }
 
     /**
      * Prepare a collection of resources
-     * @param  array[]|\stdClass[] $records Multiple records fetched from database
+     * @param  array[]|\object[] $records Multiple records fetched from database
      * @param  boolean $links
-     * [Optional] Write resource and relationship links, defauls is false
-     * @return \stdClass[]
+     * [Optional] Write resource and relationship links, defaults is false
+     * @return Resource[]
      */
     public static function collection($records = [], $links = true)
     {
@@ -99,6 +110,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      * @param  boolean $links
      * [Optional] Write resource and relationship links, default is false
      * @return Resource|null
+     * @throws \Exception
      * @todo add additional arguments to disabled by default fetching of relationship data
      */
     public static function resource($record, $links = true)
@@ -111,19 +123,23 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
             $record = (object)$record;
         }
 
+        $idAttribute = static::getIdAttribute();
+
+        if (!isset($record->{$idAttribute})) {
+            throw new \Exception(sprintf(
+                'Attribute "%s" is not set for record',
+                $idAttribute
+            ));
+        }
+
+        //Initialize resource
         $resource = new Resource(
             static::getType(),
-            (string)$record->{static::getIdAttribute()}
+            (string)$record->{$idAttribute}
         );
 
-        //$resource->type = static::getType();
-        //$resource->id   =
-
-        //Delete IdAttribute from attributes
-        unset($record->{static::getIdAttribute()});
-
-        //Initialize attributes object (used for representation order)
-        //$resource->attributes = (object)[];
+        //Delete $idAttribute from attributes
+        unset($record->{$idAttribute});
 
         //Attach relationships if resource's relationships are set
         if (($relationships = static::getRelationships())) {
