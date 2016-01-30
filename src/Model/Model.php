@@ -44,7 +44,7 @@ abstract class Model
     /**
      * Resource's type, used to describe resource objects that share
      * common attributes and relationships
-     * **SHOULD** be overwritten
+     * **MUST** be overwritten
      * @var string
      */
     protected static $type = null;
@@ -72,7 +72,7 @@ abstract class Model
 
     /**
      * Resource's endpoint, usually it the same as type
-     * **SHOULD** be overwritten
+     * **MUST** be overwritten
      * @var string
      */
     protected static $endpoint = null;

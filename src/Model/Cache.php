@@ -16,14 +16,7 @@
  */
 namespace Phramework\JSONAPI\Model;
 
-use Phramework\JSONAPI\Controller\GET\Fields;
-use Phramework\JSONAPI\Controller\GET\Filter;
-use Phramework\JSONAPI\Controller\GET\Page;
-use Phramework\JSONAPI\Controller\GET\Sort;
 use Phramework\JSONAPI\Resource;
-use \Phramework\Phramework;
-use \Phramework\Models\Operator;
-use \Phramework\JSONAPI\Relationship;
 
 /**
  * @since 1.0.0

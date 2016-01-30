@@ -18,6 +18,7 @@ namespace Phramework\JSONAPI\APP\Models;
 
 use \Phramework\Database\Database;
 use \Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\ValidationModel;
 use \Phramework\Validate\ArrayValidator;
 use \Phramework\Validate\ObjectValidator;
 use \Phramework\Validate\StringValidator;
@@ -34,10 +35,13 @@ class Article extends \Phramework\JSONAPI\Model
     protected static $endpoint = 'article';
     protected static $table    = 'article';
 
+    /**
+     * @return ValidationModel
+     */
     public static function getValidationModel()
     {
-        return (object)[
-            'attributes' => new ObjectValidator(
+        return new ValidationModel(
+            new ObjectValidator(
                 [
                     'title' => new StringValidator(2, 32),
                     'status' => (new BooleanValidator())
@@ -45,7 +49,7 @@ class Article extends \Phramework\JSONAPI\Model
                 ],
                 ['title']
             ),
-            'relationships' => new ObjectValidator(
+            new ObjectValidator(
                 [
                     'creator' => new UnsignedIntegerValidator(),
                     'tag' => new ArrayValidator(
@@ -57,25 +61,43 @@ class Article extends \Phramework\JSONAPI\Model
                 ['creator'],
                 false
             )
-        ];
-    }
-
-    public static function get()
-    {
-        return self::collection(
-            Database::executeAndFetchAll(
-                'SELECT * FROM "article"
-                WHERE "status" = 1'
-            )
         );
     }
 
     /**
-     * [getById description]
-     * @param  int|int[] $id [description]
-     * @return stdClass|stdClass[]
+     * @param Page|null $page       *[Optional]*
+     * @param Filter|null $filter   *[Optional]*
+     * @param Sort|null $sort       *[Optional]*
+     * @param Fields|null $fields   *[Optional]*
+     * @param mixed ...$additionalParameters *[Optional]*
+     * @throws NotImplementedException
+     * @return Resource[]
+     * @todo apply Page, Filter and Sort rules to arrays as helper utility
      */
-    public static function getById($id)
+    public static function get(
+        Page   $page = null,
+        Filter $filter = null,
+        Sort   $sort = null,
+        Fields $fields = null,
+        ...$additionalParameters)
+    {
+        $articles = [
+            [
+                'creator-user_id' => 1,
+                'status' => 1,
+                'title' => 'First post'
+            ],
+            [
+                'creator-user_id' => 1,
+                'status' => 1,
+                'title' => 'Second post'
+            ]
+        ];
+
+        return self::collection($articles);
+    }
+
+   /* public static function getById($id)
     {
         $is_array = is_array($id);
 
@@ -103,13 +125,13 @@ class Article extends \Phramework\JSONAPI\Model
         } else {
             return $resources;
         }
-    }
+    }*/
 
     public static function getRelationships()
     {
         return (object)[
             'creator' => new Relationship(
-                'creator-user-id',
+                'creator-user_id',
                 'user',
                 Relationship::TYPE_TO_ONE,
                 User::class,

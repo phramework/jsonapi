@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI\Controller\GET;
+namespace Phramework\JSONAPI;
 
 use Phramework\Exceptions\RequestException;
 use Phramework\Models\Operator;
@@ -28,21 +28,70 @@ use Phramework\Models\Operator;
 class Filter
 {
     /**
-     * @var integer[]
+     * @var string[]|int[]
+     * @example
+     * ```php
+     * [1, 2]
+     * ```
      */
     public $primary = null;
+
     /**
-     * @var integer[]
+     * @var object
+     * @example
+     * ```php
+     * (object) [
+     *     'author'  => [1],
+     *     'comment' => [1, 2, 3],
+     *     'tag'     => ['blog']
+     * ]
+     * ```
      */
     public $relationships = [];
+
     /**
-     * @var array $attributes (each array item [$attribute, $operator, $operant])
+     * @var FilterAttribute[]
      */
     public $attributes = [];
+
     /**
-     * @var array $attributesJSON (each array item [$attribute, $key, $operator, $operant])
+     * @var FilterJSONAttribute[]
+     * @todo merge with $attributes, since we can separate by class type
      */
-    public $attributesJSON = [];
+    public $JSONAttributes = [];
+
+
+    public function __construct(
+        $primary = [],
+        $relationships = [],
+        $attributes = []
+    ) {
+
+        if (!is_array($primary)) {
+            throw new \Exception('Primary filter MUST be an array');
+        }
+
+        if (is_array($relationships)) {
+            $relationships = (object)$relationships;
+        }
+
+        if (!is_object($relationships)) {
+            throw new \Exception('Relationships filter MUST be an object');
+        }
+
+        if (!is_array($attributes)) {
+            throw new \Exception('Attributes filter MUST be an array');
+        }
+
+        if (!is_array($JSONAttributes)) {
+            throw new \Exception('AttributesJSON filter MUST be an array');
+        }
+
+        $this->primary = $primary;
+        $this->relationships = $relationships;
+        $this->attributes = $attributes;
+        $this->JSONAttributes = $JSONAttributes;
+    }
 
     /**
      * @param object $parameters Request parameters
@@ -50,6 +99,7 @@ class Filter
      * @return Filter|null
      * @todo rewrite code
      * @todo define $filterableJSON
+     * @todo allow strings and integers as id
      */
     public static function parseFromParameters($parameters, $modelClass)
     {
@@ -103,7 +153,7 @@ class Filter
                     array_map('trim', explode(',', trim($filterValue)))
                 );
 
-                $filter->relationships[$filterKey] = $values;
+                $filter->relationships->{$filterKey} = $values;
 
                 //when TYPE_TO_ONE it's easy to filter
             } else {
@@ -130,7 +180,7 @@ class Filter
                         $validationModel->attributes->properties->{$filterKey};
                 } else {
                     throw new \Exception(sprintf(
-                        'Attribute "%s" doesn\'t have a validation model',
+                        'Attribute "%s" is not allowed for filter',
                         $filterKey
                     ));
                 }
@@ -196,7 +246,7 @@ class Filter
 
                     $singleFilterValue = urldecode($singleFilterValue);
 
-                    list($operator, $operant) = Operator::parse($singleFilterValue);
+                    list($operator, $operand) = Operator::parse($singleFilterValue);
 
                     //Validate operator (check if it's in allowed operators class)
                     if (!in_array(
@@ -231,23 +281,23 @@ class Filter
                             //    && isset($filterValidationModel->properties->{$filterKey})
                             //) {
                             //    //Validate operant value
-                            //    $operant = $filterValidationModel->properties
-                            //        ->{$filterKey}->parse($operant);
+                            //    $operand = $filterValidationModel->properties
+                            //        ->{$filterKey}->parse($operand);
                             //} else {
                             //    //Validate operant value
-                            //    $operant = $validationModelAttributes->properties
-                            //        ->{$filterKey}->parse($operant);
+                            //    $operand = $validationModelAttributes->properties
+                            //        ->{$filterKey}->parse($operand);
                             //}
                             //
-                            $operant = $attributeValidationModel->parse($operant);
+                            $operand = $attributeValidationModel->parse($operand);
                         }
                     }
                     if ($isJSONFilter) {
                         //Push tuple to attribute filters
-                        $filter->attributesJSON[] = [$filterKey, $filterSubkey, $operator, $operant];
+                        $filter->JSONAttributes[] =  new FilterJSONAttribute($filterKey, $filterSubkey, $operator, $operand);
                     } else {
                         //Push tuple to attribute filters
-                        $filter->attributes[] = [$filterKey, $operator, $operant];
+                        $filter->attributes[] = new FilterAttribute($filterKey, $operator, $operand);
                     }
                 }
             }
@@ -256,16 +306,5 @@ class Filter
         return $filter;
     }
 
-    public function __construct(
-        $primary = null,
-        $relationships = [],
-        $attributes = [],
-        $attributesJSON = []
-    ) {
 
-        $this->primary = $primary;
-        $this->relationships = $relationships;
-        $this->attributes = $attributes;
-        $this->attributesJSON = $attributesJSON;
-    }
 }

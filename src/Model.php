@@ -519,7 +519,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
                 $hasWhere = true;
             }
 
-            $filterJSON = $filter->attributesJSON;
+            $filterJSON = $filter->JSONAttributes;
             //hack.
 
             foreach ($filterJSON as $value) {

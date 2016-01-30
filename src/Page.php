@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI\Controller\GET;
+namespace Phramework\JSONAPI;
 
 use Phramework\Exceptions\IncorrectParametersException;
 

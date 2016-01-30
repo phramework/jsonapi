@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI\Controller\GET;
+namespace Phramework\JSONAPI;
 
 /**
  * Fields helper methods
@@ -22,7 +22,34 @@ namespace Phramework\JSONAPI\Controller\GET;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class Fields
+class FilterAttribute
 {
+    /**
+     * @var string
+     */
+    public $attribute;
+    /**
+     * @var string
+     */
+    public $operator;
+    /**
+     * @var string
+     */
+    public $operand;
 
+    /**
+     * FilterAttribute constructor.
+     * @param string $attribute
+     * @param string $operator
+     * @param string $operand
+     */
+    public function __construct(
+        $attribute,
+        $operator,
+        $operand
+    ) {
+        $this->attribute = $attribute;
+        $this->operator = $operator;
+        $this->operand = $operand;
+    }
 }
