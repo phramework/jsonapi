@@ -29,7 +29,6 @@ use \Phramework\JSONAPI\Relationship;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @todo add cache
  */
 abstract class Get extends \Phramework\JSONAPI\Model\Cache
 {
@@ -123,15 +122,23 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
     }
 
 
+    /**
+     * Parse sort by parsing request parameters and using current implementation model's rules.
+     * @param  object $parameters   Request parameters
+     * @return Sort|null
+     */
+    public static function parseSort($parameters)
+    {
+        return Sort::parseFromParameters($parameters, self::class);
+    }
 
     /**
-     * Create a filter instance by parsing request parameters and using current implementation model's rules.
-     * @param  object $params   Request parameters
-     * @param  string $method   Request method
-     * @param  array  $headers  Request headers
+     * Parse filter by parsing request parameters and using current implementation model's rules.
+     * @param  object $parameters   Request parameters
+     * @return Filter|null
      */
-    public static function createFilter($params, $method, $headers)
+    public static function parseFilter($parameters)
     {
-
+        return Filter::parseFromParameters($parameters, self::class);
     }
 }

@@ -29,7 +29,6 @@ use \Phramework\JSONAPI\Relationship;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @todo add cache
  */
 abstract class Cache extends \Phramework\JSONAPI\Model\Model
 {
@@ -70,7 +69,7 @@ abstract class Cache extends \Phramework\JSONAPI\Model\Model
 
     /**
      * @param string $id
-     * @return object|null
+     * @return Resource|null
      */
     protected static function getCache($id)
     {
@@ -81,29 +80,31 @@ abstract class Cache extends \Phramework\JSONAPI\Model\Model
         $collection = self::$cache->{$type};
 
         if (!property_exists($collection, $id)) {
-            echo "MISS ($type, $id)\n";
             return null;
         }
-
-        echo "HIT ($type, $id)\n";
 
         return $collection->{$id};
     }
 
     /**
      * @param string $id
-     * @param object $resource
+     * @param Resource $resource
+     * @return bool
      */
     protected static function setCache($id, $resource)
     {
+        if (!static::$caching) {
+            return false;
+        }
+
         $type = static::getType();
 
         static::initializeCache($type);
 
         $collection = self::$cache->{$type};
 
-        echo "SET ($type, $id)\n";
-
         $collection->{$id} = $resource;
+
+        return true;
     }
 }

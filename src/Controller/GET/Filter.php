@@ -48,6 +48,7 @@ class Filter
      * @param object $parameters Request parameters
      * @throws RequestException
      * @return Filter|null
+     * @todo rewrite code
      * @todo define $filterableJSON
      */
     public static function parseFromParameters($parameters, $modelClass)

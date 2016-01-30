@@ -30,7 +30,11 @@ use \Phramework\JSONAPI\Relationship;
 abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 {
 
-
+    /**
+     * Enable caching of resources
+     * @var bool
+     */
+    protected static $caching = true;
 
     /**
      * Get resource's validation model

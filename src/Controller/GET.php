@@ -19,9 +19,11 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\JSONAPI\Controller\GET\Filter;
 use Phramework\JSONAPI\Controller\GET\Page;
 use Phramework\JSONAPI\Controller\GET\Sort;
+use Phramework\JSONAPI\Model;
 use \Phramework\Models\Request;
 use \Phramework\Models\Operator;
 use \Phramework\Exceptions\RequestException;
+use Phramework\Phramework;
 
 /**
  * GET related methods
@@ -33,19 +35,19 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 {
     /**
      * handles GET requests
-     * @param  object $params  Request parameters
-     * @param  string $modelClass                      Resource's primary model
+     * @param  object $parameters  Request parameters
+     * @param  string $modelClass                      Resource's primary model class name
      * to be used
-     * @param  array $primaryDataParameters           [Optional] Array with any
+     * @param  array $primaryDataParameters           *[Optional]* Array with any
      * additional arguments that the primary data is requiring
      * @param  array $relationshipsParameters [Optional] Array with any
      * additional argument primary data's relationships are requiring
-     * @param  boolean $filterable                     [Optional] Deafult is
+     * @param  boolean $filterable                     *[Optional]* Default is
      * true, if true allows `filter` URI parameters to be parsed for filtering
-     * @param  boolean $filterableJSON                 [Optional] Deafult is
+     * @param  boolean $filterableJSON                 *[Optional]* Default is
      * false, if true allows `filter` URI parameters to be parsed for filtering
      * for JSON encoded fields
-     * @param  boolean $sortable                       [Optional] Deafult is
+     * @param  boolean $sortable                       *[Optional]* Default is
      * true, if true allows sorting
      * @uses $modelClass::get method to fetch resource collection
      * @throws \Exception
@@ -53,7 +55,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
      * @return boolean
      */
     protected static function handleGET(
-        $params,
+        $parameters,
         $modelClass,
         $primaryDataParameters = [],
         $relationshipsParameters = [],
@@ -67,19 +69,13 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         if ($filterable){
 
-            $filter = Filter::parseFromParameters(
-                $params,
-                $modelClass
-            );
+            $filter = $modelClass::parseFilter($parameters);
         }
 
-        $page = Page::parseFromParameters($params);
+        $page = Page::parseFromParameters($parameters);
 
         if ($sortable) {
-            $sort = Sort::parseFromParameters(
-                $params,
-                $modelClass
-            );
+            $sort = $modelClass::parseSort($parameters);
         }
 
         $data = $modelClass::get(
@@ -90,7 +86,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
             $primaryDataParameters
         );
 
-        $requestInclude = static::getRequestInclude($params);
+        $requestInclude = static::getRequestInclude($parameters);
 
         //Get included data
         $includedData = $modelClass::getIncludedData(
@@ -101,7 +97,9 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         return static::viewData(
             $data,
-            ['self' => $modelClass::getSelfLink()],
+            (object)[
+                'self' => $modelClass::getSelfLink()
+            ],
             null,
             (empty($requestInclude) ? null : $includedData)
         );
