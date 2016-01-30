@@ -33,7 +33,22 @@ class Tag extends \Phramework\JSONAPI\Model
     protected static $endpoint = 'tag';
     protected static $table    = 'tag';
 
-    public static function get()
+    /**
+     * @param Page|null $page       *[Optional]*
+     * @param Filter|null $filter   *[Optional]*
+     * @param Sort|null $sort       *[Optional]*
+     * @param Fields|null $fields   *[Optional]*
+     * @param mixed ...$additionalParameters *[Optional]*
+     * @throws NotImplementedException
+     * @return Resource[]
+     * @todo apply Page, Filter and Sort rules to arrays as helper utility
+     */
+    public static function get(
+        Page   $page = null,
+        Filter $filter = null,
+        Sort   $sort = null,
+        Fields $fields = null,
+        ...$additionalParameters)
     {
         return self::collection(
             Database::executeAndFetchAll(
@@ -42,7 +57,7 @@ class Tag extends \Phramework\JSONAPI\Model
             )
         );
     }
-
+/**
     public static function getById($id)
     {
         return self::resource(
@@ -54,7 +69,7 @@ class Tag extends \Phramework\JSONAPI\Model
                 [$id]
             )
         );
-    }
+    }**/
 
     /**
      * post article-tag relationship

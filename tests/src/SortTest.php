@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\APP\Models\Article;
+use Phramework\JSONAPI\APP\Models\Tag;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Sort
@@ -62,6 +63,107 @@ class SortTest extends \PHPUnit_Framework_TestCase
             Article::class
         );
 
-        $this->assertNull($sort);
+        $this->assertEquals(Article::getSort(), $sort);
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     */
+    public function testParseFromParameters()
+    {
+        $parameters = (object) [
+            'sort' => '-id'
+        ];
+
+        $sort = Sort::parseFromParameters(
+            $parameters,
+            Article::class
+        );
+
+        $this->assertInstanceOf(
+            Sort::class,
+            $sort
+        );
+
+        $this->assertSame(Article::getTable(), $sort->table);
+        $this->assertSame('id', $sort->attribute);
+        $this->assertFalse($sort->ascending);
+
+        //Test ascending
+        $parameters = (object) [
+            'sort' => 'id'
+        ];
+
+        $sort = Sort::parseFromParameters(
+            $parameters,
+            Article::class
+        );
+
+        $this->assertSame('id', $sort->attribute);
+        $this->assertTrue($sort->ascending);
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureNotString()
+    {
+        $parameters = (object) [
+            'sort' => ['id']
+        ];
+
+        $sort = Sort::parseFromParameters(
+            $parameters,
+            Article::class
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureParseExpression()
+    {
+        $parameters = (object) [
+            'sort' => '--id'
+        ];
+
+        $sort = Sort::parseFromParameters(
+            $parameters,
+            Article::class
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureNotSortable()
+    {
+        $parameters = (object) [
+            'sort' => 'meta'
+        ];
+
+        $sort = Sort::parseFromParameters(
+            $parameters,
+            Article::class
+        );
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testParseFromParametersFailureNoSortableAttributes()
+    {
+        $parameters = (object) [
+            'sort' => 'id'
+        ];
+
+        $sort = Sort::parseFromParameters(
+            $parameters,
+            Tag::class
+        );
     }
 }

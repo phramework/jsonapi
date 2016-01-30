@@ -42,6 +42,7 @@ class Sort
 
     /**
      * @var
+     * @deprecated
      */
     public $default;
 
@@ -77,48 +78,49 @@ class Sort
      * @param object $parameters Request parameters
      * @param string $modelClass
      * @return Sort
-     * @todo rewrite
      * @throws RequestException
      */
     public static function parseFromParameters($parameters, $modelClass)
     {
-        $modelSort = $modelClass::getSort();
+        $sortableAttributes = $modelClass::getSortable();
 
-        $sort = null;
+        $sort = $modelClass::getSort();
 
-        if ($modelSort->default !== null) {
-            $sort = new Sort(
-                $modelClass::getTable(),
-                [],
-                $modelSort->ascending
+        //Don't accept arrays
+
+        if (isset($parameters->sort)) {
+            if (!is_string($parameters->sort)) {
+                throw new RequestException(
+                    'String expected for sort'
+                );
+            }
+
+            if (empty($sortableAttributes)) {
+                throw new RequestException('Not sortable attributes for this resource model');
+            }
+
+            //Check attribute is in resource model's sortable and parse if is descending
+            $validateExpression = sprintf(
+                '/^(?P<descending>\-)?(?P<attribute>%s)$/',
+                implode('|', array_map(
+                    'preg_quote',
+                    $sortableAttributes,
+                    ['/']
+                ))
             );
 
-            //Don't accept arrays
-            if (isset($parameters->sort)) {
-                if (!is_string($parameters->sort)) {
-                    throw new RequestException(
-                        'String expected for sort'
-                    );
-                }
-
-                $validateExpression = sprintf(
-                    '/^(?P<descending>\-)?(?P<attribute>%s)$/',
-                    implode('|', $modelSort->attributes)
+            if (!!preg_match($validateExpression, $parameters->sort, $matches)) {
+                $sort->attribute = $matches['attribute'];
+                $sort->ascending = (
+                isset($matches['descending']) && $matches['descending']
+                    ? false
+                    : true
                 );
 
-                if (!!preg_match($validateExpression, $parameters->sort, $matches)) {
-                    $sort->attribute = $matches['attribute'];
-                    $sort->ascending = (
-                    isset($matches['descending']) && $matches['descending']
-                        ? false
-                        : true
-                    );
-
-                } else {
-                    throw new RequestException(
-                        'Invalid value for sort'
-                    );
-                }
+            } else {
+                throw new RequestException(
+                    'Invalid value for sort'
+                );
             }
         }
 

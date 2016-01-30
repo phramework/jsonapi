@@ -301,6 +301,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
     /**
      * Get filterable attribute keys
+     * **MAY** be overwritten
      * @return array
      */
     public static function getFilterable()
@@ -310,6 +311,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
     /**
      * Get attribute keys that can be updated using PATCH
+     * **MAY** be overwritten
      * @return string[]
      */
     public static function getMutable()
@@ -318,7 +320,19 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
+     * Get attribute keys that allowed to be used for sort
+     * **MAY** be overwritten
+     * @return string[]
+     * @since 1.0.0
+     */
+    public static function getSortable()
+    {
+        return [];
+    }
+
+    /**
      * Get sort attributes and default
+     * **MAY** be overwritten
      * @return object Returns an object with attribute `attributes` containing
      * an string[] with allowed sort attributes
      * and attribute `default` a string|null having the value of default, boolean `ascending`
@@ -326,9 +340,9 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      */
     public static function getSort()
     {
-        return (new Sort(
-            self::$table
-        ))->setDefault(null);
+        return new Sort(
+            static::getTable()
+        );
     }
 
     /**

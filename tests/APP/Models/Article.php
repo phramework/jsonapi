@@ -38,6 +38,14 @@ class Article extends \Phramework\JSONAPI\Model
     protected static $table    = 'article';
 
     /**
+     * @return string[]
+     */
+    public static function getSortable()
+    {
+        return ['id'];
+    }
+
+    /**
      * @return ValidationModel
      */
     public static function getValidationModel()

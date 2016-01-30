@@ -169,7 +169,7 @@ abstract class Relationship extends Get
             return [];
         }
 
-        //iterate through all primary data
+        //iterate all primary data
 
         //if a single resource convert it to array
         //so it can be iterated in the same way
