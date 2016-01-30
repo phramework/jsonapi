@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 Xenofon Spafaridis
+ * Copyright 2015 - 2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,21 @@ namespace Phramework\JSONAPI\Controller\GET;
  */
 class Filter
 {
+    /**
+     * @var integer[]
+     */
     public $primary = null;
+    /**
+     * @var integer[]
+     */
     public $relationships = [];
+    /**
+     * @var array $attributes (each array item [$attribute, $operator, $operant])
+     */
     public $attributes = [];
+    /**
+     * @var array $attributesJSON (each array item [$attribute, $key, $operator, $operant])
+     */
     public $attributesJSON = [];
 
     /**

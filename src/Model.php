@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 Xenofon Spafaridis
+ * Copyright 2015 - 2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\Model\Get;
 use \Phramework\Phramework;
 use \Phramework\Models\Operator;
 use \Phramework\JSONAPI\Relationship;
@@ -26,172 +27,10 @@ use \Phramework\JSONAPI\Relationship;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-abstract class Model
+abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 {
-    /**
-     * Model's method prefix, following by ucfirst(Class)
-     */
-    const GET_RELATIONSHIP_BY_PREFIX = 'getRelationshipBy';
 
-    const POST_RELATIONSHIP_BY_PREFIX = 'postRelationshipBy';
 
-    /**
-     * Model's method prefix
-     */
-    const GET_BY_PREFIX = 'getBy';
-
-    /**
-     * Resource's type, used to describe resource objects that share
-     * common attributes and relationships
-     * **Must** be overwritten
-     * @var string
-     */
-    protected static $type = null;
-
-    /**
-     * Resource's table name
-     * Can be overwritten, default is null (no database)
-     * @var string|null
-     */
-    protected static $table = null;
-
-    /**
-     * Resource's table's schema name
-     * Can be overwritten, default is null (no schema)
-     * @var string|null
-     */
-    protected static $schema = null;
-
-    /**
-     * Resource's identification attribute (Primary key in database).
-     * Can be overwritten, default is id
-     * @var string
-     */
-    protected static $idAttribute = 'id';
-
-    /**
-     * Resource's endpoint, usually it the same as type
-     * **Must** be overwritten
-     * @var string
-     */
-    protected static $endpoint = null;
-
-    /**
-     * Records's type casting schema for database rectods
-     * Can be overwritten
-     * Also it can be set to empty array to disable type
-     * casting for this resource.
-     * @var array|null
-     */
-    protected static $cast = null;
-
-    /**
-     * Records's type casting schema
-     *
-     * This object contains the rules applied to fetched data from database in
-     * order to have correct data types.
-     * @uses static::$cast If cast is not null
-     * @uses static::getValidationModel If static::$cast is null, it uses
-     * validationModel's attributes to extract the cast schema
-     * @return array
-     * @todo Rewrite validationModel's attributes
-     */
-    public static function getCast()
-    {
-        //If cast is not null
-        if (static::$cast != null) {
-            return static::$cast;
-        }
-
-        return [];
-    }
-
-    /**
-     * Get resource's type
-     * @return string
-     */
-    public static function getType()
-    {
-        return static::$type;
-    }
-
-    /**
-     * Get resource's table name
-     * @return string|null
-     */
-    public static function getTable()
-    {
-        return static::$table;
-    }
-
-    /**
-     * Get resource's table schema name
-     * @return string
-     */
-    public static function getSchema()
-    {
-        return static::$schema;
-    }
-
-    /**
-     * Resource's identification attribute (Primary key in database)
-     * @return string
-     */
-    public static function getIdAttribute()
-    {
-        return static::$idAttribute;
-    }
-
-    /**
-     * Get resource's endpoint
-     * @return string
-     */
-    public static function getEndpoint()
-    {
-        return static::$endpoint;
-    }
-
-    /**
-     * Get link to resource's self
-     * @param  string $append [description]
-     * @return string
-     * @uses Phramework::getSetting base
-     */
-    public static function getSelfLink($append = '')
-    {
-        return Phramework::getSetting('base') . static::getEndpoint() . '/' . $append;
-    }
-
-    /**
-     * Get resource's relationships
-     * @return object Object with Relationshipn objects as values
-     */
-    public static function getRelationships()
-    {
-        return new \stdClass();
-    }
-
-    public static function getRelationship($relationshipKey)
-    {
-        $relationships = static::getRelationships();
-
-        if (!isset($relationships->{$relationshipKey})) {
-            throw new \Exception('Not a valid relationship key');
-        }
-
-        return $relationships->{$relationshipKey};
-    }
-    /**
-     * Check if relationship exists
-     * @param  string $relationshipKey Relationship's key (alias)
-     * @return Boolean
-     */
-    public static function relationshipExists($relationshipKey)
-    {
-        $relationships = static::getRelationships();
-
-        return isset($relationships->{$relationshipKey});
-    }
 
     /**
      * Get resource's validation model
@@ -255,7 +94,8 @@ abstract class Model
      * @param  array|\stdClass $record An individual record fetched from database
      * @param  boolean $links
      * [Optional] Write resource and relationship links, default is false
-     * @return \stdClass|null
+     * @return Resource|null
+     * @todo add additional arguments to disabled by default fetching of relationship data
      */
     public static function resource($record, $links = true)
     {
@@ -267,21 +107,24 @@ abstract class Model
             $record = (object)$record;
         }
 
-        $resource = new \stdClass();
+        $resource = new Resource(
+            static::getType(),
+            (string)$record->{static::getIdAttribute()}
+        );
 
-        $resource->type = static::getType();
-        $resource->id   = (string)$record->{static::getIdAttribute()};
+        //$resource->type = static::getType();
+        //$resource->id   =
 
         //Delete IdAttribute from attributes
         unset($record->{static::getIdAttribute()});
 
         //Initialize attributes object (used for representation order)
-        $resource->attributes = (object)[];
+        //$resource->attributes = (object)[];
 
         //Attach relationships if resource's relationships are set
         if (($relationships = static::getRelationships())) {
             //Initialize relationships object
-            $resource->relationships = new \stdClass();
+            //$resource->relationships = new \stdClass();
 
             //Parse relationships
             foreach ($relationships as $relationship => $relationshipObject) {
@@ -463,211 +306,10 @@ abstract class Model
     }
 
     /**
-     * Get records from a relationship link
-     * @param  static $relationshipKey
-     * @param  string $idAttributeValue
-     * @return stdClass|stdClass[]
-     * @throws \Phramework\Exceptions\ServerException If relationship doesn't exist
-     * @throws \Phramework\Exceptions\ServerException If relationship's class method is
-     * not defined
-     * @throws \Phramework\Exceptions\ServerException If resources's class
-     * `self::GET_RELATIONSHIP_BY_PREFIX . ucfirst(idAttribute)` method isn't
-     * defined
-     */
-    public static function getRelationshipData(
-        $relationshipKey,
-        $idAttributeValue,
-        $additionalGetArguments = [],
-        $additionalArguments = []
-    ) {
-        if (!static::relationshipExists($relationshipKey)) {
-            throw new \Phramework\Exceptions\ServerException(
-                'Not a valid relationship key'
-            );
-        }
-
-        $relationship = static::getRelationship($relationshipKey);
-
-        switch ($relationship->getRelationshipType()) {
-            case Relationship::TYPE_TO_ONE:
-                $callMethod = [
-                    static::class,
-                    self::GET_BY_PREFIX . ucfirst(static::getIdAttribute())
-                ];
-
-                if (!is_callable($callMethod)) {
-                    throw new \Phramework\Exceptions\ServerException(
-                        $callMethod[0] . '::' . $callMethod[1]
-                        . ' is not implemented'
-                    );
-                }
-
-                //We have to get this type's resource
-                $resource = call_user_func_array(
-                    $callMethod,
-                    array_merge([$idAttributeValue], $additionalGetArguments)
-                );
-
-                if (!$resource) {
-                    return null;
-                }
-
-                //And use it's relationships data for this relationship
-                return $resource->relationships->{$relationshipKey}->data;
-
-                break;
-            case Relationship::TYPE_TO_MANY:
-            default:
-                $callMethod = [
-                    $relationship->getRelationshipClass(),
-                    self::GET_RELATIONSHIP_BY_PREFIX . ucfirst(static::getType())
-                ];
-
-                if (!is_callable($callMethod)) {
-                    throw new \Phramework\Exceptions\ServerException(
-                        $callMethod[0] . '::' . $callMethod[1]
-                        . ' is not implemented'
-                    );
-                }
-                //also we could attempt to use GetById like the above TO_ONE
-                //to use relationships data
-
-                return call_user_func_array(
-                    $callMethod,
-                    array_merge([$idAttributeValue], $additionalArguments)
-                );
-                break;
-        }
-    }
-
-
-    /**
-     * Get jsonapi's included object, selected by include argument,
-     * using id's of relationship's data from resources in primary data object
-     * @param  object $primaryData Primary data object
-     * @param  string[] $include     An array with the keys of relationships to include
-     * @return object[]              An array with all included related data
-     * @throws \Phramework\Exceptions\RequestException
-     * @todo handle Relationship resource cannot be accessed
-     * @todo include second level relationships
-     */
-    public static function getIncludedData(
-        $primaryData,
-        $include = [],
-        $additionalArguments = []
-    ) {
-        //Store relationshipKeys as key and ids of their related data as value
-        $temp = [];
-
-        //check if relationship exists
-        foreach ($include as $relationshipKey) {
-            if (!static::relationshipExists($relationshipKey)) {
-                throw new \Phramework\Exceptions\RequestException(sprintf(
-                    'Relationship "%s" not found',
-                    $relationshipKey
-                ));
-            }
-
-            //Will hold ids of related data
-            $temp[$relationshipKey] = [];
-        }
-
-        if (empty($include) || empty($primaryData)) {
-            return [];
-        }
-
-        //iterate through all primary data
-
-        //if a single resource
-        if (!is_array($primaryData)) {
-            $primaryData = [$primaryData];
-        }
-
-        foreach ($primaryData as $resource) {
-            //ignore if relationships are not set
-            if (!property_exists($resource, 'relationships')) {
-                continue;
-            }
-
-            foreach ($include as $relationshipKey) {
-                //ignore if this relationship is not set
-                if (!isset($resource->relationships->{$relationshipKey})) {
-                    continue;
-                }
-
-                if (!isset($resource->relationships->{$relationshipKey}->data)) {
-                    continue;
-                }
-
-                //if single
-                $relationshipData = $resource->relationships->{$relationshipKey}->data;
-
-                if (!$relationshipData || empty($relationshipData)) {
-                    continue;
-                }
-
-                //if a single resource
-                if (!is_array($relationshipData)) {
-                    $relationshipData = [$relationshipData];
-                }
-
-                foreach ($relationshipData as $primaryKeyAndType) {
-                    //push primary key (use type? $primaryKeyAndType->type)
-                    $temp[$relationshipKey][] = $primaryKeyAndType->id;
-                }
-            }
-        }
-
-        $included = [];
-
-        //remove duplicates
-        foreach ($include as $relationshipKey) {
-            $relationship = static::getRelationship($relationshipKey);
-
-            $callMethod = [
-                $relationship->getRelationshipClass(),
-                self::GET_BY_PREFIX
-                . ucfirst($relationship->getRelationshipIdAttribute())
-            ];
-
-            if (!is_callable($callMethod)) {
-                throw new \Phramework\Exceptions\ServerException(
-                    $callMethod[0] . '::' . $callMethod[1]
-                    . ' is not implemented'
-                );
-            }
-
-            foreach (array_unique($temp[$relationshipKey]) as $idAttribute) {
-                $additionalArgument = (
-                    isset($additionalArguments[$relationshipKey])
-                    ? $additionalArguments[$relationshipKey]
-                    : []
-                );
-
-                $resource = call_user_func_array(
-                    $callMethod,
-                    array_merge([$idAttribute], $additionalArgument)
-                );
-
-                if (!$resource) {
-                    //throw new \Exception('Relationship resource cannot be accessed');
-                }
-
-                //push to included
-                $included[] = $resource;
-            }
-        }
-
-        //fetch related resources using GET_BY_PREFIX{{idAttribute}} method
-
-        return $included;
-    }
-
-    /**
      * This method will update `{{sort}}` string inside query parameter with
      * the provided sort
      * @param  string       $query    Query
-     * @param  null|object  $sort     string `table`, string `attribute`, boolean `ascending`
+     * @param  Sort|null    $sort     string `table`, string `attribute`, boolean `ascending`
      * @return string       Query
      */
     protected static function handleSort($query, $sort)
@@ -695,8 +337,8 @@ abstract class Model
     /**
      * This method will update `{{pagination}}` string inside query parameter with
      * the provided pagination directives
-     * @param  string  $query    Query
-     * @param  object  $page
+     * @param  string    $query    Query
+     * @param  Page|null $page
      * @return string            Query
      */
     protected static function handlePagination($query, $page = null)
@@ -732,7 +374,7 @@ abstract class Model
      * This method will update `{{filter}}` string inside query parameter with
      * the provided filter directives
      * @param  string  $query    Query
-     * @param  object  $filter   This object has 3 attributes:
+     * @param  Filter|null  $filter   This object has 3 attributes:
      * primary, relationships and attributes
      * - integer[] $primary
      * - integer[] $relationships
@@ -740,6 +382,7 @@ abstract class Model
      * - array $attributesJSON (each array item [$attribute, $key, $operator, $operant])
      * @param  boolean $hasWhere If query already has an WHERE, default is true
      * @return string            Query
+     * @throws \Phramework\Exceptions\NotImplementedException
      * @todo check if query work both in MySQL and postgre
      */
     protected static function handleFilter(

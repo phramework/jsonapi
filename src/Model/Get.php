@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 Xenofon Spafaridis
+ * Copyright 2015 - 2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ use \Phramework\JSONAPI\Relationship;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @todo add cache
  */
-abstract class Get
+abstract class Get extends \Phramework\JSONAPI\Model\Model
 {
     /**
      * @param Page|null $page       *[Optional]*
