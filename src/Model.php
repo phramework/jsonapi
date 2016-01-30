@@ -306,6 +306,213 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Get records from a relationship link
+     * @param  static $relationshipKey
+     * @param  string $idAttributeValue
+     * @return stdClass|stdClass[]
+     * @throws \Phramework\Exceptions\ServerException If relationship doesn't exist
+     * @throws \Phramework\Exceptions\ServerException If relationship's class method is
+     * not defined
+     * @throws \Phramework\Exceptions\ServerException If resources's class
+     * `self::GET_RELATIONSHIP_BY_PREFIX . ucfirst(idAttribute)` method isn't
+     * defined
+     */
+    public static function getRelationshipData(
+        $relationshipKey,
+        $idAttributeValue,
+        $additionalGetArguments = [],
+        $additionalArguments = []
+    ) {
+        if (!static::relationshipExists($relationshipKey)) {
+            throw new \Phramework\Exceptions\ServerException(
+                'Not a valid relationship key'
+            );
+        }
+
+        $relationship = static::getRelationship($relationshipKey);
+
+        switch ($relationship->getRelationshipType()) {
+            case Relationship::TYPE_TO_ONE:
+                $callMethod = [
+                    static::class,
+                    self::GET_BY_PREFIX . ucfirst(static::getIdAttribute())
+                ];
+
+                if (!is_callable($callMethod)) {
+                    throw new \Phramework\Exceptions\ServerException(
+                        $callMethod[0] . '::' . $callMethod[1]
+                        . ' is not implemented'
+                    );
+                }
+
+                //We have to get this type's resource
+                $resource = call_user_func_array(
+                    $callMethod,
+                    array_merge([$idAttributeValue], $additionalGetArguments)
+                );
+
+                if (!$resource) {
+                    return null;
+                }
+
+                //And use it's relationships data for this relationship
+                return (
+                    isset($resource->relationships->{$relationshipKey}->data)
+                    ? $resource->relationships->{$relationshipKey}->data
+                    : null
+                );
+
+                break;
+            case Relationship::TYPE_TO_MANY:
+            default:
+                $callMethod = [
+                    $relationship->getRelationshipClass(),
+                    self::GET_RELATIONSHIP_BY_PREFIX . ucfirst(static::getType())
+                ];
+
+                if (!is_callable($callMethod)) {
+                    throw new \Phramework\Exceptions\ServerException(
+                        $callMethod[0] . '::' . $callMethod[1]
+                        . ' is not implemented'
+                    );
+                }
+                //also we could attempt to use GetById like the above TO_ONE
+                //to use relationships data
+
+                return call_user_func_array(
+                    $callMethod,
+                    array_merge([$idAttributeValue], $additionalArguments)
+                );
+                break;
+        }
+    }
+
+
+    /**
+     * Get jsonapi's included object, selected by include argument,
+     * using id's of relationship's data from resources in primary data object
+     * @param  object $primaryData Primary data object
+     * @param  string[] $include     An array with the keys of relationships to include
+     * @return object[]              An array with all included related data
+     * @todo handle Relationship resource cannot be accessed
+     * @todo include second level relationships
+     */
+    public static function getIncludedData(
+        $primaryData,
+        $include = [],
+        $additionalArguments = []
+    ) {
+        //Store relationshipKeys as key and ids of their related data as value
+        $temp = [];
+
+        //check if relationship exists
+        foreach ($include as $relationshipKey) {
+            if (!static::relationshipExists($relationshipKey)) {
+                throw new \Phramework\Exceptions\RequestException(sprintf(
+                    'Relationship "%s" not found',
+                    $relationshipKey
+                ));
+            }
+
+            //Will hold ids of related data
+            $temp[$relationshipKey] = [];
+        }
+
+        if (empty($include) || empty($primaryData)) {
+            return [];
+        }
+
+        //iterate through all primary data
+
+        //if a single resource
+        if (!is_array($primaryData)) {
+            $primaryData = [$primaryData];
+        }
+
+        foreach ($primaryData as $resource) {
+            //ignore if relationships are not set
+            if (!property_exists($resource, 'relationships')) {
+                continue;
+            }
+
+            foreach ($include as $relationshipKey) {
+                //ignore if this relationship is not set
+                if (!isset($resource->relationships->{$relationshipKey})) {
+                    continue;
+                }
+
+                if (!isset($resource->relationships->{$relationshipKey}->data)) {
+                    continue;
+                }
+
+                //if single
+                $relationshipData = $resource->relationships->{$relationshipKey}->data;
+
+                if (!$relationshipData || empty($relationshipData)) {
+                    continue;
+                }
+
+                //if a single resource
+                if (!is_array($relationshipData)) {
+                    $relationshipData = [$relationshipData];
+                }
+
+                foreach ($relationshipData as $primaryKeyAndType) {
+                    //push primary key (use type? $primaryKeyAndType->type)
+                    $temp[$relationshipKey][] = $primaryKeyAndType->id;
+                }
+            }
+        }
+
+        $included = [];
+
+        //remove duplicates
+        foreach ($include as $relationshipKey) {
+            $relationship = static::getRelationship($relationshipKey);
+
+            $callMethod = [
+                $relationship->getRelationshipClass(),
+                self::GET_BY_PREFIX
+                . ucfirst($relationship->getRelationshipIdAttribute())
+            ];
+
+            if (!is_callable($callMethod)) {
+                throw new \Phramework\Exceptions\ServerException(
+                    $callMethod[0] . '::' . $callMethod[1]
+                    . ' is not implemented'
+                );
+            }
+
+            foreach (array_unique($temp[$relationshipKey]) as $idAttribute) {
+                $additionalArgument = (
+                    isset($additionalArguments[$relationshipKey])
+                    ? $additionalArguments[$relationshipKey]
+                    : []
+                );
+
+                $resource = call_user_func_array(
+                    $callMethod,
+                    array_merge([$idAttribute], $additionalArgument)
+                );
+
+                if (!$resource) {
+                    //throw new \Exception('Relationship resource cannot be accessed');
+                }
+
+                //push to included
+                $included[] = $resource;
+            }
+        }
+
+        //fetch related resources using GET_BY_PREFIX{{idAttribute}} method
+
+        return $included;
+    }
+
+    /**
+>>>>>>> master
      * This method will update `{{sort}}` string inside query parameter with
      * the provided sort
      * @param  string       $query    Query

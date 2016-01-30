@@ -72,6 +72,10 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         $sort = null;
 
+        $idAttribute = $modelClass::getIdAttribute();
+
+        $filterValidationModel = $modelClass::getFilterValidationModel();
+
         if ($filterable && isset($params->filter)) {
             foreach ($params->filter as $filterKey => $filterValue) {
                 //todo validate as int
@@ -85,10 +89,18 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                         ));
                     }
 
+                    //Use filterValidator for idAttribute if set else use intval to parse filtered values
+                    $function = (
+                    !empty($filterValidationModel) && isset($filterValidationModel->{$idAttribute})
+                        ? [$filterValidationModel->{$idAttribute}, 'parse']
+                        : 'intval'
+                    );
+
                     $values = array_map(
-                        'intval',
+                        $function,
                         array_map('trim', explode(',', trim($filterValue)))
                     );
+
                     $filter->primary = $values;
                 } elseif ($modelClass::relationshipExists($filterKey)) {
                     //Check filter value type
@@ -98,6 +110,8 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                             $filterKey
                         ));
                     }
+
+                    //Todo use filterValidation model
 
                     $values = array_map(
                         'intval',
@@ -109,7 +123,6 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
                     //when TYPE_TO_ONE it's easy to filter
                 } else {
                     $validationModel = $modelClass::getValidationModel();
-                    $filterValidationModel = $modelClass::getFilterValidationModel();
                     //if (!$validationModel || !isset($validationModel->attributes)) {
                     //    throw new \Exception(sprintf(
                     //        'Model "%s" doesn\'t have a validation model for attributes',
