@@ -24,29 +24,40 @@ namespace Phramework\JSONAPI;
 class Resource
 {
     /**
+     * Resource's type
      * @var string
      */
     public $type;
 
     /**
+     * *NOTE* The id member is not required when the resource object originates at the client and represents a new resource to be created on the server.
      * @var string
      */
     public $id;
 
     /**
+     * An attributes object representing some of the resource's data
      * @var object
      */
     public $attributes;
 
     /**
+     * A relationships object describing relationships between the resource and other JSON API resources.
      * @var object
      */
     public $relationships;
 
     /**
+     * A links object containing links related to the resource
      * @var object
      */
     public $links;
+
+    /**
+     * Non-standard meta-information about a resource that can not be represented as an attribute or relationship.
+     * @var object
+     */
+    public $meta;
 
     /**
      * Resource constructor.
@@ -61,5 +72,6 @@ class Resource
         $this->links         = new \stdClass();
         $this->attributes    = new \stdClass();
         $this->relationships = new \stdClass();
+        $this->meta          = new \stdClass();
     }
 }
