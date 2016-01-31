@@ -8,6 +8,8 @@
 
 namespace Phramework\JSONAPI\Model;
 
+use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
 
 abstract class Relationship extends Get
@@ -45,9 +47,10 @@ abstract class Relationship extends Get
 
     /**
      * Get records from a relationship link
-     * @param  string $relationshipKey
-     * @param  string $id
-     * @return stdClass|stdClass[]
+     * @param string $relationshipKey
+     * @param string $id
+     * @param Fields|null $fields
+     * @return RelationshipResource|RelationshipResource[]
      * @throws \Phramework\Exceptions\ServerException If relationship doesn't exist
      * @throws \Phramework\Exceptions\ServerException If relationship's class method is
      * not defined
@@ -55,6 +58,7 @@ abstract class Relationship extends Get
     public static function getRelationshipData(
         $relationshipKey,
         $id,
+        Fields $fields = null,
         $primaryDataParameters = [],
         $relationshipParameters = []
     ) {
@@ -68,22 +72,10 @@ abstract class Relationship extends Get
 
         switch ($relationship->getRelationshipType()) {
             case Relationship::TYPE_TO_ONE:
-                $callMethod = [
-                    static::class,
-                    'getById'
-                ];
-
-                /*if (!is_callable($callMethod)) {
-                    throw new \Phramework\Exceptions\ServerException(
-                        $callMethod[0] . '::' . $callMethod[1]
-                        . ' is not implemented'
-                    );
-                }*/
-
-                //We have to get this type's resource
-                $resource = call_user_func_array(
-                    $callMethod,
-                    array_merge([$id], $primaryDataParameters)
+                $resource = $callMethod = static::getById(
+                    $id,
+                    $fields,
+                    $primaryDataParameters
                 );
 
                 if (!$resource) {
@@ -117,7 +109,7 @@ abstract class Relationship extends Get
 
                 return call_user_func_array(
                     $callMethod,
-                    array_merge([$id], $relationshipParameters)
+                    array_merge([$id, $fields], $relationshipParameters)
                 );
                 break;
         }
@@ -126,8 +118,10 @@ abstract class Relationship extends Get
     /**
      * Get jsonapi's included object, selected by include argument,
      * using id's of relationship's data from resources in primary data object
-     * @param  Resource|Resource[]  $primaryData Primary data resource or resources
-     * @param  string[]             $include     An array with the keys of relationships to include
+     * @param Resource|Resource[]  $primaryData Primary data resource or resources
+     * @param string[]             $include     An array with the keys of relationships to include
+     * @param Fields|null $fields
+     * @param array $$additionalResourceParameters *[Optional]*
      * @return Resource[]           An array with all included related data
      * @throws \Phramework\Exceptions\RequestException When a relationship is not found
      * @throws \Phramework\Exceptions\ServerException
@@ -138,6 +132,7 @@ abstract class Relationship extends Get
     public static function getIncludedData(
         $primaryData,
         $include = [],
+        Fields $fields = null,
         $additionalResourceParameters = []
     ) {
         /**
@@ -216,22 +211,34 @@ abstract class Relationship extends Get
 
         $included = [];
 
-        //remove duplicates
         foreach ($include as $relationshipKey) {
             $relationship = static::getRelationship($relationshipKey);
 
-            $callMethod = [
-                $relationship->getRelationshipClass(),
-                'getById'
-            ];
+            $relationshipClass = $relationship->getRelationshipClass();
 
-            /*if (!is_callable($callMethod)) {
-                throw new \Phramework\Exceptions\ServerException(
-                    $callMethod[0] . '::' . $callMethod[1]
-                    . ' is not implemented'
-                );
-            }*/
+            $ids = array_unique($tempRelationshipIds->{$relationshipKey});
 
+            $additionalArgument = (
+                isset($additionalResourceParameters[$relationshipKey])
+                ? $additionalResourceParameters[$relationshipKey]
+                : []
+            );
+
+            $resources = $relationshipClass::getById(
+                $ids,
+                $fields,
+                $additionalArgument
+            );
+
+            foreach ($resources as $key => $resource) {
+                if ($resource === null) {
+                    continue;
+                }
+
+                $included[] = $resource;
+            }
+
+            /*
             foreach (array_unique($tempRelationshipIds->{$relationshipKey}) as $idAttribute) {
                 $additionalArgument = (
                 isset($additionalResourceParameters[$relationshipKey])
@@ -241,7 +248,7 @@ abstract class Relationship extends Get
 
                 $resource = call_user_func_array(
                     $callMethod,
-                    array_merge([$idAttribute], $additionalArgument)
+                    array_merge([$idAttribute, $fields], $additionalArgument)
                 );
 
                 if (!$resource) {
@@ -250,7 +257,7 @@ abstract class Relationship extends Get
                     //push to included
                     $included[] = $resource;
                 }
-            }
+            }*/
         }
 
         return $included;

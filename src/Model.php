@@ -30,7 +30,6 @@ use Phramework\Validate\ObjectValidator;
  */
 abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 {
-
     /**
      * Enable caching of resources
      * @var bool
@@ -48,7 +47,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
                 (object) [],
                 [],
                 false //No additional properties
-            )
+            ) //Attributes validator
         );
     }
 
@@ -331,6 +330,17 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
+     * Get attribute keys that allowed to be used for sort
+     * **MAY** be overwritten
+     * @return string[]
+     * @since 1.0.0
+     */
+    public static function getFields()
+    {
+        return [];
+    }
+
+    /**
      * Get sort attributes and default
      * **MAY** be overwritten
      * @return object Returns an object with attribute `attributes` containing
@@ -414,20 +424,16 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      * This method will update `{{filter}}` string inside query parameter with
      * the provided filter directives
      * @param  string  $query    Query
-     * @param  Filter|null  $filter   This object has 3 attributes:
-     * primary, relationships and attributes
-     * - integer[] $primary
-     * - integer[] $relationships
-     * - array $attributes (each array item [$attribute, $operator, $operant])
-     * - array $attributesJSON (each array item [$attribute, $key, $operator, $operant])
-     * @param  boolean $hasWhere If query already has an WHERE, default is true
+     * @param  Filter|null  $filter
+     * @param  boolean $hasWhere *[Optional]* If query already has an WHERE, default is true
      * @return string            Query
      * @throws \Phramework\Exceptions\NotImplementedException
+     * @throws \Exception
      * @todo check if query work both in MySQL and postgre
      */
     protected static function handleFilter(
         $query,
-        $filter = null,
+        $filter,
         $hasWhere = true
     ) {
         $additionalFilter = [];
@@ -567,16 +573,73 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
+     * This method will update `{{fields}}` string inside query parameter with
+     * the provided fields directives
+     * @param string $query
+     * @param Fields $fields
+     * @return string
+     * @since 1.0.0
+     */
+    protected static function handleFields(
+        $query,
+        Fields $fields
+    ) {
+        $type = static::getType();
+
+        //Get field attributes for this type and force id attribute
+        $attributes = array_unique(array_merge(
+            $fields->get($type),
+            [static::$idAttribute]
+        ));
+
+        $escape = function ($input){
+            if ($input === '*') {
+                return $input;
+            }
+            return sprintf('"%s"', $input);
+        };
+
+        /**
+         * This method will prepare the attributes by prefixing then with "
+         * - * ->
+         * - id -> "id"
+         * - table.id -> "table"."id"
+         * and glue them with comma separator
+         */
+        $queryPart = implode(',',
+            array_map(
+                function ($attribute) use ($escape) {
+                    return implode(
+                        '.',
+                        array_map($escape, explode('.', $attribute))
+                    );
+                },
+                $attributes
+            )
+        );
+
+        $query = str_replace(
+            '{{fields}}',
+            $queryPart,
+            $query
+        );
+
+        return $query;
+    }
+
+    /**
      * Apply handle pagination, sort and filter to query,
-     * will replace `{{sort}}`, `{{pagination}}` and `{{filter}}` strings in
+     * will replace `{{sort}}`, `{{pagination}}`, `{{filter}}` and `{{fields}}` strings in
      * query.
-     * @uses Model::handlePagination
-     * @uses Model::handleSort
-     * @uses Model::handleFilter
+     * @uses static::handlePagination
+     * @uses static::handleSort
+     * @uses static::handleFilter
+     * @uses static::handleFields
      * @param  string       $query    Query
      * @param  Page|null    $page     See handlePagination $page parameter
      * @param  Filter|null  $filter   See handleFilter $filter parameter
-     * @param  Sort|null    $sort See handleSort $sort parameter
+     * @param  Sort|null    $sort     See handleSort $sort parameter
+     * @param  Fields|null  $fields   See handleFields $fields parameter
      * @param  boolean $hasWhere If query already has an WHERE, default is true
      * @return string       Query
      */
@@ -585,18 +648,22 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
         Page $page,
         Filter $filter,
         Sort $sort,
+        Fields $fields,
         $hasWhere = true
     ) {
-        return trim(static::handlePagination(
-            static::handleSort(
-                static::handleFilter(
-                    $query,
-                    $filter,
-                    $hasWhere
+        return trim(static::handleFields(
+            static::handlePagination(
+                static::handleSort(
+                    static::handleFilter(
+                        $query,
+                        $filter,
+                        $hasWhere
+                    ),
+                    $sort
                 ),
-                $sort
+                $page
             ),
-            $page
+            $fields
         ));
     }
 }

@@ -53,16 +53,32 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
 
     /**
      * @param string|string[] $id An id of a single resource or ids of multiple resources
+     * @param Fields|null $fields   *[Optional]*
      * @param mixed ...$additionalParameters
-     * @return Resource|object
+     * @return Resource|object|null Returns null when item is not available,
+     * returns object when multiple ids are requested, each id is used as object's key.
+     * @example
+     * ```php
+     * $article = Article::get(5);
+     *
+     * // Will return a valid resource or null in case in's not found
+     * ```
+     * @example
+     * ```php
+     * $article = Article::get(5);
+     *
+     * // Will return a valid resource or null in case in's not found
+     * ```
      * @todo make sure call to get method with multiple $additionalParameters will work
      */
-    public static function getById($id, ...$additionalParameters)
+    public static function getById($id, Fields $fields = null, ...$additionalParameters)
     {
         if (!is_array($id) && ($cached = static::getCache($id)) !== null) {
-            //Return immediately if cached
+            //Return a single resource immediately if cached
             return $cached;
         } elseif (is_array($id)) {
+            $id = array_unique($id);
+
             $collectionObject = new \stdClass();
 
             $originalId = $id;
@@ -75,6 +91,11 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
                     //but it will be returned in $collectionObject
                     $id = array_diff($id, [$resourceId]);
                 }
+            }
+
+            //If all ids are already available from cache
+            if (count($id) === 0) {
+                return $collectionObject;
             }
         }
 
@@ -91,7 +112,7 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
             new Page(count($id)), //limit number of requested resources
             $filter,
             null, //sort
-            null, //fields
+            $fields, //fields
             $additionalParameters
         );
 
@@ -105,32 +126,27 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
 
             //Return a resource
             return $collection[0];
-        } else { //if array
-            //$collectionObject = new \stdClass();
-//
-            //foreach ($id as $resourceId) {
-            //    $collectionObject->{$resourceId} = null;
-            //}
-
-            foreach ($collection as $resource) {
-                $collectionObject->{$resource->id} = $resource;
-                static::setCache($resource->id, $resource);
-            }
-
-            unset($collection);
-
-            return $collectionObject;
         }
+
+        //If ids are an array
+        foreach ($collection as $resource) {
+            $collectionObject->{$resource->id} = $resource;
+            static::setCache($resource->id, $resource);
+        }
+
+        unset($collection);
+
+        return $collectionObject;
     }
 
     /**
      * Parse page for pagination by parsing request parameters and using current implementation model's rules.
      * @param object $parameters Request parameters
-     * @return null|Page
+     * @return Page|null
      */
     public static function parsePage($parameters)
     {
-        return Page::parseFromParameters($parameters, self::class);
+        return Page::parseFromParameters($parameters, static::class);
     }
 
     /**
@@ -140,7 +156,7 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
      */
     public static function parseSort($parameters)
     {
-        return Sort::parseFromParameters($parameters, self::class);
+        return Sort::parseFromParameters($parameters, static::class);
     }
 
     /**
@@ -150,6 +166,17 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
      */
     public static function parseFilter($parameters)
     {
-        return Filter::parseFromParameters($parameters, self::class);
+        return Filter::parseFromParameters($parameters, static::class);
     }
+
+    /**
+     * Parse fields by parsing request parameters and using current implementation model's rules.
+     * @param object $parameters Request parameters
+     * @return Fields|null
+     */
+    public static function parseFields($parameters)
+    {
+        return Fields::parseFromParameters($parameters, static::class);
+    }
+
 }
