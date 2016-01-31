@@ -25,6 +25,18 @@ use Phramework\Models\Operator;
  */
 class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
 {
+    protected $filterAttribute;
+
+    public function setUp()
+    {
+        $this->filterAttribute = new FilterJSONAttribute(
+            'meta',
+            'keywords',
+            Operator::OPERATOR_LIKE,
+            'blog'
+        );
+    }
+
     /**
      * @covers ::__construct
      */
@@ -36,5 +48,25 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
             Operator::OPERATOR_LIKE,
             'blog'
         );
+    }
+
+    /**
+     * @covers ::__get
+     */
+    public function test__get()
+    {
+        $this->assertSame(
+            'keywords',
+            $this->filterAttribute->key
+        );
+    }
+
+    /**
+     * @covers ::__get
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
+    public function test__getFailure()
+    {
+        $this->assertNull($this->filterAttribute->{'not-found'});
     }
 }

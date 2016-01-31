@@ -14,55 +14,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Model;
+
+use Gitonomy\Git\Reference\Tag;
+use Phramework\JSONAPI\APP\Models\Article;
+use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Resource;
 
 /**
- * Fields helper methods
- * @since 1.0.0
+ * @coversDefaultClass Phramework\JSONAPI\Model\Cache
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-read string $key
  */
-class FilterJSONAttribute extends FilterAttribute
+class CacheTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var string
+     * Helper method
+     * @param int $limit
+     * @param int $offset
+     * @return Resource
      */
-    protected $key;
-
-    /**
-     * FilterAttribute constructor.
-     * @param string $attribute
-     * @param string $key
-     * @param string $operator
-     * @param string $operand
-     */
-    public function __construct(
-        $attribute,
-        $key,
-        $operator,
-        $operand
-    ) {
-        parent::__construct(
-            $attribute,
-            $operator,
-            $operand
+    protected function get($limit = 1, $offset = 0)
+    {
+        //Get first trend
+        $collection = Article::get(
+            new Page($limit, $offset)
         );
 
-        $this->key = $key;
+        return $collection;
     }
 
     /**
-     * @param string $name
-     * @return mixed
+     * @covers ::getCache
      */
-    public function __get($name)
+    public function testGetCache()
     {
-        switch ($name) {
-            case 'key':
-                return $this->key;
-        }
+    }
 
-        return parent::__get($name);
+    /**
+     * @covers ::setCache
+     */
+    public function testSetCache()
+    {
+        //Get with offset (another resource)
+        //$collection = self::get(1, 3);
     }
 }

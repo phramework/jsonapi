@@ -21,9 +21,9 @@ namespace Phramework\JSONAPI;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-write string $attribute
- * @property-write string $operator
- * @property-write string $operand
+ * @property-read string $attribute
+ * @property-read string $operator
+ * @property-read string $operand
  */
 class FilterAttribute
 {

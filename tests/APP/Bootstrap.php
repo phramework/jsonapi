@@ -16,7 +16,9 @@
  */
 namespace Phramework\JSONAPI\APP;
 
-define('NS', '\\Phramework\\JSONAPI\\APP\\Controllers\\');
+include __DIR__ .  '/../../vendor/autoload.php';
+
+define('NS', 'Phramework\\JSONAPI\\APP\\Controllers\\');
 
 use \Phramework\Phramework;
 
@@ -50,11 +52,9 @@ class Bootstrap
         //Initialize API
         $phramework = new Phramework($settings, $URIStrategy);
 
-        \Phramework\Database\Database::setAdapter(
-            new \Phramework\Database\MySQL($settings['database'])
-        );
-
-        var_dump($settings);
+        //\Phramework\Database\Database::setAdapter(
+        //    new \Phramework\Database\MySQL($settings['database'])
+        //);
 
         Phramework::setViewer(
             \Phramework\JSONAPI\APP\Viewers\Viewer::class
@@ -68,3 +68,5 @@ class Bootstrap
         //$phramework->invoke();
     }
 }
+
+Bootstrap::prepare();

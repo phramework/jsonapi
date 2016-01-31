@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI\Model;
 
+use Phramework\Exceptions\NotImplementedException;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Filter;
 use Phramework\JSONAPI\Page;
@@ -100,20 +101,18 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
         }
 
         //Prepare filter
-        $filter = new Filter();
-
-        $filter->primary = (
+        $filter = new Filter((
             is_array($id)
             ? $id
             : [$id]
-        ); //Force array for primary data
+        )); //Force array for primary data
 
         $collection = static::get(
             new Page(count($id)), //limit number of requested resources
             $filter,
             null, //sort
             $fields, //fields
-            $additionalParameters
+            ...$additionalParameters
         );
 
         if (!is_array($id)) {

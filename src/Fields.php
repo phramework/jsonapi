@@ -25,7 +25,7 @@ use Phramework\Exceptions\RequestException;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property object-read $fields
+ * @property-read object $fields
  */
 class Fields
 {

@@ -16,12 +16,16 @@
  */
 namespace Phramework\JSONAPI\APP\Models;
 
-use \Phramework\Database\Database;
-use \Phramework\JSONAPI\Relationship;
-use \Phramework\Validate\ArrayValidator;
-use \Phramework\Validate\ObjectValidator;
-use \Phramework\Validate\StringValidator;
-use \Phramework\Validate\UnsignedIntegerValidator;
+use Phramework\Database\Database;
+use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\Sort;
+use Phramework\Validate\ArrayValidator;
+use Phramework\Validate\ObjectValidator;
+use Phramework\Validate\StringValidator;
+use Phramework\Validate\UnsignedIntegerValidator;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -50,12 +54,49 @@ class Tag extends \Phramework\JSONAPI\Model
         Fields $fields = null,
         ...$additionalParameters
     ) {
-        return self::collection(
-            Database::executeAndFetchAll(
-                'SELECT * FROM "tag"
-                WHERE "status" = 1'
-            )
-        );
+        $records = [
+            [
+                'id' => 1,
+                'status' => 1,
+                'title' => 'Tag 1',
+                'created' => null
+            ],
+            [
+                'id' => 2,
+                'status' => 1,
+                'title' => 'Tag 2',
+                'created' => time()
+            ],
+            [
+                'id' => 3,
+                'status' => 1,
+                'title' => 'Tag 3',
+                'created' => time() + 100
+            ],
+            [
+                'id' => 4,
+                'status' => 0,
+                'title' => 'Tag 4',
+                'created' => time() + 1000
+            ]
+        ];
+
+        if ($filter !== null) {
+            $records = array_filter(
+                $records,
+                function ($record) use ($filter) {
+                    return in_array($record['id'], $filter->primary, false);
+                }
+            );
+        }
+
+        if ($page !== null) {
+            $records = array_values(
+                array_slice($records, $page->offset, $page->limit)
+            );
+        }
+
+        return self::collection($records);
     }
 
     /**
@@ -86,7 +127,7 @@ class Tag extends \Phramework\JSONAPI\Model
 
     public static function getRelationshipByArticle($articleId)
     {
-        return Database::executeAndFetchAllArray(
+        /*return Database::executeAndFetchAllArray(
             'SELECT "t"."id"
             FROM "article-tag" as "a-t"
             JOIN "tag" AS "t"
@@ -95,7 +136,9 @@ class Tag extends \Phramework\JSONAPI\Model
               AND "a-t"."status" = 1
               AND "t"."status" = 1',
             [$articleId]
-        );
+        );*/
+
+        return [];
     }
 
     public static function getRelationships()

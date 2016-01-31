@@ -17,7 +17,11 @@
 namespace Phramework\JSONAPI\APP\Models;
 
 use \Phramework\Database\Database;
+use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\Page;
 use \Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\Sort;
 use Phramework\JSONAPI\ValidationModel;
 use Phramework\Models\Operator;
 use \Phramework\Validate\ArrayValidator;
@@ -118,8 +122,9 @@ class Article extends \Phramework\JSONAPI\Model
         Fields $fields = null,
         ...$additionalParameters
     ) {
-        $articles = [
+        $records = [
             [
+                'id' => '1',
                 'creator-user_id' => 1,
                 'status' => 1,
                 'title' => 'First post',
@@ -129,15 +134,47 @@ class Article extends \Phramework\JSONAPI\Model
                 ]
             ],
             [
+                'id' => '2',
                 'creator-user_id' => 1,
                 'status' => 1,
                 'title' => 'Second post',
                 'updated' => time(),
                 'meta' => null
+            ],
+            [
+                'id' => '3',
+                'creator-user_id' => 2,
+                'status' => 1,
+                'title' => 'Third post',
+                'updated' => time() + 100,
+                'meta' => null
+            ],
+            [
+                'id' => '4',
+                'creator-user_id' => 1,
+                'status' => 0,
+                'title' => 'Fourth post',
+                'updated' => time() + 1000,
+                'meta' => null
             ]
         ];
 
-        return self::collection($articles);
+        if ($filter !== null) {
+            $records = array_filter(
+                $records,
+                function ($record) use ($filter) {
+                    return in_array($record['id'], $filter->primary, false);
+                }
+            );
+        }
+
+        if ($page !== null) {
+            $records = array_values(
+                array_slice($records, $page->offset, $page->limit)
+            );
+        }
+
+        return self::collection($records);
     }
 
     public static function getRelationships()
