@@ -16,7 +16,9 @@
  */
 namespace Phramework\JSONAPI;
 
+use Exception;
 use Phramework\JSONAPI\APP\Models\Article;
+use Phramework\JSONAPI\APP\Models\Tag;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Fields
@@ -26,16 +28,126 @@ use Phramework\JSONAPI\APP\Models\Article;
 class FieldsTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var Fields
+     */
+    protected $fields;
+
+    public function setUp()
+    {
+        $this->fields = new Fields();
+    }
+
+    /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct1()
     {
-        $fields1 = new Fields();
+        $fieldsInstance = new Fields();
 
-        $fields2 = new Fields((object) [
-            Article::getType() => 'title'
+        $this->assertInternalType('object', $fieldsInstance->getFields());
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstruct2()
+    {
+        $fieldsInstance = new Fields((object) [
+            Article::getType() => ['title']
+        ]);
+
+        $fields = $fieldsInstance->getFields();
+
+        $this->assertInternalType('object', $fields);
+
+        $this->assertObjectHasAttribute(
+            Article::getType(),
+            $fields
+        );
+
+        $this->assertInternalType(
+            'array',
+            $fields->{Article::getType()}
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @expectedException Exception
+     */
+    public function testConstructFailure()
+    {
+        new Fields((object)[
+            Article::getType() => 'title' //Must be an array
         ]);
     }
+
+    /**
+     * @covers ::add
+     * @before testGet
+     * @before getFields
+     */
+    public function testAdd()
+    {
+        $return = $this->fields->add(
+            Article::getType(),
+            'id'
+        );
+
+        $this->assertInstanceOf(
+            Fields::class,
+            $return,
+            'Expect add method to return self'
+        );
+
+        $this->fields->add(
+            Article::getType(),
+            ['title', 'updated']
+        );
+    }
+
+    /**
+     * @covers ::get
+     */
+    public function testGet()
+    {
+        $return = $this->fields->get(
+            Article::getType()
+        );
+
+        $this->assertSame(
+            $return,
+            ['id', 'title', 'updated']
+        );
+    }
+
+    /**
+     * @covers ::get
+     */
+    public function testGetForNotSetResourceType()
+    {
+        $return = $this->fields->get(
+            Tag::getType()
+        );
+
+        $this->assertSame(
+            $return,
+            []
+        );
+    }
+
+    /**
+     * @covers ::getFields
+     */
+    public function testGetFields()
+    {
+        $fields = $this->fields->getFields();
+
+        $this->assertInternalType('object', $fields);
+
+        $this->assertObjectHasAttribute(Article::getType(), $fields);
+    }
+
 
     /**
      * @covers ::parseFromParameters

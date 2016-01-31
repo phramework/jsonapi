@@ -26,6 +26,15 @@ use Phramework\Models\Operator;
  */
 class FilterTest extends \PHPUnit_Framework_TestCase
 {
+    public function getAvailableProperties()
+    {
+        return [
+            ['primary', []],
+            ['relationships', (object)[]],
+            ['attributes',[]]
+        ];
+    }
+
     /**
      * @covers ::__construct
      */
@@ -176,7 +185,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
             if ($shouldContain1 == $filterAttribute) {
                 $found1 = true;
-            } else if ($shouldContain2 == $filterAttribute) {
+            } elseif ($shouldContain2 == $filterAttribute) {
                 $found2 = true;
             }
         }
@@ -382,5 +391,29 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             $parameters,
             APP\Models\Article::class //Use article resource model's filters
         );
+    }
+
+    /**
+     * @covers ::__get
+     * @param string $property
+     * @param mixed $expected
+     * @dataProvider getAvailableProperties
+     */
+    public function test__get($property, $expected)
+    {
+        $filter = new Filter();
+
+        $this->assertEquals($expected, $filter->{$property});
+    }
+
+    /**
+     * @covers ::__get
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
+    public function test__getFailure()
+    {
+        $filter = new Filter();
+
+        $this->assertNull($filter->{'not-found'});
     }
 }

@@ -48,8 +48,8 @@ class Tag extends \Phramework\JSONAPI\Model
         Filter $filter = null,
         Sort   $sort = null,
         Fields $fields = null,
-        ...$additionalParameters)
-    {
+        ...$additionalParameters
+    ) {
         return self::collection(
             Database::executeAndFetchAll(
                 'SELECT * FROM "tag"
@@ -57,19 +57,6 @@ class Tag extends \Phramework\JSONAPI\Model
             )
         );
     }
-/**
-    public static function getById($id)
-    {
-        return self::resource(
-            Database::executeAndFetch(
-                'SELECT * FROM "tag"
-                WHERE "status" = 1
-                AND "id" = ?
-                LIMIT 1',
-                [$id]
-            )
-        );
-    }**/
 
     /**
      * post article-tag relationship

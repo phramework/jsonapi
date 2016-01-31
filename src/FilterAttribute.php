@@ -21,21 +21,24 @@ namespace Phramework\JSONAPI;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @property-write string $attribute
+ * @property-write string $operator
+ * @property-write string $operand
  */
 class FilterAttribute
 {
     /**
      * @var string
      */
-    public $attribute;
+    protected $attribute;
     /**
      * @var string
      */
-    public $operator;
+    protected $operator;
     /**
      * @var string
      */
-    public $operand;
+    protected $operand;
 
     /**
      * FilterAttribute constructor.
@@ -51,5 +54,29 @@ class FilterAttribute
         $this->attribute = $attribute;
         $this->operator = $operator;
         $this->operand = $operand;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'operand':
+                return $this->operand;
+            case 'operator':
+                return $this->operator;
+            case 'attribute':
+                return $this->attribute;
+        }
+
+        $trace = debug_backtrace();
+        trigger_error(
+            'Undefined property via __get(): ' . $name .
+            ' in ' . $trace[0]['file'] .
+            ' on line ' . $trace[0]['line'],
+            E_USER_NOTICE);
+        return null;
     }
 }

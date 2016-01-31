@@ -21,18 +21,19 @@ namespace Phramework\JSONAPI;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @property-write string $key
  */
 class FilterJSONAttribute extends FilterAttribute
 {
     /**
      * @var string
      */
-    public $key;
+    protected $key;
 
     /**
      * FilterAttribute constructor.
      * @param string $attribute
-     * @param string $key;
+     * @param string $key
      * @param string $operator
      * @param string $operand
      */
@@ -49,5 +50,19 @@ class FilterJSONAttribute extends FilterAttribute
         );
 
         $this->key = $key;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'key':
+                return $this->key;
+        }
+
+        return parent::__get($name);
     }
 }

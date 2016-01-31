@@ -16,9 +16,7 @@
  */
 namespace Phramework\JSONAPI;
 
-use Phramework\Models\Operator;
 use Phramework\Validate\ObjectValidator;
-
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\ValidationModel

@@ -24,18 +24,20 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @property-read int|null $limit
+ * @property-read int      $offset
  */
 class Page
 {
     /**
      * @var int
      */
-    public $offset;
+    protected $offset;
 
     /**
      * @var int|null
      */
-    public $limit;
+    protected $limit;
 
     /**
      * @param int|null $limit
@@ -47,12 +49,22 @@ class Page
         $this->offset = $offset;
     }
 
-
     /**
      * @param object $parameters Request parameters
      * @return Page|null
      * @throws IncorrectParametersException
      * @todo add default pagination based on $modelClass
+     * ```php
+     * $page = Page::parseFromParameters(
+     *     (object) [
+     *         'page' => [
+     *             'limit' => 0,
+     *             'offset' => 0
+     *         ]
+     *     ], //Request parameters object
+     *     Article::class
+     * );
+     * ```
      */
     public static function parseFromParameters($parameters, $modelClass)
     {
@@ -82,5 +94,27 @@ class Page
         }
 
         return new Page($limit, $offset);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'offset':
+                return $this->offset;
+            case 'limit':
+                return $this->limit;
+        }
+
+        $trace = debug_backtrace();
+        trigger_error(
+            'Undefined property via __get(): ' . $name .
+            ' in ' . $trace[0]['file'] .
+            ' on line ' . $trace[0]['line'],
+            E_USER_NOTICE);
+        return null;
     }
 }

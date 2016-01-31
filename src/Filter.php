@@ -26,19 +26,22 @@ use Phramework\Validate\StringValidator;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @property-read string[]          $primary
+ * @property-read object            $relationships
+ * @property-read FilterAttribute[] $attributes Attribute filters of type `FilterAttribute` and `FilterJSONAttribute`
  */
 class Filter
 {
     const JSON_ATTRIBUTE_FILTER_PROPERTY_EXPRESSION = '/^[a-zA-Z_\-0-9]{1,32}$/';
 
     /**
-     * @var string[]|int[]
+     * @var string[]
      * @example
      * ```php
      * [1, 2]
      * ```
      */
-    public $primary = null;
+    protected $primary = null;
 
     /**
      * @var object
@@ -51,19 +54,33 @@ class Filter
      * ]
      * ```
      */
-    public $relationships = [];
+    protected $relationships = [];
 
     /**
      * @var FilterAttribute[]
      */
-    public $attributes = [];
+    protected $attributes = [];
 
     /**
      * Filter constructor.
-     * @param array $primary
+     * @param string[] $primary
      * @param array $relationships
-     * @param array $attributes
+     * @param FilterAttribute[] $attributes
      * @throws \Exception
+     * @example
+     * ```php
+     * $filter = new Filter(
+     *     [1, 2],
+     *     (object) [
+     *         'author'  => [1],
+     *         'comment' => [1, 2, 3],
+     *         'tag'     => ['blog']
+     *     ],
+     *     [
+     *         new FilterAttribute('title', Operator::OPERATOR_LIKE, 'blog')
+     *     ]
+     * );
+     * ```
      */
     public function __construct(
         $primary = [],
@@ -102,24 +119,27 @@ class Filter
      * @todo allowed operator for JSON properties
      * @example
      * ```php
-     * (object) [
-     *     'filter' => [
-     *         'article'   => '1, 2',
-     *         'tag'       => '4, 5, 7',
-     *         'creator'   => '1',
-     *         'status'    => [true, false],
-     *         'title'     => [
-     *             Operator::OPERATOR_LIKE . 'blog',
-     *             Operator::OPERATOR_NOT_LIKE . 'welcome'
-     *         ],
-     *         'updated'   => Operator::OPERATOR_NOT_ISNULL,
-     *         'meta.keywords' => 'blog'
-     *     ]
-     * ];
+     * $filter = Filter::parseFromParameters(
+     *     (object) [
+     *         'filter' => [
+     *             'article'   => '1, 2',
+     *             'tag'       => '4, 5, 7',
+     *             'creator'   => '1',
+     *             'status'    => [true, false],
+     *             'title'     => [
+     *                 Operator::OPERATOR_LIKE . 'blog',
+     *                 Operator::OPERATOR_NOT_LIKE . 'welcome'
+     *             ],
+     *             'updated'   => Operator::OPERATOR_NOT_ISNULL,
+     *             'meta.keywords' => 'blog'
+     *         ]
+     *     ], //Request parameters object
+     *     Article::class
+     * );
+     * ```
      * @throws RequestException
      * @throws \Exception
      * @throws IncorrectParametersException
-     * ```
      */
     public static function parseFromParameters($parameters, $modelClass, $filterableJSON = true)
     {
@@ -127,10 +147,12 @@ class Filter
             return null;
         }
 
-        $filter = new Filter();
-
         $filterValidationModel = $modelClass::getFilterValidationModel();
         $idAttribute = $modelClass::getIdAttribute();
+
+        $filterPrimary       = [];
+        $filterRelationships = new \stdClass();
+        $filterAttributes    = [];
 
         foreach ($parameters->filter as $filterKey => $filterValue) {
 
@@ -159,7 +181,7 @@ class Filter
                     )
                 );
 
-                $filter->primary = $values;
+                $filterPrimary = $values;
             } elseif ($modelClass::relationshipExists($filterKey)) { //Filter relationship data
                 //Check filter value type
                 if (!is_string($filterValue) && !is_integer($filterValue)) {
@@ -181,7 +203,7 @@ class Filter
                     )
                 );
 
-                $filter->relationships->{$filterKey} = $values;
+                $filterRelationships->{$filterKey} = $values;
 
                 //when TYPE_TO_ONE it's easy to filter ??
             } else {
@@ -294,7 +316,8 @@ class Filter
                             //If filter validator is set for dereference JSON object property
                             if ($filterValidationModel
                                 && isset($filterValidationModel->properties->{$filterKey})
-                                && isset($filterValidationModel->properties->{$filterKey}->properties->{$filterPropertyKey})
+                                && isset($filterValidationModel->properties->{$filterKey}
+                                        ->properties->{$filterPropertyKey})
                             ) {
 
                                 $attributePropertyValidator = $filterValidationModel->properties
@@ -324,19 +347,49 @@ class Filter
                         }
                     }
 
+                    //Push to attribute filters
                     if ($isJSONFilter) {
-                        //Push to attribute filters
-                        $filter->attributes[] =  new FilterJSONAttribute($filterKey, $filterPropertyKey, $operator, $operand);
+                        $filterAttributes[] =  new FilterJSONAttribute(
+                            $filterKey,
+                            $filterPropertyKey,
+                            $operator,
+                            $operand
+                        );
                     } else {
-                        //Push to attribute filters
-                        $filter->attributes[] = new FilterAttribute($filterKey, $operator, $operand);
+                        $filterAttributes[] = new FilterAttribute($filterKey, $operator, $operand);
                     }
                 }
             }
         }
 
-        return $filter;
+        return new Filter(
+            $filterPrimary,
+            $filterRelationships,
+            $filterAttributes
+        );
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'primary':
+                return $this->primary;
+            case 'relationships':
+                return $this->relationships;
+            case 'attributes':
+                return $this->attributes;
+        }
 
+        $trace = debug_backtrace();
+        trigger_error(
+            'Undefined property via __get(): ' . $name .
+            ' in ' . $trace[0]['file'] .
+            ' on line ' . $trace[0]['line'],
+            E_USER_NOTICE);
+        return null;
+    }
 }

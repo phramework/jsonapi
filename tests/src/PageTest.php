@@ -25,6 +25,14 @@ use Phramework\JSONAPI\APP\Models\Article;
  */
 class PageTest extends \PHPUnit_Framework_TestCase
 {
+    public function getAvailableProperties()
+    {
+        return [
+            ['limit', null],
+            ['offset', 0]
+        ];
+    }
+
     /**
      * @covers ::__construct
      */
@@ -106,5 +114,29 @@ class PageTest extends \PHPUnit_Framework_TestCase
             $parameters,
             Article::class
         );
+    }
+
+    /**
+     * @covers ::__get
+     * @param string $property
+     * @param mixed $expected
+     * @dataProvider getAvailableProperties
+     */
+    public function test__get($property, $expected)
+    {
+        $page = new Page();
+
+        $this->assertSame($expected, $page->{$property});
+    }
+
+    /**
+     * @covers ::__get
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
+    public function test__getFailure()
+    {
+        $page = new Page();
+
+        $this->assertNull($page->{'not-found'});
     }
 }

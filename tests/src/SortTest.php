@@ -26,6 +26,15 @@ use Phramework\JSONAPI\APP\Models\Tag;
  */
 class SortTest extends \PHPUnit_Framework_TestCase
 {
+    public function getAvailableProperties()
+    {
+        return [
+            ['table', Article::getTable()],
+            ['ascending', true],
+            ['attribute', null]
+        ];
+    }
+
     /**
      * @covers ::__construct
      */
@@ -34,23 +43,6 @@ class SortTest extends \PHPUnit_Framework_TestCase
         $sort = new Sort(
             Article::getTable()
         );
-    }
-
-    /**
-     * @covers ::setDefault
-     */
-    public function testSetDefault()
-    {
-        $sort = new Sort(
-            Article::getTable()
-        );
-
-        $this->assertInstanceOf(
-            Sort::class,
-            $sort->setDefault(null)
-        );
-
-        $this->assertSame(null, $sort->default);
     }
 
     /**
@@ -165,5 +157,28 @@ class SortTest extends \PHPUnit_Framework_TestCase
             $parameters,
             Tag::class
         );
+    }
+
+    /**
+     * @covers ::__get
+     * @param string $property
+     * @param mixed $expected
+     * @dataProvider getAvailableProperties
+     */
+    public function test__get($property, $expected)
+    {
+        $sort = new Sort(Article::getTable());
+
+        $this->assertSame($expected, $sort->{$property});
+    }
+
+    /**
+     * @covers ::__get
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
+    public function test__getFailure()
+    {
+        $sort = new Sort(Article::getTable());
+        $this->assertNull($sort->{'not-found'});
     }
 }

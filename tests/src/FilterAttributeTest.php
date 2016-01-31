@@ -18,7 +18,6 @@ namespace Phramework\JSONAPI;
 
 use Phramework\Models\Operator;
 
-
 /**
  * @coversDefaultClass Phramework\JSONAPI\FilterAttribute
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -26,6 +25,29 @@ use Phramework\Models\Operator;
  */
 class FilterAttributeTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var FilterAttribute
+     */
+    protected $filterAttribute;
+
+    public function setUp()
+    {
+        $this->filterAttribute = new FilterAttribute(
+            'id',
+            Operator::OPERATOR_EQUAL,
+            '5'
+        );
+    }
+
+    public function getAvailableProperties()
+    {
+        return [
+            ['attribute', 'id'],
+            ['operator', Operator::OPERATOR_EQUAL],
+            ['operand', '5']
+        ];
+    }
+
     /**
      * @covers ::__construct
      */
@@ -36,5 +58,28 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
             Operator::OPERATOR_EQUAL,
             '5'
         );
+    }
+
+    /**
+     * @covers ::__get
+     * @param string $property
+     * @param mixed  $expected
+     * @dataProvider getAvailableProperties
+     */
+    public function test__get($property, $expected)
+    {
+        $this->assertSame(
+            $this->filterAttribute->{$property},
+            $expected
+        );
+    }
+
+    /**
+     * @covers ::__get
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
+    public function test__getFailure()
+    {
+        $this->assertNull($this->filterAttribute->{'not-found'});
     }
 }

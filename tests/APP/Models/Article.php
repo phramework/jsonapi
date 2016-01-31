@@ -116,8 +116,8 @@ class Article extends \Phramework\JSONAPI\Model
         Filter $filter = null,
         Sort   $sort = null,
         Fields $fields = null,
-        ...$additionalParameters)
-    {
+        ...$additionalParameters
+    ) {
         $articles = [
             [
                 'creator-user_id' => 1,
@@ -139,36 +139,6 @@ class Article extends \Phramework\JSONAPI\Model
 
         return self::collection($articles);
     }
-
-   /* public static function getById($id)
-    {
-        $is_array = is_array($id);
-
-        if (!$is_array) {
-            $id = [$id];
-        }
-
-        $data = Database::executeAndFetchAll(
-            'SELECT * FROM "article"
-            WHERE "status" = 1
-            AND "id" IN (' . implode(',', array_fill(0, count($id), '?')) . ')
-            LIMIT ' . count($id),
-            $id
-        );
-
-        $resources = array_map('static::resource', $data);
-
-        if (!$is_array) {
-
-            if (!$data) {
-                return null;
-            }
-
-            return $resources[0];
-        } else {
-            return $resources;
-        }
-    }*/
 
     public static function getRelationships()
     {

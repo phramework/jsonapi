@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI;
 
+use Exception;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 
@@ -24,19 +25,54 @@ use Phramework\Exceptions\RequestException;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @property object-read $fields
  */
 class Fields
 {
     /**
      * @var object
      */
-    public $fields;
+    protected $fields;
 
+    /**
+     * @return object
+     * @deprecated
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param object|null $fields
+     * @throws \Exception
+     * @example
+     * ```php
+     * new Fields((object)
+     *     Article::getType() => ['title']
+     * ]);
+     * ```
+     * @example
+     * ```php
+     * new Fields((object)
+     *     Article::getType() => ['title', 'updated'],
+     *     Tag::getType()     => ['title']
+     * ]);
+     * ```
+     */
     public function __construct($fields = null)
     {
-        if ($fields !== null) {
+        if ($fields === null) {
             $this->fields = new \stdClass();
         } else {
+            foreach ($fields as $resourceType => $field) {
+                if (!is_array($field)) {
+                    throw new \Exception(sprintf(
+                        'Resource type "%s" fields value expected to be an array',
+                        $resourceType
+                    ));
+                }
+            }
             $this->fields = $fields;
         }
     }
@@ -84,6 +120,18 @@ class Fields
      * @return Fields|null
      * @throws RequestException
      * @throws IncorrectParametersException
+     * @example
+     * ```php
+     * $fields = Fields::parseFromParameters(
+     *     (object) [
+     *         'fields' => [
+     *             Article::getType() => ['title, updated'],
+     *             Tag::getType()     => ['title']
+     *         ]
+     *     ], //Request parameters object
+     *     Article::class
+     * );
+     * ```
      */
     public static function parseFromParameters($parameters, $modelClass)
     {
@@ -93,7 +141,7 @@ class Fields
 
         $fields = new Fields();
 
-        foreach ($parameters->fields as $resourceType => $fieldsValue) {
+        foreach ($parameters->fields as $resourceType => $value) {
             //check if $resourceType allowed,
             //TODO incomplete since we will support 2nd level relationship data inclusion
             if ($modelClass::getType() == $resourceType
@@ -106,7 +154,7 @@ class Fields
                 ));
             }
 
-            if (!is_string($fieldsValue)) {
+            if (!is_string($value)) {
                 throw new IncorrectParametersException(sprintf(
                     'Expecting string value for fields of resource type "%s"',
                     $resourceType
@@ -115,16 +163,36 @@ class Fields
 
             $parsedFields = array_map(
                 'trim',
-                explode(',', trim($fieldsValue))
+                explode(',', trim($value))
             );
 
             //Validate parsedFields
             //TODO
 
             //Push parsed fields
-            $fields->add($parsedFields);
+            $fields->add($resourceType, $parsedFields);
         }
 
         return $fields;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'fields':
+                return $this->fields;
+        }
+
+        $trace = debug_backtrace();
+        trigger_error(
+            'Undefined property via __get(): ' . $name .
+            ' in ' . $trace[0]['file'] .
+            ' on line ' . $trace[0]['line'],
+            E_USER_NOTICE);
+        return null;
     }
 }

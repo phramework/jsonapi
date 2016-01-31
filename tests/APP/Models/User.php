@@ -48,8 +48,8 @@ class User extends \Phramework\JSONAPI\Model
         Filter $filter = null,
         Sort   $sort = null,
         Fields $fields = null,
-        ...$additionalParameters)
-    {
+        ...$additionalParameters
+    ) {
         return self::collection(
             Database::executeAndFetchAll(
                 'SELECT * FROM "user"
@@ -57,18 +57,4 @@ class User extends \Phramework\JSONAPI\Model
             )
         );
     }
-
-    /**
-    public static function getById($id)
-    {
-        return self::resource(
-            Database::executeAndFetch(
-                'SELECT * FROM "user"
-                WHERE "status" = 1
-                AND "id" = ?
-                LIMIT 1',
-                [$id]
-            )
-        );
-    }**/
 }

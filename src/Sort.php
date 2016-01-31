@@ -24,27 +24,32 @@ use Phramework\Exceptions\RequestException;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @todo allow multiple values for sort
+ * @property-read string $table
+ * @property-read bool   $ascending
+ * @property-read string $attribute
  */
 class Sort
 {
     /**
      * @var string
      */
-    public $table;
-    /**
-     * @var string
-     */
-    public $ascending;
+    protected $table;
+
     /**
      * @var bool
      */
-    public $attribute;
+    protected $ascending;
+
+    /**
+     * @var string
+     */
+    protected $attribute;
 
     /**
      * @var
      * @deprecated
      */
-    public $default;
+    protected $default;
 
     /**
      * Sort constructor.
@@ -54,30 +59,26 @@ class Sort
      */
     public function __construct(
         $table,
-        $attribute = [],
+        $attribute = null,
         $ascending = true
     ) {
         $this->table = $table;
-        $this->ascending = $attribute;
-        $this->attribute = $ascending;
-
-        $this->default = null;
-    }
-
-    /**
-     * @param $default
-     * @return $this
-     */
-    public function setDefault($default)
-    {
-        $this->default = $default;
-        return $this;
+        $this->attribute = $attribute;
+        $this->ascending = $ascending;
     }
 
     /**
      * @param object $parameters Request parameters
      * @param string $modelClass
      * @return Sort
+     * ```php
+     * $sort = Sort::parseFromParameters(
+     *     (object) [
+     *         'sort' => '-updated'
+     *     ], //Request parameters object
+     *     Article::class
+     * );
+     * ```
      * @throws RequestException
      */
     public static function parseFromParameters($parameters, $modelClass)
@@ -125,5 +126,29 @@ class Sort
         }
 
         return $sort;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'table':
+                return $this->table;
+            case 'ascending':
+                return $this->ascending;
+            case 'attribute':
+                return $this->attribute;
+        }
+
+        $trace = debug_backtrace();
+        trigger_error(
+            'Undefined property via __get(): ' . $name .
+            ' in ' . $trace[0]['file'] .
+            ' on line ' . $trace[0]['line'],
+            E_USER_NOTICE);
+        return null;
     }
 }

@@ -24,8 +24,14 @@ namespace Phramework\JSONAPI;
  */
 class Relationship
 {
-
+    /**
+     * Relationship type to one resource.
+     */
     const TYPE_TO_ONE  = 1;
+
+    /**
+     * Relationship type to zero, one or more resources.
+     */
     const TYPE_TO_MANY = 2;
 
     /**

@@ -178,5 +178,4 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
     {
         return Fields::parseFromParameters($parameters, static::class);
     }
-
 }

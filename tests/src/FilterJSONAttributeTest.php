@@ -18,7 +18,6 @@ namespace Phramework\JSONAPI;
 
 use Phramework\Models\Operator;
 
-
 /**
  * @coversDefaultClass Phramework\JSONAPI\FilterJSONAttribute
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0

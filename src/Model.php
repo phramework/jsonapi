@@ -592,7 +592,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
             [static::$idAttribute]
         ));
 
-        $escape = function ($input){
+        $escape = function ($input) {
             if ($input === '*') {
                 return $input;
             }
@@ -606,7 +606,8 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
          * - table.id -> "table"."id"
          * and glue them with comma separator
          */
-        $queryPart = implode(',',
+        $queryPart = implode(
+            ',',
             array_map(
                 function ($attribute) use ($escape) {
                     return implode(
