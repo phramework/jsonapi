@@ -16,22 +16,32 @@
  */
 namespace Phramework\JSONAPI\APP\Models;
 
-use \Phramework\Database\Database;
-use \Phramework\JSONAPI\Relationship;
-use \Phramework\Validate\ArrayValidator;
-use \Phramework\Validate\ObjectValidator;
-use \Phramework\Validate\StringValidator;
-use \Phramework\Validate\UnsignedIntegerValidator;
+use Phramework\Database\Database;
+use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\Sort;
+use Phramework\Validate\ArrayValidator;
+use Phramework\Validate\ObjectValidator;
+use Phramework\Validate\StringValidator;
+use Phramework\Validate\UnsignedIntegerValidator;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class User extends \Phramework\JSONAPI\APP\Model
+class NotCachedModel extends \Phramework\JSONAPI\APP\Model
 {
-    protected static $type     = 'user';
-    protected static $endpoint = 'user';
-    protected static $table    = 'user';
+    protected static $type = 'not_cached';
+    protected static $endpoint = 'not_cached';
+    protected static $table = 'not-cached';
+
+    /**
+     * Disable caching
+     * @var bool
+     */
+    static $caching = false;
 
     /**
      * @param Page|null $page       *[Optional]*
@@ -49,7 +59,20 @@ class User extends \Phramework\JSONAPI\APP\Model
         Fields $fields = null,
         ...$additionalParameters
     ) {
-        $records = [];
+        $records = [
+            [
+                'id' => 1,
+                'status' => 1,
+                'title' => 'Tag 1',
+                'created' => null
+            ],
+            [
+                'id' => 2,
+                'status' => 1,
+                'title' => 'Tag 2',
+                'created' => time()
+            ]
+        ];
 
         return self::collection(self::handleGetWithArrayOfRecords(
             $records,

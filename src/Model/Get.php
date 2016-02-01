@@ -70,7 +70,6 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
      *
      * // Will return a valid resource or null in case in's not found
      * ```
-     * @todo make sure call to get method with multiple $additionalParameters will work
      */
     public static function getById($id, Fields $fields = null, ...$additionalParameters)
     {

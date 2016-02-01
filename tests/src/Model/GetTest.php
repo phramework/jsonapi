@@ -25,6 +25,7 @@ use Phramework\JSONAPI\Resource;
  * @coversDefaultClass Phramework\JSONAPI\Model\Get
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @afterClass CacheTest
  */
 class GetTest extends \PHPUnit_Framework_TestCase
 {
@@ -42,22 +43,6 @@ class GetTest extends \PHPUnit_Framework_TestCase
         );
 
         return $collection;
-    }
-
-    /**
-     * @covers ::getCache
-     */
-    public function testGetCache()
-    {
-    }
-
-    /**
-     * @covers ::setCache
-     */
-    public function testSetCache()
-    {
-        //Get with offset (another resource)
-        //$collection = self::get(1, 3);
     }
 
     /**

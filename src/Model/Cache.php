@@ -61,12 +61,15 @@ abstract class Cache extends \Phramework\JSONAPI\Model\Model
     }
 
     /**
+     * *NOTE* Will return a clone of the resource, so any changes to it wont affect the stored in cache resource.
      * @param string $id
      * @return Resource|null
      */
     protected static function getCache($id)
     {
         $type = static::getType();
+
+        $id = (string)$id;
 
         static::initializeCache($type);
 
@@ -76,7 +79,9 @@ abstract class Cache extends \Phramework\JSONAPI\Model\Model
             return null;
         }
 
-        return $collection->{$id};
+        $resource = $collection->{$id};
+
+        return (clone $resource);
     }
 
     /**
@@ -91,6 +96,8 @@ abstract class Cache extends \Phramework\JSONAPI\Model\Model
         }
 
         $type = static::getType();
+
+        $id = (string)$id;
 
         static::initializeCache($type);
 
@@ -108,6 +115,8 @@ abstract class Cache extends \Phramework\JSONAPI\Model\Model
     protected static function invalidateCache($id)
     {
         $type = static::getType();
+
+        $id = (string)$id;
 
         static::initializeCache($type);
 

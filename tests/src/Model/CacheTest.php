@@ -16,10 +16,13 @@
  */
 namespace Phramework\JSONAPI\Model;
 
-use Gitonomy\Git\Reference\Tag;
+use Phramework\JSONAPI\APP\Bootstrap;
 use Phramework\JSONAPI\APP\Models\Article;
+use Phramework\JSONAPI\APP\Models\NotCachedModel;
 use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Resource;
+use Phramework\JSONAPI\Viewers\JSONAPI;
+use Phramework\Phramework;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model\Cache
@@ -45,18 +48,90 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::getCache
+     * @covers ::initializeCache
      */
-    public function testGetCache()
+    public function testInitializeCache()
     {
+
+        Bootstrap::invokeStaticMethod(
+            Article::class,
+            'getCache',
+            ['1']
+        );
     }
 
     /**
      * @covers ::setCache
+     * @after testInitializeCache
      */
     public function testSetCache()
     {
-        //Get with offset (another resource)
-        //$collection = self::get(1, 3);
+        $article = clone Article::getById('1');
+
+        $article->id = 1000;
+
+        $this->assertTrue(Bootstrap::invokeStaticMethod(
+            Article::class,
+            'setCache',
+            [1000, $article]
+        ));
+
+        $articleCached = Bootstrap::invokeStaticMethod(
+            Article::class,
+            'getCache',
+            [1000]
+        );
+
+        $this->assertEquals($article, $articleCached);
+
+
+        $this->assertFalse(Bootstrap::invokeStaticMethod(
+            NotCachedModel::class,
+            'setCache',
+            ['1', NotCachedModel::getById('1')]
+        ), 'Expect false when trying to set cache in a model with disabled caching');
+    }
+
+    /**
+     * @covers ::getCache
+     * @after testInitializeCache
+     */
+    public function testGetCache()
+    {
+        $this->assertInstanceOf(
+            Resource::class,
+            Bootstrap::invokeStaticMethod(
+                Article::class,
+                'getCache',
+                ['1']
+            )
+        );
+
+        $this->assertNull(Bootstrap::invokeStaticMethod(
+            Article::class,
+            'getCache',
+            ['not-found']
+        ));
+    }
+
+    /**
+     * @covers ::invalidateCache
+     * @after testGetCache
+     */
+    public function testInvalidateCache()
+    {
+        Bootstrap::invokeStaticMethod(
+            Article::class,
+            'invalidateCache',
+            [1000]
+        );
+
+        $articleCached = Bootstrap::invokeStaticMethod(
+            Article::class,
+            'getCache',
+            [1000]
+        );
+
+        $this->assertNull($articleCached);
     }
 }

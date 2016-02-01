@@ -35,7 +35,7 @@ use \Phramework\Validate\BooleanValidator;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class Article extends \Phramework\JSONAPI\Model
+class Article extends \Phramework\JSONAPI\APP\Model
 {
     protected static $type     = 'article';
     protected static $endpoint = 'article';
@@ -113,7 +113,6 @@ class Article extends \Phramework\JSONAPI\Model
      * @param mixed ...$additionalParameters *[Optional]*
      * @throws NotImplementedException
      * @return Resource[]
-     * @todo apply Page, Filter and Sort rules to arrays as helper utility
      */
     public static function get(
         Page   $page = null,
@@ -159,22 +158,14 @@ class Article extends \Phramework\JSONAPI\Model
             ]
         ];
 
-        if ($filter !== null) {
-            $records = array_filter(
-                $records,
-                function ($record) use ($filter) {
-                    return in_array($record['id'], $filter->primary, false);
-                }
-            );
-        }
-
-        if ($page !== null) {
-            $records = array_values(
-                array_slice($records, $page->offset, $page->limit)
-            );
-        }
-
-        return self::collection($records);
+        return self::collection(self::handleGetWithArrayOfRecords(
+            $records,
+            $page,
+            $filter,
+            $sort,
+            $fields,
+            ...$additionalParameters
+        ));
     }
 
     public static function getRelationships()
