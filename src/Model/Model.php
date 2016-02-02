@@ -31,6 +31,9 @@ abstract class Model
     /**
      * Model's method prefix, following by ucfirst(type of resource)
      * for example `getRelationshipByInput_template` if is was `input_template`
+     * $resource->id,
+     * $relationshipKey,
+     * $filter
      */
     const GET_RELATIONSHIP_BY_PREFIX = 'getRelationshipBy';
 

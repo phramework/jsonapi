@@ -62,7 +62,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
                         ->setDefault(true)
                 ],
                 ['title']
-            ),
+            ), // Attributes
             new ObjectValidator(
                 [
                     'creator' => new UnsignedIntegerValidator(),
@@ -74,7 +74,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
                 ],
                 ['creator'],
                 false
-            )
+            ) // Relationships
         );
     }
 
@@ -94,6 +94,9 @@ class Article extends \Phramework\JSONAPI\APP\Model
         ]);
     }
 
+    /**
+     * @return array
+     */
     public static function getFilterable()
     {
         return [
@@ -158,14 +161,17 @@ class Article extends \Phramework\JSONAPI\APP\Model
             ]
         ];
 
-        return self::collection(self::handleGetWithArrayOfRecords(
-            $records,
-            $page,
-            $filter,
-            $sort,
-            $fields,
-            ...$additionalParameters
-        ));
+        return self::collection(
+            self::handleGetWithArrayOfRecords(
+                $records,
+                $page,
+                $filter,
+                $sort,
+                $fields,
+                ...$additionalParameters
+            ),
+            $fields
+        );
     }
 
     public static function getRelationships()

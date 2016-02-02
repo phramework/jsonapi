@@ -21,6 +21,8 @@ use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Filter;
 use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\RelationshipResource;
+use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\Sort;
 use Phramework\Validate\ArrayValidator;
 use Phramework\Validate\ObjectValidator;
@@ -116,8 +118,72 @@ class Tag extends \Phramework\JSONAPI\APP\Model
         );
     }
 
-    public static function getRelationshipByArticle($articleId)
-    {
+    /**
+     * @param $articleId
+     * @return RelationshipResource[]
+     */
+    public static function getRelationshipByArticle(
+        $articleId,
+        $relationshipKey,
+        Fields $fields = null,
+        $flags = Resource::PARSE_DEFAULT
+    ) {
+        //*NOTE* idAttribute of tag is `id` so `tag-id` of pairs should be served as `id`
+        $matrix = [
+            [
+                'article-id' => '1',
+                'id'         => '1',
+                'status'     => 'ENABLED'
+            ],
+            [
+                'article-id' => '1',
+                'id'         => '2',
+                'status'     => 'ENABLED'
+            ],
+            [
+                'article-id' => '2',
+                'id'         => '1',
+                'status'     => 'ENABLED'
+            ],
+            [
+                'article-id' => '3',
+                'id'         => '4',
+                'status'     => 'DISABLED'
+            ]
+        ];
+
+        $records = array_filter(
+            $matrix,
+            function ($pair) use ($articleId) {
+                return $pair['article-id'] == $articleId;
+            }
+        );
+
+        $class = static::class;
+
+        /*$resources = array_reduce(
+            $matrix,
+            function ($carry, $item) use ($class) {
+                $carry[] = RelationshipResource::parseFromRecord(
+                    [
+                        'id'     => $item['id'],
+                        'status' => $item['status']
+                    ],
+                    $class
+                );
+
+                return $carry;
+            },
+            []
+        );*/
+
+        return RelationshipResource::parseFromRecords(
+            $records,
+            $class,
+            $fields,
+            $flags
+        );
+
         /*return Database::executeAndFetchAllArray(
             'SELECT "t"."id"
             FROM "article-tag" as "a-t"
@@ -134,6 +200,8 @@ class Tag extends \Phramework\JSONAPI\APP\Model
 
     public static function getRelationships()
     {
+        return new \stdClass();
+
         return (object)[
             'article' => new Relationship(
                 'article-id',

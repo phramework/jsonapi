@@ -92,7 +92,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $page = Page::parseFromParameters(
+        Page::parseFromParameters(
             $parameters,
             Article::class
         );
@@ -110,7 +110,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $page = Page::parseFromParameters(
+        Page::parseFromParameters(
             $parameters,
             Article::class
         );

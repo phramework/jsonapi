@@ -68,172 +68,38 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
     /**
      * Prepare a collection of resources
-     * @param  array[]|\object[] $records Multiple records fetched from database
-     * @param  boolean $links
+     * @param  array[]|object[] $records Multiple records fetched from database
      * [Optional] Write resource and relationship links, defaults is false
      * @return Resource[]
+     * @uses Resource::parseFromRecords
+     * @todo Add example
      */
-    public static function collection($records = [], $links = true)
+    public static function collection($records = [], Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
     {
-        if (!$records) {
-            return [];
-        }
-
-        $collection = [];
-
-        foreach ($records as $record) {
-            //Convert this record to resource object
-            $resource = static::resource($record, $links);
-
-            //Attach links.self to this resource
-            if ($resource) {
-                if ($links) {
-                    //Include links object
-                    $resource->links = [
-                        'self' => static::getSelfLink($resource->id)
-                    ];
-                }
-
-                //Push to collection
-                $collection[] = $resource;
-            }
-
-        }
-
-        return $collection;
+        return Resource::parseFromRecords(
+            $records,
+            static::class,
+            $fields,
+            $flags
+        );
     }
 
     /**
      * Prepare an individual resource
-     * @param  array|\stdClass $record An individual record fetched from database
-     * @param  boolean $links
-     * [Optional] Write resource and relationship links, default is false
+     * @param  array|object $record A single record fetched from database
      * @return Resource|null
      * @throws \Exception
-     * @todo add additional arguments to disabled by default fetching of relationship data
+     * @uses Resource::parseFromRecord
+     * @todo Add example
      */
-    public static function resource($record, $links = true)
+    public static function resource($record, Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
     {
-        if (!$record) {
-            return null;
-        }
-
-        if (!is_object($record) && is_array($record)) {
-            $record = (object)$record;
-        }
-
-        $idAttribute = static::getIdAttribute();
-
-        if (!isset($record->{$idAttribute})) {
-            throw new \Exception(sprintf(
-                'Attribute "%s" is not set for record',
-                $idAttribute
-            ));
-        }
-
-        //Initialize resource
-        $resource = new Resource(
-            static::getType(),
-            (string)$record->{$idAttribute}
+        return Resource::parseFromRecord(
+            $record,
+            static::class,
+            $fields,
+            $flags
         );
-
-        //Delete $idAttribute from attributes
-        unset($record->{$idAttribute});
-
-        //Attach relationships if resource's relationships are set
-        if (($relationships = static::getRelationships())) {
-            //Initialize relationships object
-            //$resource->relationships = new \stdClass();
-
-            //Parse relationships
-            foreach ($relationships as $relationship => $relationshipObject) {
-                //Initialize an new relationship entry object
-                $relationshipEntry = new \stdClass();
-
-                if ($links) {
-                    //Set relationship links
-                    $relationshipEntry->links = [
-                        'self' => static::getSelfLink(
-                            $resource->id . '/relationships/' . $relationship
-                        ),
-                        'related' => static::getSelfLink(
-                            $resource->id . '/' . $relationship
-                        )
-                    ];
-                }
-
-                $attribute = $relationshipObject->getAttribute();
-                $relationshipType = $relationshipObject->getRelationshipType();
-                $type = $relationshipObject->getResourceType();
-
-                if (isset($record->{$attribute}) && $record->{$attribute}) {
-                    //If relationship data exists in record's attributes use them
-
-                    //In case of TYPE_TO_ONE attach single object to data
-                    if ($relationshipType == Relationship::TYPE_TO_ONE) {
-                        $relationshipEntry->data = (object)[
-                            'id' => (string)$record->{$attribute},
-                            'type' => $type
-                        ];
-
-                    //In case of TYPE_TO_MANY attach an array of objects
-                    } elseif ($relationshipType == Relationship::TYPE_TO_MANY) {
-                        $relationshipEntry->data = [];
-
-                        foreach ($record->{$attribute} as $k => $d) {
-                            if (!is_array($d)) {
-                                $d = [$d];
-                            }
-
-                            foreach ($d as $dd) {
-                                //Push object
-                                $relationshipEntry->data[] = (object)[
-                                    'id' => (string)$dd,
-                                    'type' => $type
-                                ];
-                            }
-                        }
-                    }
-                } else {
-                    //Else try to use relationship`s class method to retrieve data
-                    if ($relationshipType == Relationship::TYPE_TO_MANY) {
-                        $callMethod = [
-                            $relationshipObject->getRelationshipClass(),
-                            self::GET_RELATIONSHIP_BY_PREFIX . ucfirst($resource->type)
-                        ];
-                        //Check if method exists
-                        if (is_callable($callMethod)) {
-                            $relationshipEntry->data = [];
-
-                            $relationshipEntryData = call_user_func(
-                                $callMethod,
-                                $resource->id
-                            );
-
-                            foreach ($relationshipEntryData as $k => $d) {
-                                //Push object
-                                $relationshipEntry->data[] = (object)[
-                                    'id' => (string)$d,
-                                    'type' => $type
-                                ];
-                            }
-                        }
-                    }
-                }
-
-                //Unset this attribute (MUST not be visible in resource's attributes)
-                unset($record->{$attribute});
-
-                //Push relationship to relationships
-                $resource->relationships->{$relationship} = $relationshipEntry;
-            }
-        }
-
-        //Attach resource attributes
-        $resource->attributes = (object)$record;
-
-        //Return final resource object
-        return $resource;
     }
 
     /**
