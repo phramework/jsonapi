@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI;
 
+use Symfony\Component\Config\Definition\Exception\Exception;
+
 /**
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -25,6 +27,8 @@ namespace Phramework\JSONAPI;
  */
 class Resource
 {
+    const META_MEMBER_ATTRIBUTE = 'attributes-meta';
+
     const PARSE_DEFAULT            = Resource::PARSE_ATTRIBUTES   | Resource::PARSE_LINKS
                                    | Resource::PARSE_RELATIONSHIP | Resource::PARSE_RELATIONSHIP_LINKS;
 
@@ -95,8 +99,7 @@ class Resource
         $records,
         $modelClass,
         Fields $fields = null,
-        $flags = Resource::PARSE_DEFAULT,
-        $meta = null
+        $flags = Resource::PARSE_DEFAULT
     ) {
         if (empty($records)) {
             return [];
@@ -106,7 +109,7 @@ class Resource
 
         foreach ($records as $record) {
             //Convert this record to resource object
-            $resource = static::parseFromRecord($record, $modelClass, $fields, $flags, $meta);
+            $resource = static::parseFromRecord($record, $modelClass, $fields, $flags);
 
             //Attach links.self to this resource
             if (!empty($resource)) {
@@ -138,13 +141,13 @@ class Resource
      * ```
      * @todo Rewrite relationship code
      * @todo WHAT ABOUT meta?
+     * @todo WHAT ABOUT relationship meta?
      */
     public static function parseFromRecord(
         $record,
         $modelClass,
         Fields $fields = null,
-        $flags = Resource::PARSE_DEFAULT,
-        $meta = null
+        $flags = Resource::PARSE_DEFAULT
     ) {
         if (empty($record)) {
             return null;
@@ -170,7 +173,7 @@ class Resource
             ));
         }
 
-        //Determine which class called parsed method
+        //Determine in which class parse method was called (create a Resource or a RelationshipResource)
         $resourceClass = static::class;
 
         //Initialize resource
@@ -181,6 +184,28 @@ class Resource
 
         //Delete $idAttribute from record's attributes
         unset($record->{$idAttribute});
+
+        //Attach resource resource if META_ATTRIBUTE is available
+        if (isset($record->{Resource::META_MEMBER_ATTRIBUTE})) {
+            $meta = $record->{Resource::META_MEMBER_ATTRIBUTE};
+
+            if (is_array($meta) && Resource::isArrayAssoc($meta)) {
+                $meta = (object) $meta;
+            }
+
+            if (!is_object($meta)) {
+                throw new \Exception(sprintf(
+                    'The value of meta member MUST be an object for resource with id "%s" of type "%s"',
+                    $resource->id,
+                    $resource->type
+                ));
+            }
+
+            //Push meta
+            $resource->meta = $meta;
+
+            unset($record->{Resource::META_MEMBER_ATTRIBUTE});
+        }
 
         //Attach relationships if resource's relationships are set
         if ($flagRelationships && ($relationships = $modelClass::getRelationships())) {
@@ -203,74 +228,104 @@ class Resource
                     ];
                 }
 
-                $attribute = $relationshipObject->getAttribute();
-                $relationshipType = $relationshipObject->getRelationshipType();
-                $type = $relationshipObject->getResourceType();
+                $attribute                = $relationshipObject->getAttribute();
+                $relationshipType         = $relationshipObject->getRelationshipType();
+                $relationshipResourceType = $relationshipObject->getResourceType();
 
-                //If relationship data exists in record's attributes use them
-                if (isset($record->{$attribute}) && $record->{$attribute}) {
+                //Define callback method
+                $callbackMethod = [
+                    $relationshipObject->getRelationshipClass(),
+                    $modelClass::GET_RELATIONSHIP_BY_PREFIX . ucfirst($resource->type)
+                    // TODO https://github.com/phramework/jsonapi/issues/6#issuecomment-178689524
+                ];
 
-                    //In case of TYPE_TO_ONE attach single object to data
-                    if ($relationshipType == Relationship::TYPE_TO_ONE) {
-                        //TODO PARSE AS RESOURCE!
-                        //TODO ALLOW An optional set to handle return item else use plain data ??
-                        $relationshipEntry->data = (object)[
-                            'id' => (string)$record->{$attribute},
-                            'type' => $type
-                        ];
+                //Define callback
+                $callback = function () use
+                (
+                    $callbackMethod,
+                    $resource,
+                    $relationshipKey,
+                    $fields,
+                    $flags
+                ) {
+                    return call_user_func(
+                        $callbackMethod,
+                        $resource->id,
+                        $relationshipKey,
+                        $fields,
+                        $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
+                    );
+                };
 
-                    } elseif ($relationshipType == Relationship::TYPE_TO_MANY) {
+                if ($relationshipType == Relationship::TYPE_TO_ONE) {
 
-                        //In case of TYPE_TO_MANY attach an array of objects
-                        $relationshipEntry->data = [];
+                    $relationshipEntryResource = null;
 
-                        foreach ($record->{$attribute} as $k => $d) {
-                            if (!is_array($d)) {
-                                $d = [$d];
-                            }
-                            //TODO PARSE AS RESOURCE!
-                            foreach ($d as $dd) {
-                                //Push object
-                                $relationshipEntry->data[] = (object)[
-                                    'id' => (string)$dd,
-                                    'type' => $type
-                                ];
-                            }
+                    if (isset($record->{$attribute}) && $record->{$attribute}) { //preloaded
+                        $relationshipEntryResource = $record->{$attribute};
+                    }else if (is_callable($callbackMethod)) { //available from callback
+                        $relationshipEntryResource = $callback();
+                    }
+
+                    if ($relationshipEntryResource !== null) {
+                        //parse
+                        if (is_string($relationshipEntryResource)) {
+                            //If returned $relationshipEntryResource is an id string
+                            $relationshipEntry = new RelationshipResource(
+                                $relationshipResourceType,
+                                (string) $relationshipEntryResource
+                            );
+                        } elseif ($relationshipEntryResource instanceof RelationshipResource) {
+                            //If returned $relationshipEntryResource is RelationshipResource
+                            $relationshipEntry->data = $relationshipEntryResource;
+                        } else {
+                            throw new \Exception(sprintf(
+                                'Unexpected relationship entry resource of relationship "%s",'
+                                . ' expecting string or RelationshipResource "%s" given',
+                                $relationshipKey,
+                                gettype($relationshipEntryResource)
+                            ));
                         }
                     }
-                } else { //Else try to use relationship`s class method to retrieve data
-                    //TODO can there be an optional method to return TO_ONE items?
+                } elseif ($relationshipType == Relationship::TYPE_TO_MANY) {
+                    //Initialize
+                    $relationshipEntry->data = [];
 
-                    if ($relationshipType == Relationship::TYPE_TO_MANY) {
-                        $callMethod = [
-                            $relationshipObject->getRelationshipClass(),
-                            $modelClass::GET_RELATIONSHIP_BY_PREFIX . ucfirst($resource->type)
-                        ];
-                        //Check if method exists
-                        if (is_callable($callMethod)) {
-                            $relationshipEntry->data = [];
+                    $relationshipEntryResources = [];
 
-                            $relationshipEntryResources = call_user_func(
-                                $callMethod,
-                                $resource->id,
-                                $relationshipKey,
-                                $fields,
-                                $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
+                    if (isset($record->{$attribute}) && $record->{$attribute}) { //preloaded
+                        $relationshipEntryResources = $record->{$attribute};
+                    }else if (is_callable($callbackMethod)) { //available from callback
+                        $relationshipEntryResources = $callback();
+                    }
+
+                    if (!is_array($relationshipEntryResources)) {
+                        throw new \Exception(sprintf(
+                            'Expecting array for relationship entry resources of relationship "%s"',
+                            $relationshipKey
+                        ));
+                    }
+
+                    //Parse resources
+
+                    if (Resource::isArrayOf($relationshipEntryResources, 'string')) {
+                        //If returned $relationshipEntryResources are id strings
+                        foreach ($relationshipEntryResources as $relationshipEntryResourceId) {
+                            $relationshipEntry->data[] = new RelationshipResource(
+                                $relationshipResourceType,
+                                (string) $relationshipEntryResourceId
                             );
-
-                            //TODO Can we detect if array of strings or array of resources is returned
-                            //So we can continue to support string[]
-
-                            foreach ($relationshipEntryResources as $k => $d) {
-                                //Push object
-                                $relationshipEntry->data[] = $d;
-
-                                /*(object)[
-                                    'id' => (string)$d,
-                                    'type' => $type
-                                ];*/
-                            }
                         }
+                    } elseif (Resource::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
+                        //If returned $relationshipEntryResources are RelationshipResource
+                        $relationshipEntry->data[] = $relationshipEntryResources;
+                    } else {
+                        throw new \Exception(sprintf(
+                            'Unexpected relationship entry resources of relationship "%s",'
+                            . ' expecting string or RelationshipResource "%s" given',
+                            $relationshipKey,
+                            gettype($relationshipEntryResources[0])
+                        ));
                     }
                 }
 
@@ -297,5 +352,31 @@ class Resource
 
         //Return final resource object
         return $resource;
+    }
+
+    /**
+     * @param array $array
+     * @param string $type
+     * @return bool
+     */
+    public static function isArrayOf(array $array, $type = 'string') {
+        foreach ($array as $value) {
+            $valueType = gettype($value);
+
+            if ($type != $valueType && !(is_object($value) && $value instanceof $type)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $array
+     * @return bool
+     */
+    public static function isArrayAssoc($array)
+    {
+        return array_keys($array) !== range(0, count($array) - 1);
     }
 }

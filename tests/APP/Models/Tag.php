@@ -133,7 +133,10 @@ class Tag extends \Phramework\JSONAPI\APP\Model
             [
                 'article-id' => '1',
                 'id'         => '1',
-                'status'     => 'ENABLED'
+                'status'     => 'ENABLED',
+                Resource::META_MEMBER_ATTRIBUTE => (object) [
+                    'weight' => 100
+                ]
             ],
             [
                 'article-id' => '1',

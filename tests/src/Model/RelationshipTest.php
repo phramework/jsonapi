@@ -34,7 +34,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRelationshipData()
     {
-        $articles = Article::get(new Page(1))[0];
+        $articles = Article::get(new Page(1, 1))[0];
 
         print_r($articles);
 

@@ -21,6 +21,7 @@ use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Filter;
 use Phramework\JSONAPI\Page;
 use \Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\Sort;
 use Phramework\JSONAPI\ValidationModel;
 use Phramework\Models\Operator;
@@ -127,25 +128,34 @@ class Article extends \Phramework\JSONAPI\APP\Model
         $records = [
             [
                 'id' => '1',
-                'creator-user_id' => 1,
+                'creator-user_id' => '1',
                 'status' => 1,
                 'title' => 'First post',
                 'updated' => null,
                 'meta' => (object) [
                     'keywords' => 'blog'
+                ],
+                Resource::META_MEMBER_ATTRIBUTE => (object) [
+                    'view'  => 1000,
+                    'unique' => 100
                 ]
             ],
             [
                 'id' => '2',
-                'creator-user_id' => 1,
+                'creator-user_id' => '1',
                 'status' => 1,
                 'title' => 'Second post',
                 'updated' => time(),
-                'meta' => null
+                'meta' => null,
+                Resource::META_MEMBER_ATTRIBUTE => [
+                    'some_key' => [
+                        1, 2, 3
+                    ]
+                ]
             ],
             [
                 'id' => '3',
-                'creator-user_id' => 2,
+                'creator-user_id' => '2',
                 'status' => 1,
                 'title' => 'Third post',
                 'updated' => time() + 100,
@@ -153,7 +163,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
             ],
             [
                 'id' => '4',
-                'creator-user_id' => 1,
+                'creator-user_id' => '1',
                 'status' => 0,
                 'title' => 'Fourth post',
                 'updated' => time() + 1000,
