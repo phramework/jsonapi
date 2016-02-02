@@ -16,8 +16,6 @@
  */
 namespace Phramework\JSONAPI\APP\Models;
 
-namespace APP\Models;
-
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Page;

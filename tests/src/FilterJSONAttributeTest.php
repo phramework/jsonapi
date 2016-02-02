@@ -53,7 +53,7 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__get
      */
-    public function test__get()
+    public function testGet()
     {
         $this->assertSame(
             'keywords',
@@ -63,10 +63,10 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__get
-     * @expectedException PHPUnit_Framework_Error_Notice
+     * @expectedException \Exception
      */
-    public function test__getFailure()
+    public function testGetFailure()
     {
-        $this->assertNull($this->filterAttribute->{'not-found'});
+        $this->filterAttribute->{'not-found'};
     }
 }

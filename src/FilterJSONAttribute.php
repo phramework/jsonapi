@@ -55,6 +55,7 @@ class FilterJSONAttribute extends FilterAttribute
     /**
      * @param string $name
      * @return mixed
+     * @throws \Exception
      */
     public function __get($name)
     {

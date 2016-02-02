@@ -165,7 +165,7 @@ class SortTest extends \PHPUnit_Framework_TestCase
      * @param mixed $expected
      * @dataProvider getAvailableProperties
      */
-    public function test__get($property, $expected)
+    public function testGet($property, $expected)
     {
         $sort = new Sort(Article::getTable());
 
@@ -174,11 +174,11 @@ class SortTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__get
-     * @expectedException PHPUnit_Framework_Error_Notice
+     * @expectedException \Exception
      */
-    public function test__getFailure()
+    public function testGetFailure()
     {
         $sort = new Sort(Article::getTable());
-        $this->assertNull($sort->{'not-found'});
+        $sort->{'not-found'};
     }
 }

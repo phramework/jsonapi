@@ -122,7 +122,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
      * @param mixed $expected
      * @dataProvider getAvailableProperties
      */
-    public function test__get($property, $expected)
+    public function testGet($property, $expected)
     {
         $page = new Page();
 
@@ -131,12 +131,12 @@ class PageTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__get
-     * @expectedException PHPUnit_Framework_Error_Notice
+     * @expectedException \Exception
      */
-    public function test__getFailure()
+    public function testGetFailure()
     {
         $page = new Page();
 
-        $this->assertNull($page->{'not-found'});
+        $page->{'not-found'};
     }
 }

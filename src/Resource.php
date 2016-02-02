@@ -22,12 +22,12 @@ use Symfony\Component\Config\Definition\Exception\Exception;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @todo add magic set and get, set will instantiate a property if it's null, to reduce output of json to minimal required
- *
+ * @todo add magic set and get, set will instantiate a property
+ * if it's null, to reduce output of json to minimal required
  */
 class Resource
 {
-    const META_MEMBER_ATTRIBUTE = 'attributes-meta';
+    const META_MEMBER = 'attributes-meta';
 
     const PARSE_DEFAULT            = Resource::PARSE_ATTRIBUTES   | Resource::PARSE_LINKS
                                    | Resource::PARSE_RELATIONSHIP | Resource::PARSE_RELATIONSHIP_LINKS;
@@ -105,13 +105,13 @@ class Resource
             return [];
         }
 
+        //Initialize collection
         $collection = [];
 
         foreach ($records as $record) {
-            //Convert this record to resource object
+            //Parse resource from record
             $resource = static::parseFromRecord($record, $modelClass, $fields, $flags);
 
-            //Attach links.self to this resource
             if (!empty($resource)) {
                 //Push to collection
                 $collection[] = $resource;
@@ -186,10 +186,10 @@ class Resource
         unset($record->{$idAttribute});
 
         //Attach resource resource if META_ATTRIBUTE is available
-        if (isset($record->{Resource::META_MEMBER_ATTRIBUTE})) {
-            $meta = $record->{Resource::META_MEMBER_ATTRIBUTE};
+        if (isset($record->{Resource::META_MEMBER})) {
+            $meta = $record->{Resource::META_MEMBER};
 
-            if (is_array($meta) && Resource::isArrayAssoc($meta)) {
+            if (is_array($meta) && Util::isArrayAssoc($meta)) {
                 $meta = (object) $meta;
             }
 
@@ -204,7 +204,7 @@ class Resource
             //Push meta
             $resource->meta = $meta;
 
-            unset($record->{Resource::META_MEMBER_ATTRIBUTE});
+            unset($record->{Resource::META_MEMBER});
         }
 
         //Attach relationships if resource's relationships are set
@@ -240,8 +240,7 @@ class Resource
                 ];
 
                 //Define callback
-                $callback = function () use
-                (
+                $callback = function () use (
                     $callbackMethod,
                     $resource,
                     $relationshipKey,
@@ -263,7 +262,7 @@ class Resource
 
                     if (isset($record->{$attribute}) && $record->{$attribute}) { //preloaded
                         $relationshipEntryResource = $record->{$attribute};
-                    }else if (is_callable($callbackMethod)) { //available from callback
+                    } elseif (is_callable($callbackMethod)) { //available from callback
                         $relationshipEntryResource = $callback();
                     }
 
@@ -295,7 +294,7 @@ class Resource
 
                     if (isset($record->{$attribute}) && $record->{$attribute}) { //preloaded
                         $relationshipEntryResources = $record->{$attribute};
-                    }else if (is_callable($callbackMethod)) { //available from callback
+                    } elseif (is_callable($callbackMethod)) { //available from callback
                         $relationshipEntryResources = $callback();
                     }
 
@@ -308,7 +307,7 @@ class Resource
 
                     //Parse resources
 
-                    if (Resource::isArrayOf($relationshipEntryResources, 'string')) {
+                    if (Util::isArrayOf($relationshipEntryResources, 'string')) {
                         //If returned $relationshipEntryResources are id strings
                         foreach ($relationshipEntryResources as $relationshipEntryResourceId) {
                             $relationshipEntry->data[] = new RelationshipResource(
@@ -316,7 +315,7 @@ class Resource
                                 (string) $relationshipEntryResourceId
                             );
                         }
-                    } elseif (Resource::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
+                    } elseif (Util::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
                         //If returned $relationshipEntryResources are RelationshipResource
                         $relationshipEntry->data[] = $relationshipEntryResources;
                     } else {
@@ -347,36 +346,11 @@ class Resource
             $resource->links = (object) [
                 'self' => $modelClass::getSelfLink(
                     $resource->id
-            )];
+                )
+            ];
         }
 
         //Return final resource object
         return $resource;
-    }
-
-    /**
-     * @param array $array
-     * @param string $type
-     * @return bool
-     */
-    public static function isArrayOf(array $array, $type = 'string') {
-        foreach ($array as $value) {
-            $valueType = gettype($value);
-
-            if ($type != $valueType && !(is_object($value) && $value instanceof $type)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $array
-     * @return bool
-     */
-    public static function isArrayAssoc($array)
-    {
-        return array_keys($array) !== range(0, count($array) - 1);
     }
 }

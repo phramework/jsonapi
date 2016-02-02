@@ -399,7 +399,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      * @param mixed $expected
      * @dataProvider getAvailableProperties
      */
-    public function test__get($property, $expected)
+    public function testGet($property, $expected)
     {
         $filter = new Filter();
 
@@ -408,12 +408,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__get
-     * @expectedException PHPUnit_Framework_Error_Notice
+     * @expectedException \Exception
      */
-    public function test__getFailure()
+    public function testGetFailure()
     {
         $filter = new Filter();
 
-        $this->assertNull($filter->{'not-found'});
+        $filter->{'not-found'};
     }
 }

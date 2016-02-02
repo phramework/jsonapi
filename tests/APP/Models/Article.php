@@ -135,7 +135,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
                 'meta' => (object) [
                     'keywords' => 'blog'
                 ],
-                Resource::META_MEMBER_ATTRIBUTE => (object) [
+                Resource::META_MEMBER => (object) [
                     'view'  => 1000,
                     'unique' => 100
                 ]
@@ -147,7 +147,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
                 'title' => 'Second post',
                 'updated' => time(),
                 'meta' => null,
-                Resource::META_MEMBER_ATTRIBUTE => [
+                Resource::META_MEMBER => [
                     'some_key' => [
                         1, 2, 3
                     ]

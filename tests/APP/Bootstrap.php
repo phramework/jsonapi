@@ -76,7 +76,8 @@ class Bootstrap
      * @param array  $parameters Array of parameters to pass into method.
      *
      * @return mixed Method return.
-     * @link https://jtreminio.com/2013/03/unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
+     * @link https://jtreminio.com/2013/03/
+     * unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
      */
     public static function invokeMethod(&$object, $methodName, array $parameters = [])
     {
@@ -93,7 +94,8 @@ class Bootstrap
      * @param array  $parameters Array of parameters to pass into method.
      *
      * @return mixed Method return.
-     * @link https://jtreminio.com/2013/03/unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
+     * @link https://jtreminio.com/2013/03/
+     * unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
      */
     public static function invokeStaticMethod($class, $methodName, array $parameters = [])
     {

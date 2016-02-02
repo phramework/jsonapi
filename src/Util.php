@@ -16,42 +16,38 @@
  */
 namespace Phramework\JSONAPI;
 
-use Phramework\JSONAPI\APP\Models\Article;
-use Phramework\JSONAPI\APP\Models\Tag;
-
 /**
- * @coversDefaultClass Phramework\JSONAPI\Resource
+ * Sort helper methods
+ * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class Util
 {
     /**
-     * @covers ::__construct
+     * @param array $array
+     * @param string $type
+     * @return bool
      */
-    public function testConstruct()
+    public static function isArrayOf(array $array, $type = 'string')
     {
-        new Resource(
-            Article::getType(),
-            'id'
-        );
+        foreach ($array as $value) {
+            $valueType = gettype($value);
+
+            if ($type != $valueType && !(is_object($value) && $value instanceof $type)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
-     * @covers ::parseFromRecords
+     * @param array $array
+     * @return bool
      */
-    public function testParseFromRecords()
+    public static function isArrayAssoc(array $array)
     {
-        $articles = Article::get();
-    }
-
-    /**
-     * @covers ::parseFromRecord
-     */
-    public function testParseFromRecord()
-    {
-        $tags = Tag::get();
-
-        $articles = Article::get();
+        return array_keys($array) !== range(0, count($array) - 1);
     }
 }

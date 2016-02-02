@@ -66,7 +66,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $attributeValidator = $modelClass::getValidationModel()->attributes;
 
         if ($attributeValidator === null) {
-
+            //TODO ???
         }
 
         foreach ($modelClass::getMutable() as $mutable) {
@@ -87,14 +87,16 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $requestAttributes = static::getRequestAttributes($params);
 
         $attributes = $validator->parse($requestAttributes);
+        $attributesCount = 0;
 
         foreach ($attributes as $key => $attribute) {
             if ($attribute === null) {
                 unset($attributes->{$key});
             }
+            ++$attributesCount;
         }
 
-        if (count($attributes) === 0) {
+        if ($attributesCount === 0) {
             throw new RequestException('No fields updated');
         }
 
@@ -104,7 +106,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         //Check if resource exists
         static::exists($data);
 
-        $patch = $modelClass::patch($id, (array)$attributes);
+        $patch = $modelClass::patch($id, (array) $attributes);
 
         static::viewData(
             $modelClass::resource(['id' => $id]),

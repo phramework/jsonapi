@@ -41,7 +41,7 @@ class NotCachedModel extends \Phramework\JSONAPI\APP\Model
      * Disable caching
      * @var bool
      */
-    static $caching = false;
+    protected static $caching = false;
 
     /**
      * @param Page|null $page       *[Optional]*

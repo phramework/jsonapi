@@ -179,6 +179,7 @@ class Fields
     /**
      * @param string $name
      * @return mixed
+     * @throws \Exception
      */
     public function __get($name)
     {
@@ -187,12 +188,9 @@ class Fields
                 return $this->fields;
         }
 
-        $trace = debug_backtrace();
-        trigger_error(
-            'Undefined property via __get(): ' . $name .
-            ' in ' . $trace[0]['file'] .
-            ' on line ' . $trace[0]['line'],
-            E_USER_NOTICE);
-        return null;
+        throw new \Exception(sprintf(
+            'Undefined property via __get(): %s',
+            $name
+        ));
     }
 }

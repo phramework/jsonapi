@@ -66,7 +66,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
      * @param mixed  $expected
      * @dataProvider getAvailableProperties
      */
-    public function test__get($property, $expected)
+    public function testGet($property, $expected)
     {
         $this->assertSame(
             $this->filterAttribute->{$property},
@@ -76,10 +76,10 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__get
-     * @expectedException PHPUnit_Framework_Error_Notice
+     * @expectedException \Exception
      */
-    public function test__getFailure()
+    public function testGetFailure()
     {
-        $this->assertNull($this->filterAttribute->{'not-found'});
+        $this->filterAttribute->{'not-found'};
     }
 }
