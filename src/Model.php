@@ -821,6 +821,26 @@ abstract class Model
                             : $operator
                         )
                     );
+                } elseif (in_array($operator, Operator::getInArrayOperators())) {
+                    //Define a transformation matrix, operator to SQL operator
+                    $transformation = [
+                        Operator::OPERATOR_IN_ARRAY => '= ANY',
+                        Operator::OPERATOR_NOT_IN_ARRAY => '!= ANY'
+                    ];
+
+                    $additionalFilter[] = sprintf( //$operand ANY (array)
+                        '%s \'%s\' %s("%s"."%s") ',
+                        ($hasWhere ? 'AND' : 'WHERE'),
+                        $operant,
+                        (
+                        array_key_exists($operator, $transformation)
+                            ? $transformation[$operator]
+                            : $operator
+                        ),
+                        static::$table,
+                        $key
+                    );
+                    $hasWhere = true;
                 } elseif (in_array($operator, Operator::getLikeOperators())) {
                     //Define a transformation matrix, operator to SQL operator
                     $transformation = [
