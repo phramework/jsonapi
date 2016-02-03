@@ -47,7 +47,6 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
     protected function prepare()
     {
-        return;
         //ob_start();
         $_SERVER['REQUEST_URI'] = '/article/';
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_POST;
@@ -114,8 +113,6 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     public function testPOSTSuccess()
     {
-        return;
-
         $this->prepare();
         //ob_clean();
         $this->phramework->invoke();
@@ -123,6 +120,8 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         //ob_end_clean();
         //Access parameters written by invoked phramework's viewer
         $params = $this->params;
+
+        var_dump($params);
 
         $this->assertInternalType('object', $params);
 

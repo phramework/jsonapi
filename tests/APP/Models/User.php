@@ -17,7 +17,13 @@
 namespace Phramework\JSONAPI\APP\Models;
 
 use \Phramework\Database\Database;
-use \Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\RelationshipResource;
+use Phramework\JSONAPI\Resource;
+use Phramework\JSONAPI\Sort;
 use \Phramework\Validate\ArrayValidator;
 use \Phramework\Validate\ObjectValidator;
 use \Phramework\Validate\StringValidator;
@@ -32,6 +38,19 @@ class User extends \Phramework\JSONAPI\APP\Model
     protected static $type     = 'user';
     protected static $endpoint = 'user';
     protected static $table    = 'user';
+
+    public static $records = [
+        [
+            'id'       => '1',
+            'username' => 'nohponex',
+            'email'    => 'nohponex@gmail.com'
+        ],
+        [
+            'id'       => '1',
+            'username' => 'alkallio',
+            'email'    => 'alkallio@gmail.com'
+        ]
+    ];
 
     /**
      * @param Page|null $page       *[Optional]*
@@ -49,15 +68,25 @@ class User extends \Phramework\JSONAPI\APP\Model
         Fields $fields = null,
         ...$additionalParameters
     ) {
-        $records = [];
+
 
         return self::collection(self::handleGetWithArrayOfRecords(
-            $records,
+            self::$records,
             $page,
             $filter,
             $sort,
             $fields,
             ...$additionalParameters
         ));
+    }
+
+    /**
+     * TYPE_TO_ONE callback
+     * @param $articleId
+     * @return string
+     */
+    public static function getRelationshipByArticle($articleId)
+    {
+        return '1';
     }
 }

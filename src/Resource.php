@@ -274,7 +274,7 @@ class Resource
                                 $relationshipResourceType,
                                 (string) $relationshipEntryResource
                             );
-                        } elseif ($relationshipEntryResource instanceof RelationshipResource) {
+                        } elseif ($relationshipEntryResource instanceof Resource) {
                             //If returned $relationshipEntryResource is RelationshipResource
                             $relationshipEntry->data = $relationshipEntryResource;
                         } else {
@@ -315,7 +315,7 @@ class Resource
                                 (string) $relationshipEntryResourceId
                             );
                         }
-                    } elseif (Util::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
+                    } elseif (Util::isArrayOf($relationshipEntryResources, Resource::class)) {
                         //If returned $relationshipEntryResources are RelationshipResource
                         $relationshipEntry->data[] = $relationshipEntryResources;
                     } else {

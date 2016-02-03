@@ -18,6 +18,7 @@ namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
+use Phramework\JSONAPI\APP\Models\User;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Resource
@@ -53,5 +54,128 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $tags = Tag::get();
 
         $articles = Article::get();
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     */
+    public function testParseFromRecordEmpty()
+    {
+        $this->assertNull(Tag::resource(null));
+        $this->assertNull(Tag::resource([]));
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     */
+    public function testParseFromRecordSuccessToOnePreloaded()
+    {
+        Article::resource([
+            'id' => '1',
+            'creator-user_id' => '1'
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     */
+    public function testParseFromRecordSuccessToOnePreloadedResource()
+    {
+        $creator = User::resource(User::$records[0]);
+
+        Article::resource([
+            'id' => '1',
+            'creator-user_id' => $creator
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     */
+    public function testParseFromRecordSuccessToOneUseCallback()
+    {
+        Article::resource([
+            'id' => '1'
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     */
+    public function testParseFromRecordSuccessToManyPreloaded()
+    {
+        Article::resource([
+            'id' => '1',
+            'tag-id' => ['1', '2']
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
+    public function testParseFromRecordFailureNoIdAttributeSetInRecord()
+    {
+        Tag::resource(['title' => 'true']);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
+    public function testParseFromRecordFailureMetaNotAnObject()
+    {
+        Tag::resource([
+            'id' => '1',
+            Resource::META_MEMBER => 5
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
+    public function testParseFromRecordFailureMetaNotAnObject2()
+    {
+        Tag::resource([
+            'id' => '1',
+            Resource::META_MEMBER => [1, 2, 3]
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
+    public function testParseFromRecordFailureToManyNotAnStringOrResource()
+    {
+        Article::resource([
+            'id' => '1',
+            'creator-user_id' => new \stdClass()
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
+    public function testParseFromRecordFailureToManyNotAnArray()
+    {
+        Article::resource([
+            'id' => '1',
+            'tag-id' => 5
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
+    public function testParseFromRecordFailureToManyNotAnArrayOfStringsOrAttributes()
+    {
+        Article::resource([
+            'id' => '1',
+            'tag-id' => [new \stdClass(), 5]
+        ]);
     }
 }

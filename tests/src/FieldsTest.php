@@ -219,4 +219,24 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
             Article::class
         );
     }
+
+    /**
+     * @covers ::__get
+     */
+    public function testMagicGet()
+    {
+        $fields = new Fields();
+
+        $this->assertInternalType('object', $fields->fields);
+    }
+
+    /**
+     * @covers ::__get
+     * @expectedException \Exception
+     */
+    public function testMagicGetFailure()
+    {
+        $fields = new Fields();
+        $fields->{'not-found'};
+    }
 }

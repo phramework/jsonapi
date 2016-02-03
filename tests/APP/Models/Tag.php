@@ -201,6 +201,9 @@ class Tag extends \Phramework\JSONAPI\APP\Model
         return [];
     }
 
+    /**
+     * @todo
+     */
     public static function getRelationships()
     {
         return new \stdClass();
