@@ -34,7 +34,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     {
         $articles = Article::get(new Page(1, 1))[0];
 
-        print_r($articles);
+        //print_r($articles);
 
         $relationship = Tag::getRelationshipByArticle(
             '1',
@@ -42,6 +42,6 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             null
         );
 
-        print_r($relationship);
+        //print_r($relationship);
     }
 }

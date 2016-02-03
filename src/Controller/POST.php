@@ -17,9 +17,11 @@
 namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\Controller\POST\QueueItem;
+use Phramework\JSONAPI\Util;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 use \Phramework\JSONAPI\Relationship;
+use Phramework\Validate\ObjectValidator;
 
 /**
  * POST related methods
@@ -44,6 +46,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * so that any exceptions can be thrown, and finally invoke the execution of the queue.
      * @uses $modelClass::post method to create resources
      * @return int[]
+     * @todo validate type
      */
     protected static function handlePOST(
         $params,
@@ -59,7 +62,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $data = static::getRequestData($params);
 
         //Treat single requests as an array of resources
-        if (!is_array($data)) {
+        if (is_object($data) || is_array($data) && Util::isArrayAssoc($data)) {
             $data = [$data];
         }
 
@@ -68,7 +71,11 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 $resource = (object)$resource;
             }
 
-            $requestAttributes = $resource->attributes;
+            $requestAttributes = (
+                isset($resource->attributes) && $resource->attributes
+                ? $resource->attributes
+                : new \stdClass()
+            );
 
             if (property_exists($resource, 'relationships')) {
                 $requestRelationships = $resource->relationships;
@@ -126,6 +133,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $ids[] = $id;
         }
 
+        return $ids;
+
         if (count($ids) === 1) {
             //Prepare response with 201 Created status code
             \Phramework\Models\Response::created(
@@ -170,10 +179,17 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $validationCallbacks,
         $requestRelationships
     ) {
-        $validationModel = $modelClass::getValidationModel();
+        $validator = $modelClass::getValidationModel();
+
+        $attributesValidator = (
+            isset($validator->attributes) && $validator->attributes
+            ? $validator->attributes
+            : new ObjectValidator()
+        );
+
 
         //Parse request attributes using $validationModel to validate the data
-        $attributes = $validationModel->attributes->parse($requestAttributes);
+        $attributes = $attributesValidator->parse($requestAttributes);
 
         $relationships = $modelClass::getRelationships();
 
@@ -193,6 +209,11 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
          * - copy ids to $relationshipAttributes object
          */
         foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
+            //Work with objects
+            if (is_array($relationshipValue)) {
+                $relationshipValue = (object) $relationshipValue;
+            }
+
             if (!isset($relationshipValue->data)) {
                 throw new RequestException(sprintf(
                     'Relationship "%s" must have a member data defined',
@@ -201,6 +222,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
 
             $relationshipData = $relationshipValue->data;
+
+            if (is_array($relationshipData) && Util::isArrayAssoc($relationshipData)) {
+                $relationshipData = (object) $relationshipData;
+            }
 
             //Check if relationship exists
             static::exists(
@@ -252,18 +277,24 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 }
 
                 foreach ($relationshipData as $value) {
+                    if (is_array($value) && Util::isArrayAssoc($value)) {
+                        $value = (object) $value;
+                    }
+
                     if (!is_object($value)) {
                         throw new RequestException(sprintf(
                             'Expected data properties to be object for relationship "%s"',
                             $relationshipKey
                         ));
                     }
+
                     if (!isset($value->id) || !isset($value->type)) {
                         throw new RequestException(sprintf(
                             'Attributes "id" and "type" required for relationship "%s"',
                             $relationshipKey
                         ));
                     }
+
                     if ($value->type !== $relationshipResourceType) {
                         throw new RequestException(sprintf(
                             'Invalid resource type "%s" for relationship "%s"',
@@ -271,6 +302,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                             $relationshipKey
                         ));
                     }
+
                     $parsedValues[] = $value->id;
                 }
 
@@ -284,8 +316,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         //Parse attributes using relationship's validation model
         $parsedRelationshipAttributes =
         (
-            isset($validationModel->relationships)
-            ? $validationModel->relationships->parse(
+            isset($validator->relationships)
+            ? $validator->relationships->parse(
                 $relationshipAttributes
             )
             : new \stdClass()
@@ -409,9 +441,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                     );
                 }
 
-
                 //Push to queueRelationships
-                $queueRelationships->{$relationshipKey} = (object)[
+                $queueRelationships->{$relationshipKey} = (object) [
                     'callback' => $relationshipCallMethod, //callable
                     'resources' => $parsedRelationshipValue //array
                 ];

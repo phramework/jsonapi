@@ -125,55 +125,9 @@ class Article extends \Phramework\JSONAPI\APP\Model
         Fields $fields = null,
         ...$additionalParameters
     ) {
-        $records = [
-            [
-                'id' => '1',
-                'creator-user_id' => '1',
-                'status' => 1,
-                'title' => 'First post',
-                'updated' => null,
-                'meta' => (object) [
-                    'keywords' => 'blog'
-                ],
-                Resource::META_MEMBER => (object) [
-                    'view'  => 1000,
-                    'unique' => 100
-                ]
-            ],
-            [
-                'id' => '2',
-                'creator-user_id' => '1',
-                'status' => 1,
-                'title' => 'Second post',
-                'updated' => time(),
-                'meta' => null,
-                Resource::META_MEMBER => [
-                    'some_key' => [
-                        1, 2, 3
-                    ]
-                ]
-            ],
-            [
-                'id' => '3',
-                'creator-user_id' => '2',
-                'status' => 1,
-                'title' => 'Third post',
-                'updated' => time() + 100,
-                'meta' => null
-            ],
-            [
-                'id' => '4',
-                'creator-user_id' => '1',
-                'status' => 0,
-                'title' => 'Fourth post',
-                'updated' => time() + 1000,
-                'meta' => null
-            ]
-        ];
-
         return self::collection(
             self::handleGetWithArrayOfRecords(
-                $records,
+                static::getRecords(),
                 $page,
                 $filter,
                 $sort,
@@ -201,6 +155,67 @@ class Article extends \Phramework\JSONAPI\APP\Model
                 Tag::class,
                 'id'
             )
+        ];
+    }
+
+    public static function post(
+        $attributes,
+        $return = \Phramework\Database\Operations\Create::RETURN_ID
+    ) {
+        $records = static::getRecords();
+
+        return $records[0]['id'];
+    }
+
+
+    public static function getRecords()
+    {
+        return [
+            [
+                'id' => '1',
+                'creator-user_id' => '1',
+                'status' => 1,
+                'title' => 'First post',
+                'updated' => null,
+                'meta' => (object)[
+                    'keywords' => 'blog'
+                ],
+                Resource::META_MEMBER => (object)[
+                    'view' => 1000,
+                    'unique' => 100
+                ]
+            ],
+            [
+                'id' => '2',
+                'creator-user_id' => '1',
+                'status' => 1,
+                'title' => 'Second post',
+                'updated' => time(),
+                'meta' => null,
+                Resource::META_MEMBER => [
+                    'some_key' => [
+                        1,
+                        2,
+                        3
+                    ]
+                ]
+            ],
+            [
+                'id' => '3',
+                'creator-user_id' => '2',
+                'status' => 1,
+                'title' => 'Third post',
+                'updated' => time() + 100,
+                'meta' => null
+            ],
+            [
+                'id' => '4',
+                'creator-user_id' => '1',
+                'status' => 0,
+                'title' => 'Fourth post',
+                'updated' => time() + 1000,
+                'meta' => null
+            ]
         ];
     }
 }

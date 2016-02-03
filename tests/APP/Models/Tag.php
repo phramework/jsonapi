@@ -106,7 +106,7 @@ class Tag extends \Phramework\JSONAPI\APP\Model
         $additionalAttributes = null,
         $return = \Phramework\Database\Operations\Create::RETURN_NUMBER_OF_RECORDS
     ) {
-        return \Phramework\Database\Operations\Create::create(
+        /*return \Phramework\Database\Operations\Create::create(
             [
                 'tag-id' => $tagId,
                 'article-id' => $articleId,
@@ -115,7 +115,8 @@ class Tag extends \Phramework\JSONAPI\APP\Model
             'article-tag',
             static::getSchema(),
             $return
-        );
+        );*/
+        return 1;
     }
 
     /**

@@ -52,6 +52,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_POST;
 
         $_POST['data'] = [
+            'type' => 'article',
             'attributes' => [
                 'title' => 'omg'
             ],
@@ -90,6 +91,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
                 $that->params = $parameters;
             }
         );
+
         // clean the output buffer
         //ob_clean();
         //$this->phramework->invoke();
@@ -109,6 +111,14 @@ class POSTTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Phramework\JSONAPI\Controller\POST::handlePOSTResource
+     */
+    public function testHandlePOSTResource()
+    {
+        $this->testPOSTSuccess();
+    }
+
+    /**
      * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
      */
     public function testPOSTSuccess()
@@ -121,7 +131,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         //Access parameters written by invoked phramework's viewer
         $params = $this->params;
 
-        var_dump($params);
+        print_r([$params]);
 
         $this->assertInternalType('object', $params);
 
