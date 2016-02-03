@@ -36,7 +36,6 @@ class Resource
     const PARSE_LINKS                   = 2;
     const PARSE_RELATIONSHIP            = 4;
     const PARSE_RELATIONSHIP_LINKS      = 8;
-    const PARSE_RELATIONSHIP_ATTRIBUTES = 64;
 
     /**
      * @deprecated
@@ -165,7 +164,6 @@ class Resource
         $flagLinks                   = ($flags & Resource::PARSE_LINKS                  ) != 0;
         $flagRelationships           = ($flags & Resource::PARSE_RELATIONSHIP           ) != 0;
         $flagRelationshipsLinks      = ($flags & Resource::PARSE_RELATIONSHIP_LINKS     ) != 0;
-        $flagRelationshipsAttributes = ($flags & Resource::PARSE_RELATIONSHIP_ATTRIBUTES) != 0;
 
         //Work with objects
         if (!is_object($record) && is_array($record)) {
@@ -240,10 +238,12 @@ class Resource
                 $relationshipType         = $relationshipObject->type;
                 $recordDataAttribute      = $relationshipObject->recordDataAttribute;
 
-                //$attribute                = $relationshipModelClass::getIdAttribute();
                 $relationshipResourceType = $relationshipModelClass::getType();
 
                 //Define callback to fetch data
+                /**
+                 * @return string[]|RelationshipResource[]
+                 */
                 $dataCallback = function () use (
                     $relationshipObject,
                     $resource,
@@ -278,7 +278,7 @@ class Resource
                                 $relationshipResourceType,
                                 (string) $relationshipEntryResource
                             );
-                        } elseif ($relationshipEntryResource instanceof Resource) {
+                        } elseif ($relationshipEntryResource instanceof RelationshipResource) {
                             //If returned $relationshipEntryResource is RelationshipResource
                             $relationshipEntry->data = $relationshipEntryResource;
                         } else {
@@ -319,7 +319,7 @@ class Resource
                                 (string) $relationshipEntryResourceId
                             );
                         }
-                    } elseif (Util::isArrayOf($relationshipEntryResources, Resource::class)) {
+                    } elseif (Util::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
                         //If returned $relationshipEntryResources are RelationshipResource
                         $relationshipEntry->data[] = $relationshipEntryResources;
                     } else {

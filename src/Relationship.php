@@ -30,7 +30,13 @@ namespace Phramework\JSONAPI;
 class Relationship
 {
     const FLAG_DEFAULT = 0;
+    /**
+     * @deprecated because relationships should not have attributes
+     */
     const FLAG_ATTRIBUTES = 1;
+    /**
+     * Include relationship by default
+     */
     const FLAG_INCLUDE_BY_DEFAULT = 32;
 
     /**

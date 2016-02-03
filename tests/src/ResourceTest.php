@@ -102,6 +102,20 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecord
      */
+    public function testParseFromRecordSuccessToOnePreloadedRelationshipResource()
+    {
+        $creator = RelationshipResource::parseFromRecord(User::$records[0], User::class);
+
+        Article::resource([
+            'id' => '1',
+            'creator-user_id' => $creator
+        ]);
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
     public function testParseFromRecordSuccessToOnePreloadedResource()
     {
         $creator = User::resource(User::$records[0]);

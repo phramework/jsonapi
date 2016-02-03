@@ -68,8 +68,6 @@ class User extends \Phramework\JSONAPI\APP\Model
         Fields $fields = null,
         ...$additionalParameters
     ) {
-
-
         return self::collection(self::handleGetWithArrayOfRecords(
             self::$records,
             $page,
