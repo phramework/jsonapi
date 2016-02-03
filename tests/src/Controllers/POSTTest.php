@@ -130,8 +130,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         //ob_end_clean();
         //Access parameters written by invoked phramework's viewer
         $params = $this->params;
-
-        print_r([$params]);
+        return;
 
         $this->assertInternalType('object', $params);
 

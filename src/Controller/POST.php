@@ -238,9 +238,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
             $relationship = $modelClass::getRelationship($relationshipKey);
 
-            $relationshipResourceType = $relationship->getResourceType();
+            $relationshipModelClass   = $relationship->modelClass;
+            $relationshipResourceType = $relationshipModelClass::getType();
 
-            if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
+            if ($relationship->type == Relationship::TYPE_TO_ONE) {
                 $value = $relationshipData;
 
                 if (!is_object($value)) {
@@ -266,7 +267,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 }
                 //Push relationship attributes for this $relationshipKey
                 $relationshipAttributes->{$relationshipKey} = $value->id;
-            } elseif ($relationship->getRelationshipType() == Relationship::TYPE_TO_MANY) {
+            } elseif ($relationship->type == Relationship::TYPE_TO_MANY) {
                 $parsedValues = [];
 
                 if (!is_array($relationshipData)) {
@@ -344,10 +345,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             );
 
             $relationship = $modelClass::getRelationship($relationshipKey);
-            $relationshipClass = $relationship->getRelationshipClass();
+            $relationshipModelClass = $relationship->modelClass;
 
             $relationshipCallMethod = [
-                $relationshipClass,
+                $relationshipModelClass,
                 'getById'
             ];
 
@@ -367,13 +368,13 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                     ),
                     sprintf(
                         'Resource of type "%s" and id "%d" is not found',
-                        $relationship->getResourceType(),
+                        $relationshipModelClass::getType(),
                         $tempId
                     )
                 );
             }
 
-            if ($relationship->getRelationshipType() == Relationship::TYPE_TO_ONE) {
+            if ($relationship->type == Relationship::TYPE_TO_ONE) {
                 /*if ($parsedRelationshipValue) {
                     //check if exists
                     self::exists(
@@ -397,7 +398,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 }*/
 
                 //Copy to primary attributes
-                $attributes->{$relationship->getAttribute()} = $parsedRelationshipValue;
+                $attributes->{$relationship->recordDataAttribute} = $parsedRelationshipValue;
             }
         }
 
@@ -420,15 +421,15 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
             $relationship = $modelClass::getRelationship($relationshipKey);
 
-            if ($relationship->getRelationshipType() == Relationship::TYPE_TO_MANY) {
+            if ($relationship->type == Relationship::TYPE_TO_MANY) {
                 $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
 
                 $relationship = $modelClass::getRelationship($relationshipKey);
-                $relationshipClass = $relationship->getRelationshipClass();
+                $relationshipModelClass = $relationship->modelClass;
 
                 $relationshipCallMethod = [
-                    $relationshipClass,
-                    $relationshipClass::POST_RELATIONSHIP_BY_PREFIX
+                    $relationshipModelClass,
+                    $relationshipModelClass::POST_RELATIONSHIP_BY_PREFIX
                     . ucfirst($modelClass::getType())
                 ];
 

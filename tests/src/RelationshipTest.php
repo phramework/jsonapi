@@ -26,6 +26,17 @@ use Phramework\JSONAPI\Relationship;
  */
 class RelationshipTest extends \PHPUnit_Framework_TestCase
 {
+    public function getAvailableProperties()
+    {
+        return [
+            ['modelClass', Tag::class],
+            ['type', Relationship::TYPE_TO_ONE],
+            ['recordDataAttribute', null],
+            ['dataCallback', null],
+            ['flags', Relationship::FLAG_DEFAULT]
+        ];
+    }
+
     /**
      * @var Relationship
      */
@@ -34,11 +45,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->relationship = new Relationship(
-            'tag-id',
-            Tag::getType(),
-            Relationship::TYPE_TO_ONE,
-            Tag::class,
-            Tag::getIdAttribute()
+            Tag::class
         );
     }
 
@@ -48,52 +55,56 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     public function testConstruct()
     {
         new Relationship(
-            'tag-id',
-            Tag::getType(),
-            Relationship::TYPE_TO_ONE,
             Tag::class,
-            Tag::getIdAttribute()
+            Relationship::TYPE_TO_ONE,
+            'tag-id'
         );
     }
 
     /**
-     * @covers ::getRelationshipType
+     * @covers ::__construct
+     * @expectedException \Exception
      */
-    public function testGetRelationshipType()
+    public function testConstructFailure1()
     {
-        $this->relationship->getRelationshipType();
+        new Relationship(
+            self::class, //Doesn't extend  Phramework\JSONAPI\Model
+            Relationship::TYPE_TO_ONE,
+            'tag-id'
+        );
     }
 
     /**
-     * @covers ::getAttribute
+     * @covers ::__construct
+     * @expectedException \Exception
      */
-    public function testGetAttribute()
+    public function testConstructFailure2()
     {
-        $this->relationship->getAttribute();
-    }
-
-
-    /**
-     * @covers ::getResourceType
-     */
-    public function testGetResourceType()
-    {
-        $this->relationship->getResourceType();
+        new Relationship(
+            Tag::class,
+            Relationship::TYPE_TO_ONE,
+            null,
+            ['inv'] //Not callable
+        );
     }
 
     /**
-     * @covers ::getRelationshipClass
+     * @covers ::__get
+     * @param string $property
+     * @param mixed $expected
+     * @dataProvider getAvailableProperties
      */
-    public function testGetRelationshipClass()
+    public function testGet($property, $expected)
     {
-        $this->relationship->getRelationshipClass();
+        $this->assertEquals($expected, $this->relationship->{$property});
     }
 
     /**
-     * @covers ::getRelationshipIdAttribute
+     * @covers ::__get
+     * @expectedException \Exception
      */
-    public function testGetRelationshipIdAttribute()
+    public function testGetFailure()
     {
-        $this->relationship->getRelationshipIdAttribute();
+        $this->relationship->{'not-found'};
     }
 }

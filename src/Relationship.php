@@ -21,9 +21,18 @@ namespace Phramework\JSONAPI;
  * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @property-read string        $modelClass
+ * @property-read int           $type
+ * @property-read string|null   $recordDataAttribute
+ * @property-read callable|null $dataCallback
+ * @property-read int           $flags
  */
 class Relationship
 {
+    const FLAG_DEFAULT = 0;
+    const FLAG_ATTRIBUTES = 1;
+    const FLAG_INCLUDE_BY_DEFAULT = 32;
+
     /**
      * Relationship type to one resource.
      */
@@ -35,108 +44,119 @@ class Relationship
     const TYPE_TO_MANY = 2;
 
     /**
-     * The type of relationship from this resource to relationship resource
-     * @var Relationship::TYPE_TO_ONE|Relationship::TYPE_TO_MANY
-     */
-    protected $relationshipType;
-
-    /**
-     * Attribute of resource, this attribute is related to resource(s)
-     * of type $type
+     * Class path of relationship resource model
      * @var string
      */
-    protected $attribute;
+    protected $modelClass;
 
     /**
-     * Relationship's resource type
-     * @var string
+     * The type of relationship from the resource to relationship resource
+     * @var int
      */
-    protected $resourceType;
+    protected $type;
 
     /**
-     * Relationship's class
+     * Attribute name in record containing relationship data
      * @var string|null
      */
-    protected $relationshipClass;
+    protected $recordDataAttribute;
 
     /**
-     * The id attribute of relationship's resource
-     * @var string|null
+     * Callable method can be used to fetch relationship data, see TODO
+     * @var callable|null
      */
-    protected $relationshipIdAttribute;
+    protected $dataCallback;
 
     /**
-     * Create a new relationship from this resource to a relationship resource
-     * @param string $attribute        Relationship's attribute in this resource
-     * @param string $resourceType Relationship's resource type
-     * @param int    $relationshipType Relationship type
-     * `Relationship::TYPE_TO_ONE` `Relationship::TYPE_TO_MANY`
-     * @param string|null $relationshipClass *[Optional]*
-     * Relationship's class name, default is null
-     * @param string|null $relationshipIdAttribute *[Optional]*
-     * Relationship's id attribute, default is `"id"`
+     * Relationship flags
+     * @var int
+     */
+    protected $flags;
+
+    /**
+     * @param string        $modelClass            Class path of relationship resource model
+     * @param int           $type                  *[Optional] Relationship type
+     * @param string|null   $recordDataAttribute   *[Optional] Attribute name in record containing relationship data
+     * @param callable|null $dataCallback          *[Optional] Callable method can be used
+     * to fetch relationship data, see TODO
+     * @param int           $flags                 *[Optional] Relationship flags
+     * @throws \Exception When modelClass  doesn't extend Phramework\JSONAPI\Model
+     * @throws \Exception When dataCallback is different than null and not callable
+     * @example
+     * ```php
+     * getValidationModel() {
+     *     return (object) [
+     *         'author' => new Relationship(
+     *             Tag::class,
+     *             Relationship::TYPE_TO_ONE,
+     *             'author-user_id'
+     *         );
+     *     ];
+     * }
+     * ```
+     * @example
+     * ```php
+     * getValidationModel() {
+     *     return (object) [
+     *         'tag' => new Relationship(
+     *             Tag::class,
+     *             Relationship::TYPE_TO_MANY,
+     *             null,
+     *             [Tag::class, 'getRelationshipByArticle']
+     *         );
+     *     ];
+     * }
+     * ```
+     * @todo what about POST, PATCH callback ??
      */
     public function __construct(
-        $attribute,
-        $resourceType,
-        $relationshipType = self::TYPE_TO_ONE,
-        $relationshipClass = null,
-        $relationshipIdAttribute = 'id'
+        $modelClass,
+        $type = Relationship::TYPE_TO_ONE,
+        $recordDataAttribute = null,
+        $dataCallback = null,
+        $flags = Relationship::FLAG_DEFAULT
     ) {
-        $this->attribute = $attribute;
-        $this->resourceType = $resourceType;
-        $this->relationshipType = $relationshipType;
-        $this->relationshipClass = $relationshipClass;
-        $this->relationshipIdAttribute = $relationshipIdAttribute;
+        if (!is_subclass_of($modelClass, Model::class)) {
+            throw new \Exception(sprintf(
+                'modelClass MUST extend "%s"',
+                Model::class
+            ));
+        }
+
+        if ($dataCallback !== null && !is_callable($dataCallback)) {
+            throw new \Exception('dataCallback MUST be callable');
+        }
+
+        $this->modelClass           = $modelClass;
+        $this->type                 = $type;
+        $this->recordDataAttribute  = $recordDataAttribute;
+        $this->dataCallback         = $dataCallback;
+        $this->flags                = $flags;
     }
 
     /**
-     * Get the type of relationship from this resource to relationship resource
-     *
-     * @return Relationship::TYPE_TO_ONE|Relationship::TYPE_TO_MANY
+     * @param string $name
+     * @return mixed
+     * @throws \Exception
      */
-    public function getRelationshipType()
+    public function __get($name)
     {
-        return $this->relationshipType;
-    }
+        switch ($name) {
+            case 'modelClass':
+                return $this->modelClass;
+            case 'type':
+                return $this->type;
+            case 'recordDataAttribute':
+                return $this->recordDataAttribute;
+            case 'dataCallback':
+                return $this->dataCallback;
+            case 'flags':
+                return $this->flags;
+        }
 
-    /**
-     * Get the value of Attribute
-     *
-     * @return string
-     */
-    public function getAttribute()
-    {
-        return $this->attribute;
-    }
-
-    /**
-     * Get relationship's resource type
-     *
-     * @return string
-     */
-    public function getResourceType()
-    {
-        return $this->resourceType;
-    }
-
-    /**
-     * Get the value of relationshipClass
-     *
-     * @return string|null
-     */
-    public function getRelationshipClass()
-    {
-        return $this->relationshipClass;
-    }
-
-    /**
-     * Get the id attribute of relationship's resource
-     *
-     * @return string|null
-     */
-    public function getRelationshipIdAttribute()
-    {
-        return $this->relationshipIdAttribute;
+        throw new \Exception(sprintf(
+            'Undefined property via __get(): %s',
+            $name
+        ));
     }
 }

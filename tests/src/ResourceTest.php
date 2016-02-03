@@ -57,12 +57,35 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::parseFromRecords
+     */
+    public function testParseFromRecordsEmpty()
+    {
+        $this->assertEmpty(Tag::collection(null));
+        $this->assertEmpty(Tag::collection([]));
+    }
+
+    /**
      * @covers ::parseFromRecord
      */
     public function testParseFromRecordEmpty()
     {
         $this->assertNull(Tag::resource(null));
         $this->assertNull(Tag::resource([]));
+    }
+
+    /**
+     * @covers ::parseFromRecord
+     * @expectedException \Exception
+     */
+    public function testParseFromRecordFailureModelClass()
+    {
+        Resource::parseFromRecord(
+            [
+                'id' => '1'
+            ],
+            self::class
+        );
     }
 
     /**
@@ -161,6 +184,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRecordFailureToManyNotAnArray()
     {
+        $this->markTestIncomplete();
         Article::resource([
             'id' => '1',
             'tag-id' => 5
@@ -173,6 +197,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRecordFailureToManyNotAnArrayOfStringsOrAttributes()
     {
+        $this->markTestIncomplete();
         Article::resource([
             'id' => '1',
             'tag-id' => [new \stdClass(), 5]

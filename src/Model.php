@@ -319,23 +319,23 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
         $relationships = static::getRelationships();
 
         if ($filter) {
-            foreach ($filter->relationships as $key => $value) {
-                if (!static::relationshipExists($key)) {
+            foreach ($filter->relationships as $relationshipKey => $relationshipFilterValue) {
+                if (!static::relationshipExists($relationshipKey)) {
                     throw new \Exception(sprintf(
                         'Relationship "%s" not found',
-                        $key
+                        $relationshipKey
                     ));
                 }
-                $relationship = $relationships->{$key};
-                $relationshipClass = $relationship->getRelationshipClass();
+                $relationship = $relationships->{$relationshipKey};
+                $relationshipModelClass = $relationship->modelClass();
 
-                if ($relationship->getRelationshipType() === Relationship::TYPE_TO_ONE) {
+                if ($relationship->type === Relationship::TYPE_TO_ONE) {
                     $additionalFilter[] = sprintf(
                         '%s "%s"."%s" IN (%s)',
                         ($hasWhere ? 'AND' : 'WHERE'),
-                        static::$table, //$relationshipclass::getTable(),
-                        $relationship->getAttribute(),
-                        implode(',', $value)
+                        static::$table,
+                        $relationship->recordDataAttribute,
+                        implode(',', $relationshipFilterValue)
                     );
                     $hasWhere = true;
                 } else {
@@ -345,14 +345,14 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
                 }
             }
 
-            foreach ($filter->attributes as $value) {
-                list($key, $operator, $operand) = $value;
+            foreach ($filter->attributes as $filterValue) {
+                list($relationshipKey, $operator, $operand) = $filterValue;
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalFilter[] = sprintf(
                         '%s "%s"."%s" %s \'%s\'',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         static::$table,
-                        $key,
+                        $relationshipKey,
                         $operator,
                         $operand
                     );
@@ -366,7 +366,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
                         '%s "%s"."%s" %s \'%s\'',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         static::$table,
-                        $key,
+                        $relationshipKey,
                         (
                             array_key_exists($operator, $transformation)
                             ? $transformation[$operator]
@@ -385,7 +385,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
                         '%s LOWER("%s"."%s") %s \'%%%s%%\'',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         static::$table,
-                        $key,
+                        $relationshipKey,
                         (
                             array_key_exists($operator, $transformation)
                             ? $transformation[$operator]
@@ -406,8 +406,8 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
             $filterJSON = $filter->JSONAttributes;
             //hack.
 
-            foreach ($filterJSON as $value) {
-                list($attribute, $key, $operator, $operand) = $value;
+            foreach ($filterJSON as $relationshipFilterValue) {
+                list($attribute, $relationshipKey, $operator, $operand) = $relationshipFilterValue;
 
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalFilter[] = sprintf(
@@ -415,7 +415,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
                         ($hasWhere ? 'AND' : 'WHERE'),
                         static::$table,
                         $attribute,
-                        $key,
+                        $relationshipKey,
                         $operator,
                         $operand
                     );

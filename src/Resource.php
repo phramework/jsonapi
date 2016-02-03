@@ -37,6 +37,7 @@ class Resource
     const PARSE_RELATIONSHIP            = 4;
     const PARSE_RELATIONSHIP_LINKS      = 8;
     const PARSE_RELATIONSHIP_ATTRIBUTES = 64;
+
     /**
      * @deprecated
      */
@@ -123,7 +124,7 @@ class Resource
 
     /**
      * @param array|object $record
-     * @param $modelClass
+     * @param string $modelClass
      * @param Fields|null $fields
      * @param $flags
      * @return Resource|null
@@ -149,6 +150,13 @@ class Resource
         Fields $fields = null,
         $flags = Resource::PARSE_DEFAULT
     ) {
+        if (!is_subclass_of($modelClass, Model::class)) {
+            throw new \Exception(sprintf(
+                'modelClass MUST extend "%s"',
+                Model::class
+            ));
+        }
+
         if (empty($record)) {
             return null;
         }
@@ -228,27 +236,23 @@ class Resource
                     ];
                 }
 
-                $attribute                = $relationshipObject->getAttribute();
-                $relationshipType         = $relationshipObject->getRelationshipType();
-                $relationshipResourceType = $relationshipObject->getResourceType();
+                $relationshipModelClass   = $relationshipObject->modelClass;
+                $relationshipType         = $relationshipObject->type;
+                $recordDataAttribute      = $relationshipObject->recordDataAttribute;
 
-                //Define callback method
-                $callbackMethod = [
-                    $relationshipObject->getRelationshipClass(),
-                    $modelClass::GET_RELATIONSHIP_BY_PREFIX . ucfirst($resource->type)
-                    // TODO https://github.com/phramework/jsonapi/issues/6#issuecomment-178689524
-                ];
+                //$attribute                = $relationshipModelClass::getIdAttribute();
+                $relationshipResourceType = $relationshipModelClass::getType();
 
-                //Define callback
-                $callback = function () use (
-                    $callbackMethod,
+                //Define callback to fetch data
+                $dataCallback = function () use (
+                    $relationshipObject,
                     $resource,
                     $relationshipKey,
                     $fields,
                     $flags
                 ) {
                     return call_user_func(
-                        $callbackMethod,
+                        $relationshipObject->dataCallback,
                         $resource->id,
                         $relationshipKey,
                         $fields,
@@ -260,14 +264,14 @@ class Resource
 
                     $relationshipEntryResource = null;
 
-                    if (isset($record->{$attribute}) && $record->{$attribute}) { //preloaded
-                        $relationshipEntryResource = $record->{$attribute};
-                    } elseif (is_callable($callbackMethod)) { //available from callback
-                        $relationshipEntryResource = $callback();
+                    if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
+                        $relationshipEntryResource = $record->{$recordDataAttribute};
+                    } elseif ($relationshipObject->dataCallback !== null) { //available from callback
+                        $relationshipEntryResource = $dataCallback();
                     }
 
                     if ($relationshipEntryResource !== null) {
-                        //parse
+                        //parse relationship resource
                         if (is_string($relationshipEntryResource)) {
                             //If returned $relationshipEntryResource is an id string
                             $relationshipEntry = new RelationshipResource(
@@ -292,10 +296,10 @@ class Resource
 
                     $relationshipEntryResources = [];
 
-                    if (isset($record->{$attribute}) && $record->{$attribute}) { //preloaded
-                        $relationshipEntryResources = $record->{$attribute};
-                    } elseif (is_callable($callbackMethod)) { //available from callback
-                        $relationshipEntryResources = $callback();
+                    if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
+                        $relationshipEntryResources = $record->{$recordDataAttribute};
+                    } elseif ($relationshipObject->dataCallback !== null) { //available from callback
+                        $relationshipEntryResources = $dataCallback();
                     }
 
                     if (!is_array($relationshipEntryResources)) {
@@ -305,7 +309,7 @@ class Resource
                         ));
                     }
 
-                    //Parse resources
+                    //Parse relationship resources
 
                     if (Util::isArrayOf($relationshipEntryResources, 'string')) {
                         //If returned $relationshipEntryResources are id strings
@@ -328,8 +332,10 @@ class Resource
                     }
                 }
 
-                //Unset this attribute (MUST not be visible in resource's attributes)
-                unset($record->{$attribute});
+                if ($recordDataAttribute !== null) {
+                    //Unset this attribute (MUST not be visible in resource's attributes)
+                    unset($record->{$recordDataAttribute});
+                }
 
                 //Push relationship to relationships
                 $resource->relationships->{$relationshipKey} = $relationshipEntry;
