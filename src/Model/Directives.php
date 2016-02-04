@@ -19,10 +19,12 @@ namespace Phramework\JSONAPI\Model;
 use Phramework\Exceptions\NotImplementedException;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\FilterAttribute;
+use Phramework\JSONAPI\FilterJSONAttribute;
 use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Sort;
-use Phramework\Models\Operator;
 use Phramework\JSONAPI\Relationship;
+use Phramework\Models\Operator;
 
 /**
  * Implementation of directives
@@ -137,7 +139,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         $additionalQuery = [];
 
         if ($page !== null) {
-            if ($page->limit) {
+            if ($page->limit !== null) {
                 $additionalQuery[] = sprintf(
                     'LIMIT %s',
                     $page->limit
@@ -159,6 +161,26 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         );
 
         return $query;
+    }
+
+    /**
+     * @param array $array
+     * @return string
+     */
+    protected static function handleFilterParseIn(array $array)
+    {
+        return implode(
+            ',',
+            array_map(
+            /**
+             * Apply single quotes around key
+             */
+                function ($key) {
+                    return '\'' . $key . '\'';
+                },
+                $array
+            )
+        );
     }
 
     /**
@@ -189,18 +211,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                     ($hasWhere ? 'AND' : 'WHERE'),
                     static::$table,
                     static::$idAttribute,
-                    implode(
-                        ',',
-                        array_map(
-                            /**
-                             * Apply single quotes around key
-                             */
-                            function ($key) {
-                                return '\'' . $key . '\'';
-                            },
-                            $filter->primary
-                        )
-                    )
+                    self::handleFilterParseIn($filter->primary)
                 );
 
                 $hasWhere = true;
@@ -221,7 +232,6 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                 }
 
                 $relationship = $relationships->{$relationshipKey};
-                //$relationshipModelClass = $relationship->modelClass;
 
                 if ($relationship->type === Relationship::TYPE_TO_ONE) {
                     $additionalQuery[] = sprintf(
@@ -229,7 +239,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         ($hasWhere ? 'AND' : 'WHERE'),
                         static::$table,
                         $relationship->recordDataAttribute,
-                        implode(',', $relationshipFilterValue)
+                        self::handleFilterParseIn($relationshipFilterValue)
                     );
                     $hasWhere = true;
                 } else {
@@ -241,7 +251,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
             //Apply filters for attributes (Not JSON Attributes)
             foreach ($filter->attributes as $filterValue) {
-                if (!($filterValue instanceof FilterAttribute)) {
+                if (get_class($filterValue) != FilterAttribute::class) {
                     continue;
                 }
 
@@ -323,6 +333,25 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         strtolower($operand)
                     );
                     $hasWhere = true;
+                } elseif (in_array($operator, [Operator::OPERATOR_IN, Operator::OPERATOR_NOT_IN])) { //@todo add operator class in
+                    //Define a transformation matrix, operator to SQL operator
+                    $transformation = [
+                        Operator::OPERATOR_NOT_IN => 'NOT IN'
+                    ];
+
+                    $additionalQuery[] = sprintf(
+                        '%s "%s"."%s" %s (%s)',
+                        ($hasWhere ? 'AND' : 'WHERE'),
+                        static::$table,
+                        $attribute,
+                        (
+                        array_key_exists($operator, $transformation)
+                            ? $transformation[$operator]
+                            : $operator
+                        ),
+                        self::handleFilterParseIn($operand)
+                    );
+                    $hasWhere = true;
                 } else {
                     throw new NotImplementedException(sprintf(
                         'Filtering by operator "%s" is not implemented',
@@ -385,7 +414,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      */
     protected static function handleFields(
         $query,
-        Fields $fields
+        Fields $fields = null
     ) {
         $type = static::getType();
 

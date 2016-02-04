@@ -23,6 +23,7 @@ use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Filter;
 use Phramework\JSONAPI\FilterAttribute;
+use Phramework\JSONAPI\FilterJSONAttribute;
 use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\Sort;
@@ -190,13 +191,25 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
      */
     public function testHandleGet()
     {
-        $page = new Page(10, 5);
+        $page = new Page(10, 1);
         $filter = new Filter(
             [1, 2, 3, 'uuid'],
             [
                 'creator' => [1, 2, 3]
             ],
-            [new FilterAttribute('tile', Operator::OPERATOR_LIKE, 'blog')]
+            [
+                new FilterAttribute('status', Operator::OPERATOR_IN, [1, 2, 3]),
+                new FilterAttribute('status', Operator::OPERATOR_NOT_IN, [4, 5]),
+                new FilterAttribute('title', Operator::OPERATOR_LIKE, 'blog'),
+                new FilterAttribute('order', Operator::OPERATOR_EQUAL, 5),
+                new FilterAttribute('created', Operator::OPERATOR_LESS, time()),
+                new FilterAttribute('tag', Operator::OPERATOR_IN_ARRAY, 'blog'),
+                new FilterAttribute('tag', Operator::OPERATOR_NOT_IN_ARRAY, 'viral'),
+                new FilterAttribute('updated', Operator::OPERATOR_ISNULL),
+                new FilterAttribute('created', Operator::OPERATOR_NOT_ISNULL),
+                new FilterJSONAttribute('meta', 'keyword', Operator::OPERATOR_EQUAL, 'blog')
+                //new FilterJSONAttribute('meta', 'keyword', Operator::OPERATOR_LIKE, 'blog')
+            ]
         );
 
         $sort = new Sort(
@@ -227,7 +240,15 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInternalType('string', $query);
 
-        //print_r([$query]);
+        //([$query]);
+    }
+
+    /**
+     * @covers ::handleFilter
+     */
+    public function testHandleFilterViaGet()
+    {
+        $this->testHandleGet();
     }
 
     /**

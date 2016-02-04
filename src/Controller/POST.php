@@ -35,7 +35,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @param  object $params                          Request parameters
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
-     * @param  \Phramework\JSONAPI\Model $modelClass   Resource's primary model
+     * @param  string $modelClass                      Resource's primary model
      * @param  array $primaryDataParameters           *[Optional]* Array with any
      * additional arguments that the primary data is requiring
      * @param  array $relationshipParameters *[Optional]* Array with any

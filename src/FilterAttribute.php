@@ -21,9 +21,9 @@ namespace Phramework\JSONAPI;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-read string $attribute
- * @property-read string $operator
- * @property-read string $operand
+ * @property-read string      $attribute
+ * @property-read string      $operator
+ * @property-read mixed|null $operand
  */
 class FilterAttribute
 {
@@ -36,20 +36,20 @@ class FilterAttribute
      */
     protected $operator;
     /**
-     * @var string
+     * @var mixed|null
      */
     protected $operand;
 
     /**
      * FilterAttribute constructor.
-     * @param string $attribute
-     * @param string $operator
-     * @param string $operand
+     * @param string      $attribute
+     * @param string      $operator
+     * @param mixed|null $operand
      */
     public function __construct(
         $attribute,
         $operator,
-        $operand
+        $operand = null
     ) {
         $this->attribute = $attribute;
         $this->operator = $operator;

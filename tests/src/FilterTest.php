@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\APP\Bootstrap;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\Models\Operator;
 
@@ -116,7 +117,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         $filter = Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
+            Article::class //Use article resource model's filters
         );
 
         $this->assertInstanceOf(Filter::class, $filter);

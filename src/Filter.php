@@ -65,7 +65,7 @@ class Filter
      * Filter constructor.
      * @param string[] $primary
      * @param object|null $relationships
-     * @param FilterAttribute[] $attributes
+     * @param FilterAttribute[] $filterAttributes
      * @throws \Exception
      * @example
      * ```php
@@ -81,20 +81,25 @@ class Filter
      *     ]
      * );
      * ```
+     * @example
+     * ```php
+     * $filter = new Filter(
+     *     [1, 2],
+     *     null,
+     *     [
+     *         new FilterJSONAttribute('meta', 'keyword', Operator::OPERATOR_EQUAL, 'blog')
+     *     ]
+     * );
+     * ```
      */
     public function __construct(
         array $primary = [],
         $relationships = null,
-        array $attributes = []
+        array $filterAttributes = []
     ) {
-
-        //if (!is_array($primary)) {
-        //    throw new \Exception('Primary filter MUST be an array');
-        //}
-
         if ($relationships === null) {
             $relationships = new \stdClass();
-        } elseif (is_array($relationships) && Util::isArrayAssoc($relationships)) {
+        } elseif (is_array($relationships) && Util::isArrayAssoc($relationships)) { //Allow associative arrays
             $relationships = (object)$relationships;
         }
 
@@ -102,13 +107,13 @@ class Filter
             throw new \Exception('Relationships filter MUST be an object');
         }
 
-        //if (!is_array($attributes)) {
-        //    throw new \Exception('Attributes filter MUST be an array');
-        //}
+        if (!Util::isArrayOf($filterAttributes, FilterAttribute::class)) {
+            throw new \Exception('filterAttributes must be an array of FilterAttribute instances');
+        }
 
         $this->primary = $primary;
         $this->relationships = $relationships;
-        $this->attributes = $attributes;
+        $this->attributes = $filterAttributes;
     }
 
     /**
@@ -124,16 +129,16 @@ class Filter
      * $filter = Filter::parseFromParameters(
      *     (object) [
      *         'filter' => [
-     *             'article'   => '1, 2',
-     *             'tag'       => '4, 5, 7',
-     *             'creator'   => '1',
-     *             'status'    => [true, false],
+     *             'article'   => '1, 2', //primary filter (parsed from URL's ?filter[article]=1, 2)
+     *             'tag'       => '4, 5, 7', //relationship filter (parsed from URL's ?filter[tag]=4, 5, 7)
+     *             'creator'   => '1', //relationship  filter(parsed from URL's ?filter[creator]=1)
+     *             'status'    => ['ENABLED', 'INACTIVE'], //multiple filters
      *             'title'     => [
      *                 Operator::OPERATOR_LIKE . 'blog',
      *                 Operator::OPERATOR_NOT_LIKE . 'welcome'
-     *             ],
+     *             ], //multiple filters on title (parsed from URL's ?filter[title][]=~~blog&filter[title][]=!~~welcome)
      *             'updated'   => Operator::OPERATOR_NOT_ISNULL,
-     *             'meta.keywords' => 'blog'
+     *             'meta.keywords' => 'blog' //JSON attribute filter
      *         ]
      *     ], //Request parameters object
      *     Article::class
@@ -142,6 +147,7 @@ class Filter
      * @throws RequestException
      * @throws \Exception
      * @throws IncorrectParametersException
+     * @todo add support for operators of class_in, parsing input using explode `,` (as array)
      */
     public static function parseFromParameters($parameters, $modelClass, $filterableJSON = true)
     {
@@ -330,21 +336,6 @@ class Filter
                                 //**NOTE** Remain unparsed!
                             }
                         } else {
-                            //use filterValidationModel for this property
-                            //if defined and operator is a CLASS_LIKE operator
-                            //if (in_array($operator, Operator::getLikeOperators())
-                            //    && $filterValidationModel
-                            //    && isset($filterValidationModel->properties->{$filterKey})
-                            //) {
-                            //    //Validate operand value
-                            //    $operand = $filterValidationModel->properties
-                            //        ->{$filterKey}->parse($operand);
-                            //} else {
-                            //    //Validate operand value
-                            //    $operand = $validationModelAttributes->properties
-                            //        ->{$filterKey}->parse($operand);
-                            //}
-                            //
                             $operand = $attributeValidator->parse($operand);
                         }
                     }
