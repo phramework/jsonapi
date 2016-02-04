@@ -31,7 +31,7 @@ class SortTest extends \PHPUnit_Framework_TestCase
         return [
             ['table', Article::getTable()],
             ['ascending', true],
-            ['attribute', null]
+            ['attribute', Article::getIdAttribute()]
         ];
     }
 

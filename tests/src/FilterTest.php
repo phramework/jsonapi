@@ -59,7 +59,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             2
         );
     }
-    
+
     /**
      * @covers ::parseFromParameters
      */

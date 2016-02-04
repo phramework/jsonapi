@@ -56,7 +56,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         Bootstrap::invokeStaticMethod(
             Article::class,
             'getCache',
-            ['1']
+            '1'
         );
     }
 
@@ -73,13 +73,14 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(Bootstrap::invokeStaticMethod(
             Article::class,
             'setCache',
-            [1000, $article]
+            1000,
+            $article
         ));
 
         $articleCached = Bootstrap::invokeStaticMethod(
             Article::class,
             'getCache',
-            [1000]
+            1000
         );
 
         $this->assertEquals($article, $articleCached);
@@ -88,7 +89,8 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(Bootstrap::invokeStaticMethod(
             NotCachedModel::class,
             'setCache',
-            ['1', NotCachedModel::getById('1')]
+            '1',
+            NotCachedModel::getById('1')
         ), 'Expect false when trying to set cache in a model with disabled caching');
     }
 
@@ -103,14 +105,14 @@ class CacheTest extends \PHPUnit_Framework_TestCase
             Bootstrap::invokeStaticMethod(
                 Article::class,
                 'getCache',
-                ['1']
+                '1'
             )
         );
 
         $this->assertNull(Bootstrap::invokeStaticMethod(
             Article::class,
             'getCache',
-            ['not-found']
+            'not-found'
         ));
     }
 
@@ -123,13 +125,13 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         Bootstrap::invokeStaticMethod(
             Article::class,
             'invalidateCache',
-            [1000]
+            1000
         );
 
         $articleCached = Bootstrap::invokeStaticMethod(
             Article::class,
             'getCache',
-            [1000]
+            1000
         );
 
         $this->assertNull($articleCached);
