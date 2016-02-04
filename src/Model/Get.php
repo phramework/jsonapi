@@ -31,12 +31,12 @@ use Phramework\JSONAPI\Relationship;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-abstract class Get extends \Phramework\JSONAPI\Model\Cache
+abstract class Get extends \Phramework\JSONAPI\Model\Directives
 {
     /**
-     * @param Page|null $page       *[Optional]*
+     * @param Page|null   $page     *[Optional]*
      * @param Filter|null $filter   *[Optional]*
-     * @param Sort|null $sort       *[Optional]*
+     * @param Sort|null   $sort     *[Optional]*
      * @param Fields|null $fields   *[Optional]*
      * @param mixed ...$additionalParameters *[Optional]*
      * @throws NotImplementedException
@@ -53,9 +53,9 @@ abstract class Get extends \Phramework\JSONAPI\Model\Cache
     }
 
     /**
-     * @param string|string[] $id An id of a single resource or ids of multiple resources
-     * @param Fields|null $fields   *[Optional]*
-     * @param mixed ...$additionalParameters
+     * @param string|string[] $id       An id of a single resource or ids of multiple resources
+     * @param Fields|null     $fields   *[Optional]*
+     * @param mixed        ...$additionalParameters
      * @return Resource|object|null Returns null when item is not available,
      * returns object when multiple ids are requested, each id is used as object's key.
      * @example

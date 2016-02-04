@@ -41,7 +41,8 @@ class SortTest extends \PHPUnit_Framework_TestCase
     public function testConstruct()
     {
         $sort = new Sort(
-            Article::getTable()
+            Article::getTable(),
+            Article::getIdAttribute()
         );
     }
 
@@ -167,7 +168,10 @@ class SortTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet($property, $expected)
     {
-        $sort = new Sort(Article::getTable());
+        $sort = new Sort(
+            Article::getTable(),
+            Article::getIdAttribute()
+        );
 
         $this->assertSame($expected, $sort->{$property});
     }
@@ -178,7 +182,11 @@ class SortTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetFailure()
     {
-        $sort = new Sort(Article::getTable());
+        $sort = new Sort(
+            Article::getTable(),
+            Article::getIdAttribute()
+        );
+
         $sort->{'not-found'};
     }
 }

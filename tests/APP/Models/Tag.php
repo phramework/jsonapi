@@ -207,15 +207,13 @@ class Tag extends \Phramework\JSONAPI\APP\Model
      */
     public static function getRelationships()
     {
-        return new \stdClass();
+        ///return new \stdClass();
 
         return (object)[
             'article' => new Relationship(
-                'article-id',
-                'article',
-                Relationship::TYPE_TO_MANY,
                 Article::class,
-                'id'
+                Relationship::TYPE_TO_MANY,
+                'article_id'
             ),
         ];
     }

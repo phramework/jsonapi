@@ -84,7 +84,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
 
             //Prepare queue item
-            $queueItem = static::handlePOSTResource(
+            $queueItem = self::handlePOSTResource(
                 $params,
                 $method,
                 $headers,

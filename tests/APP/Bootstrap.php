@@ -79,7 +79,7 @@ class Bootstrap
      * @link https://jtreminio.com/2013/03/
      * unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
      */
-    public static function invokeMethod(&$object, $methodName, array $parameters = [])
+    public static function invokeMethod(&$object, $methodName, ...$parameters)
     {
         $reflection = new \ReflectionClass(get_class($object));
         $method = $reflection->getMethod($methodName);
@@ -90,6 +90,7 @@ class Bootstrap
     /**
      * Call protected/private method of a class.
      *
+     * @param string $className
      * @param string $methodName Method name to call
      * @param array  $parameters Array of parameters to pass into method.
      *
@@ -97,9 +98,9 @@ class Bootstrap
      * @link https://jtreminio.com/2013/03/
      * unit-testing-tutorial-part-3-testing-protected-private-methods-coverage-reports-and-crap/
      */
-    public static function invokeStaticMethod($class, $methodName, array $parameters = [])
+    public static function invokeStaticMethod($className, $methodName, ...$parameters)
     {
-        $reflection = new \ReflectionClass($class);
+        $reflection = new \ReflectionClass($className);
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);
         return $method->invokeArgs(null, $parameters);

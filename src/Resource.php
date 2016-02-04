@@ -123,8 +123,8 @@ class Resource
 
     /**
      * @param array|object $record
-     * @param string $modelClass
-     * @param Fields|null $fields
+     * @param string       $modelClass
+     * @param Fields|null  $fields
      * @param $flags
      * @return Resource|null
      * @throws \Exception
@@ -139,9 +139,6 @@ class Resource
      *     Tag::class
      * );
      * ```
-     * @todo Rewrite relationship code
-     * @todo WHAT ABOUT meta?
-     * @todo WHAT ABOUT relationship meta?
      */
     public static function parseFromRecord(
         $record,

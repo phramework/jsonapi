@@ -54,12 +54,12 @@ class Sort
     /**
      * Sort constructor.
      * @param $table
-     * @param array $attribute
+     * @param string $attribute
      * @param bool $ascending
      */
     public function __construct(
         $table,
-        $attribute = null,
+        $attribute,
         $ascending = true
     ) {
         $this->table = $table;

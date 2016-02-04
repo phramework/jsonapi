@@ -46,16 +46,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @expectedException Exception
-     */
-    public function testConstructFailure1()
-    {
-        $filter = new Filter(
-            1
-        );
-    }
+
 
     /**
      * @covers ::__construct
@@ -68,19 +59,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             2
         );
     }
-
-    /**
-     * @covers ::__construct
-     * @expectedException Exception
-     */
-    public function testConstructFailure3()
-    {
-        $filter = new Filter(
-            [],
-            [],
-            5
-        );
-    }
+    
     /**
      * @covers ::parseFromParameters
      */

@@ -64,7 +64,7 @@ class Filter
     /**
      * Filter constructor.
      * @param string[] $primary
-     * @param array $relationships
+     * @param object|null $relationships
      * @param FilterAttribute[] $attributes
      * @throws \Exception
      * @example
@@ -83,16 +83,18 @@ class Filter
      * ```
      */
     public function __construct(
-        $primary = [],
-        $relationships = [],
-        $attributes = []
+        array $primary = [],
+        $relationships = null,
+        array $attributes = []
     ) {
 
-        if (!is_array($primary)) {
-            throw new \Exception('Primary filter MUST be an array');
-        }
+        //if (!is_array($primary)) {
+        //    throw new \Exception('Primary filter MUST be an array');
+        //}
 
-        if (is_array($relationships)) {
+        if ($relationships === null) {
+            $relationships = new \stdClass();
+        } elseif (is_array($relationships) && Util::isArrayAssoc($relationships)) {
             $relationships = (object)$relationships;
         }
 
@@ -100,9 +102,9 @@ class Filter
             throw new \Exception('Relationships filter MUST be an object');
         }
 
-        if (!is_array($attributes)) {
-            throw new \Exception('Attributes filter MUST be an array');
-        }
+        //if (!is_array($attributes)) {
+        //    throw new \Exception('Attributes filter MUST be an array');
+        //}
 
         $this->primary = $primary;
         $this->relationships = $relationships;
