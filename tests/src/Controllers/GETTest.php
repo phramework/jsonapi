@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Controller;
 
+use Phramework\JSONAPI\APP\Bootstrap;
 use \Phramework\Phramework;
 
 /**
+ * @coversDefaultClass \Phramework\JSONAPI\Controller\GET
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
 class GETTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Phramework
+     */
     protected $phramework;
 
     /**
@@ -36,6 +41,30 @@ class GETTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    protected function prepare()
+    {
+        $_SERVER['REQUEST_URI'] = '/article/';
+        $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_GET;
+
+        $this->phramework = \Phramework\JSONAPI\APP\Bootstrap::prepare();
+
+        Phramework::setViewer(
+            \Phramework\JSONAPI\APP\Viewers\PHPUnit::class
+        );
+
+        $that = $this;
+
+        \Phramework\JSONAPI\APP\Viewers\PHPUnit::setCallback(
+            function (
+                $parameters
+            ) use (
+                $that
+            ) {
+                $that->parameters = $parameters;
+            }
+        );
+    }
+
     /**
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
@@ -44,12 +73,13 @@ class GETTest extends \PHPUnit_Framework_TestCase
     {
     }
 
-    public function testExtends()
+    /**
+     * @covers Phramework\JSONAPI\Controller\GET::handleGET
+     */
+    public function testHandleGet()
     {
-        return;
-        $this->phramework = \Phramework\JSONAPI\APP\Bootstrap::prepare();
-        /*var_dump(
-            \Phramework\JSONAPI\APP\Models\Article::getById([1, 2])
-        );*/
+        $this->prepare();
+
+        $this->phramework->invoke();
     }
 }

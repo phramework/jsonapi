@@ -51,6 +51,25 @@ class Article extends \Phramework\JSONAPI\APP\Model
     }
 
     /**
+     * @return string[]
+     */
+    public static function getFields()
+    {
+        return [
+            'title',
+            'updated'
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getMutable()
+    {
+        return ['title'];
+    }
+
+    /**
      * @return ValidationModel
      */
     public static function getValidationModel()
@@ -58,7 +77,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
         return new ValidationModel(
             new ObjectValidator(
                 [
-                    'title' => new StringValidator(2, 32),
+                    'title'  => new StringValidator(2, 32),
                     'status' => (new BooleanValidator())
                         ->setDefault(true)
                 ],
@@ -96,11 +115,11 @@ class Article extends \Phramework\JSONAPI\APP\Model
     }
 
     /**
-     * @return array
+     * @return object
      */
     public static function getFilterable()
     {
-        return [
+        return (object) [
             'no-validator' => Operator::CLASS_COMPARABLE,
             'status'       => Operator::CLASS_COMPARABLE,
             'title'        => Operator::CLASS_COMPARABLE | Operator::CLASS_LIKE,
@@ -164,6 +183,23 @@ class Article extends \Phramework\JSONAPI\APP\Model
         return $records[0]['id'];
     }
 
+    public static function patch($id, $attributes)
+    {
+        return 1;
+    }
+
+    /**
+     * Will return false on `id` = 3
+     * @return bool
+     */
+    public static function delete($id, $additionalAttributes = null)
+    {
+        return (
+            $id == '3'
+            ? false
+            : true
+        );
+    }
 
     public static function getRecords()
     {

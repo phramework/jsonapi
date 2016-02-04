@@ -19,13 +19,11 @@ namespace Phramework\JSONAPI\Controller;
 use \Phramework\Phramework;
 
 /**
- * @todo test wrong relationship
- * @todo test validation error
- * @coversDefaultClass \Phramework\JSONAPI\Controller\POST
+ * @coversDefaultClass \Phramework\JSONAPI\Controller\PATCH
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class POSTTest extends \PHPUnit_Framework_TestCase
+class PATCHTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Phramework
@@ -35,7 +33,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
     /**
      * @var object
      */
-    protected $params;
+    protected $parameters;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -48,12 +46,12 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
     protected function prepare()
     {
-        //ob_start();
-        $_SERVER['REQUEST_URI'] = '/article/';
-        $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_POST;
+        $_SERVER['REQUEST_URI'] = '/article/1';
+        $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_PATCH;
 
         $_POST['data'] = [
             'type' => 'article',
+            'id'   => 1,
             'attributes' => [
                 'title' => 'omg'
             ],
@@ -83,46 +81,22 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         );
 
         $that = $this;
+
         \Phramework\JSONAPI\APP\Viewers\PHPUnit::setCallback(
             function (
                 $parameters
             ) use (
                 $that
             ) {
-                $that->params = $parameters;
+                $that->parameters = $parameters;
             }
         );
-
-        // clean the output buffer
-        //ob_clean();
-        //$this->phramework->invoke();
-        //ob_end_clean();
     }
 
     /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
+     * @covers ::handlePATCH
      */
-    protected function tearDown()
-    {
-        //\Phramework\JSONAPI\APP\Viewers\Viewer::release(__CLASS__);
-        //foreach ($this->buffer as $line) {
-        //    print_r($line);
-        //}
-    }
-
-    /**
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOSTResource
-     */
-    public function testHandlePOSTResource()
-    {
-        $this->testPOSTSuccess();
-    }
-
-    /**
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
-     */
-    public function testPOSTSuccess()
+    public function testPATCHSuccess()
     {
         $this->prepare();
         //ob_clean();
@@ -130,20 +104,20 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
         //ob_end_clean();
         //Access parameters written by invoked phramework's viewer
-        $params = $this->params;
+        $parameters = $this->parameters;
         return;
 
-        $this->assertInternalType('object', $params);
+        $this->assertInternalType('object', $parameters);
 
-        $this->assertObjectHasAttribute('links', $params);
-        $this->assertObjectHasAttribute('data', $params);
+        $this->assertObjectHasAttribute('links', $parameters);
+        $this->assertObjectHasAttribute('data', $parameters);
 
-        $this->assertInternalType('object', $params->data);
-        $this->assertObjectHasAttribute('id', $params->data);
+        $this->assertInternalType('object', $parameters->data);
+        $this->assertObjectHasAttribute('id', $parameters->data);
 
-        $this->assertInternalType('string', $params->data->id);
+        $this->assertInternalType('string', $parameters->data->id);
 
-        $id = $params->data->id;
+        $id = $parameters->data->id;
 
         //Required, to reinitialize db adapter connection
         $this->prepare();
@@ -171,20 +145,20 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Cause a not found exception, at to TYPE_TO_ONE relationship
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
+     * @covers \Phramework\JSONAPI\Controller\PATCH::handlePATCH
      */
-    public function testPOSTFailureToOne()
+    public function testPATCHFailureToOne()
     {
         return;
         $this->prepare();
 
         //Set a non existing id for creator relationship
-        $_POST['data']['relationships']['creator']['data']['id'] = 4235454365434;
+        $_PATCH['data']['relationships']['creator']['data']['id'] = 4235454365434;
 
         $this->phramework->invoke();
 
         //Access parameters written by invoked phramework's viewer
-        $params = $this->params;
+        $params = $this->parameters;
 
         $this->assertInternalType('object', $params);
         $this->assertObjectHasAttribute('errors', $params);
@@ -198,20 +172,20 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Cause a not found exception, at to TYPE_TO_MANY relationship
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
+     * @covers \Phramework\JSONAPI\Controller\PATCH::handlePATCH
      */
-    public function testPOSTFailureToMany()
+    public function testPATCHFailureToMany()
     {
         return;
         $this->prepare();
 
         //Set a non existing id for tag relationship
-        $_POST['data']['relationships']['tag']['data'][0]['id'] = 4235454365434;
+        $_PATCH['data']['relationships']['tag']['data'][0]['id'] = 4235454365434;
 
         $this->phramework->invoke();
 
         //Access parameters written by invoked phramework's viewer
-        $params = $this->params;
+        $params = $this->parameters;
 
         $this->assertInternalType('object', $params);
         $this->assertObjectHasAttribute('errors', $params);

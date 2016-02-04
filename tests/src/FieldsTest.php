@@ -169,7 +169,8 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     {
         $parameters = (object) [
             'fields' => [
-                Article::getType() => 'title, updated'
+                Article::getType() => 'title, updated',
+                Tag::getType() => 'title'
             ]
         ];
 
@@ -181,6 +182,27 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(
             Fields::class,
             $fields
+        );
+
+        $this->assertEquals(['title', 'updated'], $fields->fields->{Article::getType()});
+        $this->assertEquals(['title'], $fields->fields->{Tag::getType()});
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     * @expectedException \Phramework\Exceptions\IncorrectParametersException
+     */
+    public function testParseFromParametersFailureNotAllowed()
+    {
+        $parameters = (object)[
+            'fields' => [
+                Article::getType() => 'creator-user_id'
+            ]
+        ];
+
+        $fields = Fields::parseFromParameters(
+            $parameters,
+            Article::class
         );
     }
 

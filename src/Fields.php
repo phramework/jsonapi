@@ -115,8 +115,8 @@ class Fields
     }
 
     /**
-     * @param object $parameters
-     * @param string $modelClass
+     * @param object $parameters Request parameters
+     * @param string $primaryResourceModelClass Primary resource model class
      * @return Fields|null
      * @throws RequestException
      * @throws IncorrectParametersException
@@ -132,8 +132,9 @@ class Fields
      *     Article::class
      * );
      * ```
+     * @uses Model::getFields for each resource type to parse allowed fields
      */
-    public static function parseFromParameters($parameters, $modelClass)
+    public static function parseFromParameters($parameters, $primaryResourceModelClass)
     {
         if (!isset($parameters->fields)) {
             return null;
@@ -142,12 +143,14 @@ class Fields
         $fields = new Fields();
 
         foreach ($parameters->fields as $resourceType => $value) {
-            //check if $resourceType allowed,
-            //TODO incomplete since we will support 2nd level relationship data inclusion
-            if ($modelClass::getType() == $resourceType
-                || $modelClass::relationshipExists($resourceType)
-            ) {
+            if ($primaryResourceModelClass::getType() == $resourceType) {
+                //check if $resourceType allowed (primary)
+                $modelClass = $primaryResourceModelClass;
+            } else if($primaryResourceModelClass::relationshipExists($resourceType)) {
+                //check if $resourceType allowed (primary's relationships)
+                $modelClass = $primaryResourceModelClass::getRelationship($resourceType)->modelClass;
             } else {
+                //TODO incomplete since we will support 2nd level relationship data inclusion
                 throw new RequestException(sprintf(
                     'Not allowed resource type "%s" for fields',
                     $resourceType
@@ -155,7 +158,9 @@ class Fields
             }
 
             if (!is_string($value)) {
-                throw new IncorrectParametersException(sprintf(
+                throw new IncorrectParametersException(
+                    ['fields'],
+                    sprintf(
                     'Expecting string value for fields of resource type "%s"',
                     $resourceType
                 ));
@@ -166,8 +171,19 @@ class Fields
                 explode(',', trim($value))
             );
 
-            //Validate parsedFields
-            //TODO
+            $allowedFields = $modelClass::getFields();
+
+            //Validate parsedFields (allowed in $modelClass)
+            foreach ($parsedFields as $parsedField) {
+                if (!in_array($parsedField, $allowedFields)) {
+                    throw new IncorrectParametersException(
+                        ['fields'],
+                        'Field "%s" is not allowed for field directive of resource type "%s"',
+                        $parsedField,
+                        $resourceType
+                    );
+                }
+            }
 
             //Push parsed fields
             $fields->add($resourceType, $parsedFields);

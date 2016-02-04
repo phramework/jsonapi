@@ -133,7 +133,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $ids[] = $id;
         }
 
-        return $ids;
+        return $ids; //TODO REMOVE
 
         if (count($ids) === 1) {
             //Prepare response with 201 Created status code

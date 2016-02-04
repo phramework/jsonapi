@@ -33,7 +33,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
 {
     /**
      * Handle handleByIdRelationships requests
-     * @param object $params                          Request parameters
+     * @param object $parameters                          Request parameters
      * @param string $method                          Request method
      * @param array  $headers                         Request headers
      * @param integer|string $id                      Resource's id
@@ -51,7 +51,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
      * @throws IncorrectParametersException When request method is not allowed
      */
     protected static function handleByIdRelationships(
-        $params,
+        $parameters,
         $method,
         $headers,
         $id,
@@ -61,8 +61,6 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
         $primaryDataParameters = [],
         $relationshipParameters = []
     ) {
-        $id = Request::requireId($params);
-
         $relationship = Filter::string($relationship);
 
         //Check if relationship exists

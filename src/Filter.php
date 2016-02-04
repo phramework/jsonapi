@@ -242,7 +242,7 @@ class Filter
                     $isJSONFilter = true;
                 }
 
-                if (!key_exists($filterKey, $filterable)) {
+                if (!property_exists($filterable, $filterKey)) {
                     throw new RequestException(sprintf(
                         'Filter key "%s" not allowed',
                         $filterKey
@@ -271,7 +271,7 @@ class Filter
                     ));
                 }
 
-                $operatorClass = $filterable[$filterKey];
+                $operatorClass = $filterable->{$filterKey};
 
                 if ($isJSONFilter && ($operatorClass & Operator::CLASS_JSONOBJECT) === 0) {
                     throw new RequestException(sprintf(

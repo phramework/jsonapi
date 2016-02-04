@@ -27,7 +27,6 @@ use \Phramework\Exceptions\RequestException;
  */
 abstract class Base
 {
-
     /**
      * Shortcut to \Phramework\Phramework::view.
      * @uses \Phramework\Phramework::view
@@ -113,24 +112,24 @@ abstract class Base
 
     /**
      * Extract included related resources from parameters
-     * @param  object $params Request parameters
+     * @param  object $parameters Request parameters
      * @return string[]
      */
-    protected static function getRequestInclude($params)
+    protected static function getRequestInclude($parameters)
     {
         //work with arrays
-        if (!is_object($params) && is_array($params)) {
-            $params = (object)$params;
+        if (!is_object($parameters) && is_array($parameters)) {
+            $parameters = (object)$parameters;
         }
 
-        if (!isset($params->include) || empty($params->include)) {
+        if (!isset($parameters->include) || empty($parameters->include)) {
             return [];
         }
 
         $include = [];
 
         //split parameter using , (for multiple values)
-        foreach (explode(',', $params->include) as $i) {
+        foreach (explode(',', $parameters->include) as $i) {
             $include[] = trim($i);
         }
 
@@ -152,63 +151,68 @@ abstract class Base
      *    ]
      * ]
      * ```
-     * @param  object $params Request parameters
+     * @param  object $parameters Request parameters
      * @uses Request::requireParameters
      * @return object
      */
-    protected static function getRequestAttributes($params)
+    protected static function getRequestAttributes($parameters)
     {
         //work with objects
-        if (!is_object($params) && is_array($params)) {
-            $params = (object)$params;
+        if (is_array($parameters)) {
+            $parameters = (object) $parameters;
         }
 
         //Require data
-        Request::requireParameters($params, ['data']);
+        Request::requireParameters($parameters, ['data']);
 
         //Require data attributes
-        Request::requireParameters($params->data, ['attributes']);
+        Request::requireParameters($parameters->data, ['attributes']);
 
-        return (object)$params->data->attributes;
+        //work with objects
+        if (is_array($parameters->data)) {
+            $parameters->data = (object) $parameters->data;
+        }
+
+        return (object)$parameters->data->attributes;
     }
 
     /**
      * Get request primary data
-     * @param  object $params Request parameters
+     * @param  object $parameters Request parameters
      * @uses Request::requireParameters
      * @return object|object[]
      */
-    protected static function getRequestData($params)
+    protected static function getRequestData($parameters)
     {
         //work with objects
-        if (!is_object($params) && is_array($params)) {
-            $params = (object)$params;
+        if (!is_object($parameters) && is_array($parameters)) {
+            $parameters = (object)$parameters;
         }
 
         //Require data
-        Request::requireParameters($params, ['data']);
+        Request::requireParameters($parameters, ['data']);
 
-        return $params->data;
+        return $parameters->data;
     }
 
     /**
      * Get request relationships if any attributes.
-     * @param  object $params Request parameters
+     * @param  object $parameters Request parameters
      * @return \stdClass
      */
-    protected static function getRequestRelationships($params)
+    protected static function getRequestRelationships($parameters)
     {
         //work with objects
-        if (!is_object($params) && is_array($params)) {
-            $params = (object)$params;
+        if (!is_object($parameters) && is_array($parameters)) {
+            $parameters = (object)$parameters;
         }
 
         //Require data
-        Request::requireParameters($params, ['relationships']);
+        Request::requireParameters($parameters, ['relationships']);
 
         //Require data['relationships']
-        if (isset($params->data->relationships)) {
-            return (object)$params->data->relationships;
+        if (isset($parameters->data->relationships)) {
+            return (object)$parameters->data->relationships;
         } else {
             return new \stdClass();
         }

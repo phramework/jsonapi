@@ -16,9 +16,10 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
-use Phramework\JSONAPI\Controller\GET\Filter;
-use Phramework\JSONAPI\Controller\GET\Page;
-use Phramework\JSONAPI\Controller\GET\Sort;
+use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Sort;
 use Phramework\JSONAPI\Model;
 use \Phramework\Models\Request;
 use \Phramework\Models\Operator;
@@ -57,30 +58,18 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
         $parameters,
         $modelClass,
         $primaryDataParameters = [],
-        $relationshipParameters = [],
-        $filterable = true,
-        $filterableJSON = false,
-        $sortable = true
+        $relationshipParameters = []
     ) {
-        $filter = null;
-
-        $sort = null;
-
-        if ($filterable) {
-            $filter = $modelClass::parseFilter($parameters);
-        }
-
-        $page = Page::parseFromParameters($parameters);
-
-        if ($sortable) {
-            $sort = $modelClass::parseSort($parameters);
-        }
+        $page   = $modelClass::parsePage($parameters);
+        $filter = $modelClass::parseFilter($parameters);
+        $sort   = $modelClass::parseSort($parameters);
+        $fields = $modelClass::parseFields($parameters);
 
         $data = $modelClass::get(
             $page,
             $filter,
             $sort,
-            null, //fields
+            $fields,
             $primaryDataParameters
         );
 
@@ -90,6 +79,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
         $includedData = $modelClass::getIncludedData(
             $data,
             $requestInclude,
+            $fields,
             $relationshipParameters
         );
 

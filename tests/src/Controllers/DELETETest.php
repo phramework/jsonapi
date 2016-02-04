@@ -19,13 +19,11 @@ namespace Phramework\JSONAPI\Controller;
 use \Phramework\Phramework;
 
 /**
- * @todo test wrong relationship
- * @todo test validation error
- * @coversDefaultClass \Phramework\JSONAPI\Controller\POST
+ * @coversDefaultClass \Phramework\JSONAPI\Controller\DELETE
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class POSTTest extends \PHPUnit_Framework_TestCase
+class DELETETest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Phramework
@@ -34,8 +32,9 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @var object
+     * @todo rename if this is response data
      */
-    protected $params;
+    protected $parameters;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -48,33 +47,8 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
     protected function prepare()
     {
-        //ob_start();
-        $_SERVER['REQUEST_URI'] = '/article/';
-        $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_POST;
-
-        $_POST['data'] = [
-            'type' => 'article',
-            'attributes' => [
-                'title' => 'omg'
-            ],
-            'relationships' => [
-                'creator' => [
-                    'data' => [
-                        'type' => 'user', 'id' => '1'
-                    ]
-                ],
-                'tag' => [
-                    'data' => [
-                        [
-                            'type' => 'tag', 'id' => '3'
-                        ],
-                        [
-                            'type' => 'tag', 'id' => '2'
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $_SERVER['REQUEST_URI'] = '/article/1';
+        $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_DELETE;
 
         $this->phramework = \Phramework\JSONAPI\APP\Bootstrap::prepare();
 
@@ -89,48 +63,22 @@ class POSTTest extends \PHPUnit_Framework_TestCase
             ) use (
                 $that
             ) {
-                $that->params = $parameters;
+                $that->parameters = $parameters;
             }
         );
-
-        // clean the output buffer
-        //ob_clean();
-        //$this->phramework->invoke();
-        //ob_end_clean();
     }
 
     /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
+     * @covers ::handleDELETE
      */
-    protected function tearDown()
-    {
-        //\Phramework\JSONAPI\APP\Viewers\Viewer::release(__CLASS__);
-        //foreach ($this->buffer as $line) {
-        //    print_r($line);
-        //}
-    }
-
-    /**
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOSTResource
-     */
-    public function testHandlePOSTResource()
-    {
-        $this->testPOSTSuccess();
-    }
-
-    /**
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
-     */
-    public function testPOSTSuccess()
+    public function testDELETESuccess()
     {
         $this->prepare();
-        //ob_clean();
+
         $this->phramework->invoke();
 
-        //ob_end_clean();
         //Access parameters written by invoked phramework's viewer
-        $params = $this->params;
+        $params = $this->parameters;
         return;
 
         $this->assertInternalType('object', $params);
@@ -171,47 +119,46 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Cause a not found exception, at to TYPE_TO_ONE relationship
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
+     * @covers \Phramework\JSONAPI\Controller\DELETE::handleDELETE
      */
-    public function testPOSTFailureToOne()
+    public function testDELETEFailureToOne()
     {
-        return;
         $this->prepare();
 
         //Set a non existing id for creator relationship
-        $_POST['data']['relationships']['creator']['data']['id'] = 4235454365434;
+        $_SERVER['REQUEST_URI'] = '/article/3'; //Will return false on delete
 
         $this->phramework->invoke();
 
         //Access parameters written by invoked phramework's viewer
-        $params = $this->params;
+        $params = $this->parameters;
 
         $this->assertInternalType('object', $params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(
-            404,
+            400,
             $params->errors[0]->status,
-            'Expect error`s status to be 404, since we caused a not found exception'
+            'Expect error status to be 400'
         );
     }
 
     /**
      * Cause a not found exception, at to TYPE_TO_MANY relationship
-     * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
+     * @covers \Phramework\JSONAPI\Controller\DELETE::handleDELETE
      */
-    public function testPOSTFailureToMany()
+    public function testDELETEFailureToMany()
     {
         return;
         $this->prepare();
 
         //Set a non existing id for tag relationship
-        $_POST['data']['relationships']['tag']['data'][0]['id'] = 4235454365434;
+        $_DELETE['data']['relationships']['tag']['data'][0]['id'] = 4235454365434;
 
         $this->phramework->invoke();
 
         //Access parameters written by invoked phramework's viewer
-        $params = $this->params;
+        $params = $this->parameters;
 
         $this->assertInternalType('object', $params);
         $this->assertObjectHasAttribute('errors', $params);

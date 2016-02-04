@@ -126,7 +126,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      * Update selected attributes of a database record
      * @param  mixed $id id attribute's value
      * @param  object $attributes Key-value array with fields to update
-     * @return number of updated rows
+     * @return int Number of updated rows
      * @todo add query limit
      */
     public static function patch($id, $attributes)
@@ -144,7 +144,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     /**
      * Delete a database record
      * @param  mixed $id id attribute's value
-     * @param  object $additionalAttributes Object with additinal fields
+     * @param  object $additionalAttributes Object with additional fields
      * to use in WHERE clause
      * @return boolean Returns true on success, false on failure
      */
@@ -167,11 +167,22 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     /**
      * Get filterable attribute keys
      * **MAY** be overwritten
-     * @return array
+     * @return object
+     * @example
+     * ```
+     * $filterable = getFilterable();
+     *
+     * //Will return
+     * (object) [
+     *     'no-validator' => Operator::CLASS_COMPARABLE,
+     *     'status'       => Operator::CLASS_COMPARABLE,
+     *     'title'        => Operator::CLASS_COMPARABLE | Operator::CLASS_LIKE,
+     * ]
+     * ```
      */
     public static function getFilterable()
     {
-        return [];
+        return (object) [];
     }
 
     /**
@@ -207,12 +218,9 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
-     * Get sort attributes and default
+     * Get sort
      * **MAY** be overwritten
-     * @return object Returns an object with attribute `attributes` containing
-     * an string[] with allowed sort attributes
-     * and attribute `default` a string|null having the value of default, boolean `ascending`
-     * sorting attribute
+     * @return Sort
      */
     public static function getSort()
     {

@@ -63,9 +63,6 @@ class Bootstrap
         unset($settings);
 
         return $phramework;
-
-        //Execute API
-        //$phramework->invoke();
     }
 
     /**

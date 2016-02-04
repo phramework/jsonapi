@@ -18,6 +18,7 @@ namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\APP\Bootstrap;
 use Phramework\JSONAPI\APP\Models\Article;
+use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\Models\Operator;
 
 /**
@@ -32,7 +33,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         return [
             ['primary', []],
             ['relationships', (object)[]],
-            ['attributes',[]]
+            ['attributes', []]
         ];
     }
 
@@ -46,8 +47,6 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             []
         );
     }
-
-
 
     /**
      * @covers ::__construct
@@ -74,7 +73,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         $filter = Filter::parseFromParameters(
             $parameters,
-            APP\Models\Tag::class //Use article resource model's filters
+            Tag::class //Use article resource model's filters
         );
 
         $this->assertInstanceOf(Filter::class, $filter);
@@ -188,7 +187,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
+            Article::class //Use article resource model's filters
         );
     }
 

@@ -30,7 +30,7 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
     /**
      * Handle DELETE method
      * On success will respond with 204 No Content
-     * @param  object $params                          Request parameters
+     * @param  object $parameters                          Request parameters
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
      * @param  integer|string $id                      Requested resource's id
@@ -43,10 +43,10 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
      * @uses model's `getById` method to fetch resource
      * @uses $modelClass::delete method to
      *     delete resources
-     * @return void
+     * @return bool
      */
     protected static function handleDELETE(
-        $params,
+        $parameters,
         $method,
         $headers,
         $id,
@@ -54,7 +54,11 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
         $primaryDataParameters = []
     ) {
         //Fetch data, in order to check if resource exists (and/or is accessible)
-        $data = $modelClass::getById($id, $primaryDataParameters);
+        $data = $modelClass::getById(
+            $id,
+            null, //fields
+            ...$primaryDataParameters
+        );
 
         //Check if resource exists
         static::exists($data);
@@ -71,6 +75,6 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
 
         \Phramework\Models\Response::noContent();
 
-        return;
+        return true;
     }
 }

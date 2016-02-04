@@ -29,7 +29,7 @@ use Phramework\Validate\ObjectValidator;
 abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
 {
     /**
-     * @param  object $params                          Request parameters
+     * @param  object $parameters                          Request parameters
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
      * @param  integer|string $id                      Requested resource's id
@@ -49,7 +49,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
      * @todo rethink output
      */
     protected static function handlePATCH(
-        $params,
+        $parameters,
         $method,
         $headers,
         $id,
@@ -84,7 +84,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
             );
         }
 
-        $requestAttributes = static::getRequestAttributes($params);
+        $requestAttributes = static::getRequestAttributes($parameters);
 
         $attributes = $validator->parse($requestAttributes);
         $attributesCount = 0;
@@ -101,12 +101,18 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         }
 
         //Fetch data, to check if resource exists
-        $data = $modelClass::getById(id, $primaryDataParameters);
+        $data = $modelClass::getById(
+            $id,
+            null, //fields
+            ...$primaryDataParameters
+        );
 
-        //Check if resource exists
+        //Check if resource exists (MUST exist!)
         static::exists($data);
 
         $patch = $modelClass::patch($id, (array) $attributes);
+
+        self::testUnknownError($patch, 'PATCH operation was not successful');
 
         static::viewData(
             $modelClass::resource(['id' => $id]),

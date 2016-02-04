@@ -40,6 +40,14 @@ class Tag extends \Phramework\JSONAPI\APP\Model
     protected static $table    = 'tag';
 
     /**
+     * @return string[]
+     */
+    public static function getFields()
+    {
+        return ['title'];
+    }
+
+    /**
      * @param Page|null $page       *[Optional]*
      * @param Filter|null $filter   *[Optional]*
      * @param Sort|null $sort       *[Optional]*

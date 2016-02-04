@@ -16,8 +16,9 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
-use \Phramework\Models\Request;
-use \Phramework\Exceptions\RequestException;
+use Phramework\Models\Request;
+use Phramework\JSONAPI\Fields;
+use Phramework\Exceptions\RequestException;
 
 /**
  * GETById related methods
@@ -30,7 +31,7 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
 
     /**
      * handles GETById requests
-     * @param  object $params                          Request parameters
+     * @param  object $parameters                          Request parameters
      * @param  integer|string $id                      Requested resource's id
      * @param  string $modelClass                      Resource's primary model
      * to be used
@@ -42,34 +43,38 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
      * @return boolean
      */
     protected static function handleGETByid(
-        $params,
+        $parameters,
         $id,
         $modelClass,
         $primaryDataParameters = [],
         $relationshipParameters = []
     ) {
-        //Rewrite resource's id
-        $id = Request::requireId($params);
-
         $filterValidationModel = $modelClass::getFilterValidationModel();
+
+        $idAttribute = $modelClass::getIdAttribute();
 
         //Filter id attribute value
         if (!empty($filterValidationModel) && isset($filterValidationModel->{$idAttribute})) {
             $id = $filterValidationModel->{$idAttribute}->parse($id);
         }
 
-        //validate if set
+        $fields = $modelClass::parseFields($parameters);
 
-        $data = $modelClass::getById($id, $primaryDataParameters);
+        $data = $modelClass::getById(
+            $id,
+            $fields,
+            ...$primaryDataParameters
+        );
 
         //Check if resource exists
         static::exists($data);
 
-        $requestInclude = static::getRequestInclude($params);
+        $requestInclude = static::getRequestInclude($parameters);
 
         $includedData = $modelClass::getIncludedData(
             $data,
             $requestInclude,
+            $fields,
             $relationshipParameters
         );
 
