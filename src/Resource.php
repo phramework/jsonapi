@@ -157,10 +157,10 @@ class Resource
             return null;
         }
 
-        $flagAttributes              = ($flags & Resource::PARSE_ATTRIBUTES             ) != 0;
-        $flagLinks                   = ($flags & Resource::PARSE_LINKS                  ) != 0;
-        $flagRelationships           = ($flags & Resource::PARSE_RELATIONSHIP           ) != 0;
-        $flagRelationshipsLinks      = ($flags & Resource::PARSE_RELATIONSHIP_LINKS     ) != 0;
+        $flagAttributes              = ($flags & Resource::PARSE_ATTRIBUTES) != 0;
+        $flagLinks                   = ($flags & Resource::PARSE_LINKS) != 0;
+        $flagRelationships           = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
+        $flagRelationshipsLinks      = ($flags & Resource::PARSE_RELATIONSHIP_LINKS) != 0;
 
         //Work with objects
         if (!is_object($record) && is_array($record)) {
@@ -220,7 +220,6 @@ class Resource
 
                 //Attach relationship links
                 if ($flagRelationshipsLinks) {
-
                     $relationshipEntry->links = [
                         'self' => $modelClass::getSelfLink(
                             $resource->id . '/relationships/' . $relationshipKey
@@ -258,7 +257,6 @@ class Resource
                 };
 
                 if ($relationshipType == Relationship::TYPE_TO_ONE) {
-
                     $relationshipEntryResource = null;
 
                     if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded

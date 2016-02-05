@@ -146,7 +146,7 @@ class Fields
             if ($primaryResourceModelClass::getType() == $resourceType) {
                 //check if $resourceType allowed (primary)
                 $modelClass = $primaryResourceModelClass;
-            } else if($primaryResourceModelClass::relationshipExists($resourceType)) {
+            } elseif ($primaryResourceModelClass::relationshipExists($resourceType)) {
                 //check if $resourceType allowed (primary's relationships)
                 $modelClass = $primaryResourceModelClass::getRelationship($resourceType)->modelClass;
             } else {

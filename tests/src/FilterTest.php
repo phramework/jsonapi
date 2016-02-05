@@ -203,7 +203,6 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $found2 = false;
 
         foreach ($filter->attributes as $filterAttribute) {
-
             if ($shouldContain1 == $filterAttribute) {
                 $found1 = true;
             } elseif ($shouldContain2 == $filterAttribute) {

@@ -114,7 +114,6 @@ class Filter
                     $relationshipKey
                 ));
             }
-
         }
 
         if (!Util::isArrayOf($filterAttributes, FilterAttribute::class)) {
@@ -193,7 +192,6 @@ class Filter
         $filterable = $modelClass::getFilterable();
 
         foreach ($this->attributes as $filterAttribute) {
-
             $isJSONFilter = ($filterAttribute instanceof FilterJSONAttribute);
 
             if (!property_exists($filterable, $filterAttribute->attribute)) {
@@ -316,7 +314,6 @@ class Filter
         $filterAttributes    = [];
 
         foreach ($parameters->filter as $filterKey => $filterValue) {
-
             if ($filterKey === $modelClass::getType()) { //Filter primary data
                 //Check filter value type
                 if (!is_string($filterValue) && !is_integer($filterValue)) {
