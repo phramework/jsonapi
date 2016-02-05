@@ -24,8 +24,14 @@ use Symfony\Component\Config\Definition\Exception\Exception;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @todo add magic set and get, set will instantiate a property
  * if it's null, to reduce output of json to minimal required
+ * @property-read string $id
+ * @property-read string $type
+ * @property string $links
+ * @property string $attributes
+ * @property string $relationships
+ * @property string $data
  */
-class Resource
+class Resource extends \stdClass
 {
     const META_MEMBER = 'attributes-meta';
 
@@ -47,38 +53,14 @@ class Resource
      * Resource's type
      * @var string
      */
-    public $type;
+    protected $type;
 
     /**
      * *NOTE* The id member is not required when the resource object originates
      * at the client and represents a new resource to be created on the server.
      * @var string
      */
-    public $id;
-
-    /**
-     * An attributes object representing some of the resource's data
-     * @var object
-     */
-    public $attributes;
-
-    /**
-     * A relationships object describing relationships between the resource and other JSON API resources.
-     * @var object
-     */
-    public $relationships;
-
-    /**
-     * A links object containing links related to the resource
-     * @var object
-     */
-    public $links;
-
-    /**
-     * Non-standard meta-information about a resource that can not be represented as an attribute or relationship.
-     * @var object
-     */
-    public $meta;
+    protected $id;
 
     /**
      * Resource constructor.
@@ -90,10 +72,67 @@ class Resource
         $this->type = $type;
         $this->id   = (string)$id;
 
-        $this->links         = new \stdClass();
-        $this->attributes    = new \stdClass();
-        $this->relationships = new \stdClass();
-        $this->meta          = new \stdClass();
+        //$this->links         = new \stdClass();
+        //$this->attributes    = new \stdClass();
+        //$this->relationships = new \stdClass();
+        //$this->meta          = new \stdClass();
+    }
+
+    public function __set($name, $value)
+    {
+        if (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
+            if (!isset($this->{$name}) || $this->{$name} === null) {
+                $this->{$name} = new \stdClass();
+            }
+
+            $this->{$name} = $value;
+        } elseif (in_array($name, ['id', 'type'])) {
+            $this->{$name} = $value;
+        } else {
+
+            throw new \Exception(sprintf(
+                'Undefined property via __set(): %s',
+                $name
+            ));
+        }
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws \Exception
+     */
+    public function __get($name)
+    {
+        /*switch ($name) {
+            case 'type':
+                return $this->type;
+            case 'id':
+                return $this->id;
+            case 'links':
+                return $this->links;
+            case 'attributes':
+                return $this->attributes;
+            case 'relationships':
+                return $this->relationships;
+            case 'meta':
+                return $this->meta;
+        }*/
+
+        if (in_array($name, ['id', 'type'])) {
+            return $this->{$name};
+        } elseif (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
+            return (
+                isset($this->{$name})
+                ? $this->{$name}
+                : null
+            );
+        }
+
+        throw new \Exception(sprintf(
+            'Undefined property via __get(): %s',
+            $name
+        ));
     }
 
     public static function parseFromRecords(
@@ -215,9 +254,10 @@ class Resource
             unset($record->{Resource::META_MEMBER});
         }
 
+
         //Attach relationships if resource's relationships are set
         if ($flagRelationships && ($relationships = $modelClass::getRelationships())) {
-
+            $resourceRelationships = new \stdClass();
             //Parse relationships
             foreach ($relationships as $relationshipKey => $relationshipObject) {
                 //Initialize an new relationship entry object
@@ -262,7 +302,8 @@ class Resource
                     );
                 };
 
-                if ($flagRelationshipData || $relationshipFlagData) { //Include data only if $flagRelationshipData is true
+                if ($flagRelationshipData || $relationshipFlagData) {
+                    //Include data only if $flagRelationshipData is true
                     if ($relationshipType == Relationship::TYPE_TO_ONE) {
                         $relationshipEntryResource = null;
 
@@ -341,8 +382,10 @@ class Resource
                 }
 
                 //Push relationship to relationships
-                $resource->relationships->{$relationshipKey} = $relationshipEntry;
+                $resourceRelationships->{$relationshipKey} = $relationshipEntry;
+                //$resource->relationships->{$relationshipKey} = $relationshipEntry; REMOVE
             }
+            $resource->relationships = $resourceRelationships;
         }
 
         //Attach resource attributes

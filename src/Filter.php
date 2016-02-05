@@ -29,7 +29,8 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @property-read string[]          $primary
  * @property-read object            $relationships
- * @property-read FilterAttribute[]|FilterJSONAttribute[] $attributes Attribute filters of type `FilterAttribute` and `FilterJSONAttribute`
+ * @property-read FilterAttribute[]|FilterJSONAttribute[] $attributes
+ * Attribute filters of type `FilterAttribute` and `FilterJSONAttribute`
  */
 class Filter
 {

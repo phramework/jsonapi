@@ -175,9 +175,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         return implode(
             ',',
             array_map(
-            /**
-             * Apply single quotes around key
-             */
+                /**
+                 * Apply single quotes around key
+                 */
                 function ($key) {
                     return '\'' . $key . '\'';
                 },
@@ -338,7 +338,8 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         strtolower($operand)
                     );
                     $hasWhere = true;
-                } elseif (in_array($operator, [Operator::OPERATOR_IN, Operator::OPERATOR_NOT_IN])) { //@todo add operator class in
+                } elseif (in_array($operator, [Operator::OPERATOR_IN, Operator::OPERATOR_NOT_IN])) {
+                    //@todo add operator class in
                     //Define a transformation matrix, operator to SQL operator
                     $transformation = [
                         Operator::OPERATOR_NOT_IN => 'NOT IN'

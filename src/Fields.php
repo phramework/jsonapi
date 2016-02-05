@@ -169,9 +169,10 @@ class Fields
                 throw new IncorrectParametersException(
                     ['fields'],
                     sprintf(
-                    'Expecting string value for fields of resource type "%s"',
-                    $resourceType
-                ));
+                        'Expecting string value for fields of resource type "%s"',
+                        $resourceType
+                    )
+                );
             }
 
             $parsedFields = array_map(
