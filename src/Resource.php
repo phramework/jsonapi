@@ -16,8 +16,6 @@
  */
 namespace Phramework\JSONAPI;
 
-use Symfony\Component\Config\Definition\Exception\Exception;
-
 /**
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -31,7 +29,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
  * @property string $relationships
  * @property string $data
  */
-class Resource extends \stdClass
+class Resource extends \stdClass implements \JsonSerializable
 {
     const META_MEMBER = 'attributes-meta';
 
@@ -236,6 +234,9 @@ class Resource extends \stdClass
             unset($record->{Resource::META_MEMBER});
         }
 
+        if ($flagAttributes) {
+            $resource->attributes = new \stdClass();
+        }
 
         //Attach relationships if resource's relationships are set
         if ($flagRelationships && ($relationships = $modelClass::getRelationships())) {
@@ -386,5 +387,10 @@ class Resource extends \stdClass
 
         //Return final resource object
         return $resource;
+    }
+
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
     }
 }

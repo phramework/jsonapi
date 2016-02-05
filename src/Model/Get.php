@@ -34,6 +34,7 @@ use Phramework\JSONAPI\Relationship;
 abstract class Get extends \Phramework\JSONAPI\Model\Directives
 {
     /**
+     * Get collection of resources
      * @param Page|null   $page     *[Optional]*
      * @param Filter|null $filter   *[Optional]*
      * @param Sort|null   $sort     *[Optional]*
@@ -53,6 +54,7 @@ abstract class Get extends \Phramework\JSONAPI\Model\Directives
     }
 
     /**
+     * Get a single resource by id or multiple resource by id array
      * @param string|string[] $id       An id of a single resource or ids of multiple resources
      * @param Fields|null     $fields   *[Optional]*
      * @param mixed        ...$additionalParameters

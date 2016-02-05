@@ -164,7 +164,7 @@ abstract class Relationship extends Get
             }
 
             //Will hold ids of related data
-            $tempRelationshipIds[$relationshipKey] = [];
+            $tempRelationshipIds->{$relationshipKey} = [];
         }
 
         if (empty($include) || empty($primaryData)) {
@@ -221,7 +221,7 @@ abstract class Relationship extends Get
         foreach ($include as $relationshipKey) {
             $relationship = static::getRelationship($relationshipKey);
 
-            $relationshipClass = $relationship->getRelationshipClass();
+            $relationshipModelClass = $relationship->modelClass();
 
             $ids = array_unique($tempRelationshipIds->{$relationshipKey});
 
@@ -231,10 +231,10 @@ abstract class Relationship extends Get
                 : []
             );
 
-            $resources = $relationshipClass::getById(
+            $resources = $relationshipModelClass::getById(
                 $ids,
                 $fields,
-                $additionalArgument
+                ...$additionalArgument
             );
 
             foreach ($resources as $key => $resource) {

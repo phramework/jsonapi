@@ -70,7 +70,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
             $filter,
             $sort,
             $fields,
-            $primaryDataParameters
+            ...$primaryDataParameters
         );
 
         $requestInclude = static::getRequestInclude($parameters);
