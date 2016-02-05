@@ -205,6 +205,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         $additionalQuery = [];
 
         if ($filter !== null) {
+
+            $filter->validate(static::class);
+
             if (count($filter->primary)) {
                 $additionalQuery[] = sprintf(
                     '%s "%s"."%s" IN (%s)',

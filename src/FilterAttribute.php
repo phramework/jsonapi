@@ -16,6 +16,10 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Models\Operator;
+use Phramework\Validate\StringValidator;
+use Phramework\Exceptions\RequestException;
+
 /**
  * Fields helper methods
  * @since 1.0.0
@@ -27,6 +31,8 @@ namespace Phramework\JSONAPI;
  */
 class FilterAttribute
 {
+    const JSON_ATTRIBUTE_PROPERTY_KEY_EXPRESSION = '/^[a-zA-Z_\-0-9]{1,32}$/';
+
     /**
      * @var string
      */
@@ -54,6 +60,82 @@ class FilterAttribute
         $this->attribute = $attribute;
         $this->operator = $operator;
         $this->operand = $operand;
+    }
+
+    /**
+     * @param string $filterKey
+     * @param string|string[] $filterValue
+     * @return FilterAttributes[]|FilterJSONAttribute[]
+     * @throws RequestException
+     */
+    public static function parse($filterKey, $filterValue)
+    {
+        /**
+         * @var FilterAttributes[]
+         */
+        $filterAttributes = [];
+
+        $isJSONFilter = false;
+
+        //Check if $filterKeyParts and key contains `.` dot character (object dereference operator)
+        if (strpos($filterKey, '.') !== false) {
+            $filterKeyParts = explode('.', $filterKey);
+
+            if (count($filterKeyParts) > 2) {
+                throw new RequestException(
+                    'Second level filtering for JSON objects is not available'
+                );
+            }
+
+            $filterPropertyKey = $filterKeyParts[1];
+
+            //Hack check $filterPropertyKey if valid using regular expression
+            //@todo
+            (new StringValidator(0, null, self::JSON_ATTRIBUTE_PROPERTY_KEY_EXPRESSION))
+                ->parse($filterPropertyKey);
+
+            $filterKey = $filterKeyParts[0];
+
+            $isJSONFilter = true;
+        }
+
+        //All must be arrays
+        if (!is_array($filterValue)) {
+            $filterValue = [$filterValue];
+        }
+
+        foreach ($filterValue as $singleFilterValue) {
+            if (is_array($singleFilterValue)) {
+                throw new RequestException(sprintf(
+                    'Array value given for filter attribute "%s"',
+                    $filterKey
+                ));
+            }
+
+            //@todo is this required?
+            $singleFilterValue = urldecode($singleFilterValue);
+
+            list($operator, $operand) = Operator::parse($singleFilterValue);
+
+            //Push to attribute filters
+
+            if ($isJSONFilter) {
+                $filterAttributes[] = new FilterJSONAttribute(
+                    $filterKey,
+                    $filterPropertyKey,
+                    $operator,
+                    $operand
+                );
+            } else {
+                $filterAttributes[] = new FilterAttribute(
+                    $filterKey,
+                    $operator,
+                    $operand
+                );
+            }
+        }
+
+        return $filterAttributes;
     }
 
     /**

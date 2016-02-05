@@ -107,10 +107,13 @@ class Article extends \Phramework\JSONAPI\APP\Model
             'id'      => new UnsignedIntegerValidator(0, 10),
             'title'   => new StringValidator(2, 32),
             'updated' => new UnsignedIntegerValidator(),
+            'created' => new UnsignedIntegerValidator(),
             'meta'    => new ObjectValidator([
                 'timestamp' => new UnsignedIntegerValidator(),
                 'keywords'  => new StringValidator()
-            ])
+            ]),
+            'order'   => new UnsignedIntegerValidator(),
+            'tag'     => new StringValidator()
         ]);
     }
 
@@ -124,7 +127,10 @@ class Article extends \Phramework\JSONAPI\APP\Model
             'status'       => Operator::CLASS_COMPARABLE,
             'title'        => Operator::CLASS_COMPARABLE | Operator::CLASS_LIKE,
             'updated'      => Operator::CLASS_ORDERABLE  | Operator::CLASS_NULLABLE,
-            'meta'         => Operator::CLASS_JSONOBJECT | Operator::CLASS_NULLABLE | Operator::CLASS_COMPARABLE
+            'created'      => Operator::CLASS_ORDERABLE  | Operator::CLASS_NULLABLE,
+            'meta'         => Operator::CLASS_JSONOBJECT | Operator::CLASS_NULLABLE | Operator::CLASS_COMPARABLE,
+            'tag'          => Operator::CLASS_IN_ARRAY,
+            'order'        => Operator::CLASS_ORDERABLE
         ];
     }
 

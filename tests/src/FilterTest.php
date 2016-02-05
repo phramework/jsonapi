@@ -40,11 +40,36 @@ class FilterTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct1()
     {
         $filter = new Filter(
             [1, 2, 3],
-            []
+            [
+                'tag' => [1, 2]
+            ]
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstruct2()
+    {
+        $filter = new Filter(
+            [1, 2, 3],
+            null
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @expectedException Exception
+     */
+    public function testConstructFailure1()
+    {
+        $filter = new Filter(
+            [],
+            2
         );
     }
 
@@ -56,7 +81,24 @@ class FilterTest extends \PHPUnit_Framework_TestCase
     {
         $filter = new Filter(
             [],
-            2
+            (object) [
+                'tag' => new \stdClass() //not an array
+            ]
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @expectedException Exception
+     */
+    public function testConstructFailure3()
+    {
+        $filter = new Filter(
+            [],
+            null,
+            [
+                new \stdClass()
+            ]
         );
     }
 
@@ -175,7 +217,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\RequestException
+     * @expectedException \Phramework\Exceptions\IncorrectParametersException
      */
     public function testParseFromParametersFailurePrimaryNotString()
     {
@@ -193,7 +235,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
 
     /**
-     * @covers ::parseFromParameters
+     * @covers ::validate
      * @expectedException \Phramework\Exceptions\IncorrectParametersException
      */
     public function testParseFromParametersFailurePrimaryToParse()
@@ -206,13 +248,13 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
-        );
+            Article::class //Use article resource model's filters
+        )->validate(Article::class);
     }
 
     /**
      * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\RequestException
+     * @expectedException \Phramework\Exceptions\IncorrectParametersException
      */
     public function testParseFromParametersFailureRelationshipNotString()
     {
@@ -224,12 +266,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
-        );
+            Article::class //Use article resource model's filters
+        )->validate(Article::class);
     }
 
     /**
-     * @covers ::parseFromParameters
+     * @covers ::validate
      * @expectedException \Phramework\Exceptions\RequestException
      */
     public function testParseFromParametersFailureNotAllowedAttribute()
@@ -242,12 +284,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
-        );
+            Article::class //Use article resource model's filters
+        )->validate(Article::class);
     }
 
     /**
-     * @covers ::parseFromParameters
+     * @covers ::validate
      * @expectedException Exception
      */
     public function testParseFromParametersFailureAttributeWithoutValidator()
@@ -260,8 +302,8 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
-        );
+            Article::class //Use article resource model's filters
+        )->validate(Article::class);
     }
 
     /**
@@ -278,12 +320,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
+            Article::class //Use article resource model's filters
         );
     }
 
     /**
-     * @covers ::parseFromParameters
+     * @covers ::validate
      * @expectedException \Phramework\Exceptions\IncorrectParametersException
      */
     public function testParseFromParametersFailureAttributeToParse()
@@ -296,12 +338,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
-        );
+            Article::class //Use article resource model's filters
+        )->validate(Article::class);
     }
 
     /**
-     * @covers ::parseFromParameters
+     * @covers ::validate
      * @expectedException \Phramework\Exceptions\RequestException
      */
     public function testParseFromParametersFailureAttributeNotAllowedOperator()
@@ -314,12 +356,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
-        );
+            Article::class //Use article resource model's filters
+        )->validate(Article::class);
     }
 
     /**
-     * @covers ::parseFromParameters
+     * @covers ::validate
      * @expectedException \Phramework\Exceptions\RequestException
      */
     public function testParseFromParametersFailureAttributeNotAcceptingJSONOperator()
@@ -332,12 +374,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
-        );
+            Article::class //Use article resource model's filters
+        )->validate(Article::class);
     }
 
     /**
-     * @covers ::parseFromParameters
+     * @covers ::validate
      * @expectedException \Phramework\Exceptions\IncorrectParametersException
      */
     public function testParseFromParametersFailureAttributeUsingJSONPropertyValidator()
@@ -348,10 +390,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        Filter::parseFromParameters(
+        $filter = Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
+            Article::class //Use article resource model's filters
         );
+
+        $filter->validate(Article::class);
     }
 
     /**
@@ -366,10 +410,43 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        Filter::parseFromParameters(
+        $filter = Filter::parseFromParameters(
             $parameters,
-            APP\Models\Article::class //Use article resource model's filters
+            Article::class //Use article resource model's filters
         );
+
+        $filter->validate(Article::class);
+    }
+
+    /**
+     * @covers ::validate
+     */
+    public function testValidate()
+    {
+        $filter = new Filter(
+            [],
+            (object) [
+                'tag' => [1, 2, 3]
+            ]
+        );
+
+        $filter->validate(Article::class);
+    }
+
+    /**
+     * @covers ::validate
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testValidateFailureRelationshipNotFound()
+    {
+        $filter = new Filter(
+            [],
+            (object) [
+                'not-found-relationship' => [1, 2, 3]
+            ]
+        );
+
+        $filter->validate(Article::class);
     }
 
     /**

@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI\Controller;
 
 use Phramework\Exceptions\IncorrectParametersException;
+use Phramework\JSONAPI\Fields;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 use \Phramework\Models\Filter;
@@ -72,12 +73,12 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
             )
         );
 
-        $object = call_user_func_array(
-            [
-                $modelClass,
-                'getById'
-            ],
-            array_merge([$id], $primaryDataParameters)
+        $fields = Fields::parseFromParameters($parameters, $modelClass);
+
+        $object = $modelClass::getById(
+            $id,
+            $fields, //$fields
+            $primaryDataParameters
         );
 
         //Check if object exists
@@ -90,6 +91,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
         $data = $modelClass::getRelationshipData(
             $relationship,
             $id,
+            $fields,
             $primaryDataParameters,
             (
                 isset($relationshipParameters[$relationship])

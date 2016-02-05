@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Exceptions\RequestException;
+use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\Models\Operator;
 
 /**
@@ -58,6 +60,32 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
             Operator::OPERATOR_EQUAL,
             '5'
         );
+    }
+
+    /**
+     * @covers ::parse
+     */
+    public function testValidate()
+    {
+        (new FilterTest())->testParseFromParameters();
+    }
+
+    /**
+     * @covers ::parse
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testValidateFailureAttributeArray()
+    {
+        (new FilterTest())->testParseFromParametersFailureAttributeIsArray();
+    }
+
+    /**
+     * @covers ::parse
+     * @expectedException \Phramework\Exceptions\RequestException
+     */
+    public function testValidateFailureAttributeJSONSecondLevel()
+    {
+        (new FilterTest())->testParseFromParametersFailureAttributeJSONSecondLevel();
     }
 
     /**

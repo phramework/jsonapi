@@ -98,10 +98,11 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::getMutable
+     * @dataProvider modelProvider
      */
-    public function testGetMutable()
+    public function testGetMutable($modelClass)
     {
-        $fields = Article::getMutable();
+        $fields = $modelClass::getMutable();
 
         $this->assertInternalType('array', $fields);
         $this->assertTrue(Util::isArrayOf($fields, 'string'));

@@ -79,8 +79,8 @@ abstract class Relationship extends Get
 
         $relationship = static::getRelationship($relationshipKey);
 
-        switch ($relationship->getRelationshipType()) {
-            case Relationship::TYPE_TO_ONE:
+        switch ($relationship->type) {
+            case \Phramework\JSONAPI\Relationship::TYPE_TO_ONE:
                 $resource = $callMethod = static::getById(
                     $id,
                     $fields,
@@ -99,12 +99,9 @@ abstract class Relationship extends Get
                 );
 
                 break;
-            case Relationship::TYPE_TO_MANY:
+            case \Phramework\JSONAPI\Relationship::TYPE_TO_MANY:
             default:
-                $callMethod = [
-                    $relationship->getRelationshipClass(),
-                    self::GET_RELATIONSHIP_BY_PREFIX . ucfirst(static::getType())
-                ];
+                $callMethod = $relationship->dataCallback;
 
                 if (!is_callable($callMethod)) {
                     throw new \Phramework\Exceptions\ServerException(
@@ -116,9 +113,11 @@ abstract class Relationship extends Get
                 //also we could attempt to use getById like the above TO_ONE
                 //to use relationships data
 
-                return call_user_func_array(
+                return call_user_func(
                     $callMethod,
-                    array_merge([$id, $fields], $relationshipParameters)
+                    $id,
+                    $fields,
+                    ...$relationshipParameters
                 );
                 break;
         }
