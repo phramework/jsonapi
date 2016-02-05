@@ -117,7 +117,6 @@ class Sort
                     ? false
                     : true
                 );
-
             } else {
                 throw new RequestException(
                     'Invalid value for sort'

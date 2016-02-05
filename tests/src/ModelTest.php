@@ -119,7 +119,6 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInternalType('array', $fields);
         $this->assertTrue(Util::isArrayOf($fields, 'string'));
-
     }
 
     /**
@@ -133,7 +132,6 @@ class ModelTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInternalType('array', $fields);
         $this->assertTrue(Util::isArrayOf($fields, 'string'));
-
     }
 
     /**

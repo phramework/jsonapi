@@ -205,7 +205,6 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         $additionalQuery = [];
 
         if ($filter !== null) {
-
             $filter->validate(static::class);
 
             if (count($filter->primary)) {
@@ -297,7 +296,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         Operator::OPERATOR_NOT_IN_ARRAY => '= ANY' // External not
                     ];
 
-                    $additionalQuery[] = sprintf( //$operand ANY (array)
+                    $additionalQuery[] = sprintf(//$operand ANY (array)
                         '%s %s (\'%s\' %s("%s"."%s")) ',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         (
@@ -367,7 +366,6 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
             //Apply filters only for JSON attributes
             foreach ($filter->attributes as $filterValue) {
-
                 if (!($filterValue instanceof FilterJSONAttribute)) {
                     continue;
                 }
