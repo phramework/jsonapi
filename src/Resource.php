@@ -89,7 +89,6 @@ class Resource extends \stdClass
         } elseif (in_array($name, ['id', 'type'])) {
             $this->{$name} = $value;
         } else {
-
             throw new \Exception(sprintf(
                 'Undefined property via __set(): %s',
                 $name
@@ -104,21 +103,6 @@ class Resource extends \stdClass
      */
     public function __get($name)
     {
-        /*switch ($name) {
-            case 'type':
-                return $this->type;
-            case 'id':
-                return $this->id;
-            case 'links':
-                return $this->links;
-            case 'attributes':
-                return $this->attributes;
-            case 'relationships':
-                return $this->relationships;
-            case 'meta':
-                return $this->meta;
-        }*/
-
         if (in_array($name, ['id', 'type'])) {
             return $this->{$name};
         } elseif (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
@@ -203,8 +187,6 @@ class Resource extends \stdClass
         $flagRelationships           = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
         $flagRelationshipLinks       = ($flags & Resource::PARSE_RELATIONSHIP_LINKS) != 0;
         $flagRelationshipData        = ($flags & Resource::PARSE_RELATIONSHIP_DATA) != 0;
-
-
 
         //Work with objects
         if (!is_object($record) && is_array($record)) {

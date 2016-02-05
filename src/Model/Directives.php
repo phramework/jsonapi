@@ -107,7 +107,6 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         $replace = '';
 
         if ($sort !== null) {
-
             $sort ->validate(static::class);
 
             $replace = "\n" . sprintf(
