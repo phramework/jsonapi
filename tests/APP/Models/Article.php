@@ -169,13 +169,16 @@ class Article extends \Phramework\JSONAPI\APP\Model
             'creator' => new Relationship(
                 User::class,
                 Relationship::TYPE_TO_ONE,
-                'creator-user_id'
+                'creator-user_id',
+                null,
+                Relationship::FLAG_DEFAULT | Relationship::FLAG_DATA
             ),
             'tag' => new Relationship(
                 Tag::class,
                 Relationship::TYPE_TO_MANY,
                 null,
-                [Tag::class, 'getRelationshipByArticle']
+                [Tag::class, 'getRelationshipByArticle'],
+                Relationship::FLAG_DEFAULT | Relationship::FLAG_DATA
             )
         ];
     }

@@ -34,6 +34,8 @@ class Relationship
      * @deprecated because relationships should not have attributes
      */
     const FLAG_ATTRIBUTES = 1;
+
+    const FLAG_DATA = 2;
     /**
      * Include relationship by default
      */

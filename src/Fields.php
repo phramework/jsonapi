@@ -115,6 +115,14 @@ class Fields
     }
 
     /**
+     * @param string $modelClass
+     * @todo
+     */
+    public function validate($modelClass)
+    {
+    }
+
+    /**
      * @param object $parameters Request parameters
      * @param string $primaryResourceModelClass Primary resource model class
      * @return Fields|null

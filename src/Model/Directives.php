@@ -77,10 +77,10 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
     ) {
         $query = str_replace('{{table}}', static::getTable(), $query);
 
-        $query = trim(static::handleFields(
-            static::handlePage(
-                static::handleSort(
-                    static::handleFilter(
+        $query = trim(self::handleFields(
+            self::handlePage(
+                self::handleSort(
+                    self::handleFilter(
                         $query,
                         $filter,
                         $hasWhere
@@ -102,11 +102,14 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param  Sort|null    $sort
      * @return string       Query
      */
-    protected static function handleSort($query, $sort = null)
+    private static function handleSort($query, $sort = null)
     {
         $replace = '';
 
         if ($sort !== null) {
+
+            $sort ->validate(static::class);
+
             $replace = "\n" . sprintf(
                 'ORDER BY "%s"."%s" %s',
                 $sort->table,
@@ -131,7 +134,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param  Page|null $page
      * @return string            Query
      */
-    protected static function handlePage($query, $page = null)
+    private static function handlePage($query, $page = null)
     {
         /**
          * string[]
@@ -167,7 +170,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param array $array
      * @return string
      */
-    protected static function handleFilterParseIn(array $array)
+    private static function handleFilterParseIn(array $array)
     {
         return implode(
             ',',
@@ -413,44 +416,50 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @return string
      * @since 1.0.0
      */
-    protected static function handleFields(
+    private static function handleFields(
         $query,
         Fields $fields = null
     ) {
         $type = static::getType();
 
-        //Get field attributes for this type and force id attribute
-        $attributes = array_unique(array_merge(
-            $fields->get($type),
-            [static::$idAttribute]
-        ));
+        $queryPart = '*';
 
-        $escape = function ($input) {
-            if ($input === '*') {
-                return $input;
-            }
-            return sprintf('"%s"', $input);
-        };
+        if ($fields !== null) {
+            $fields->validate(static::class);
 
-        /**
-         * This method will prepare the attributes by prefixing then with "
-         * - * ->
-         * - id -> "id"
-         * - table.id -> "table"."id"
-         * and glue them with comma separator
-         */
-        $queryPart = implode(
-            ',',
-            array_map(
-                function ($attribute) use ($escape) {
-                    return implode(
-                        '.',
-                        array_map($escape, explode('.', $attribute))
-                    );
-                },
-                $attributes
-            )
-        );
+            //Get field attributes for this type and force id attribute
+            $attributes = array_unique(array_merge(
+                $fields->get($type),
+                [static::$idAttribute]
+            ));
+
+            $escape = function ($input) {
+                if ($input === '*') {
+                    return $input;
+                }
+                return sprintf('"%s"', $input);
+            };
+
+            /**
+             * This method will prepare the attributes by prefixing then with "
+             * - * ->
+             * - id -> "id"
+             * - table.id -> "table"."id"
+             * and glue them with comma separator
+             */
+            $queryPart = implode(
+                ',',
+                array_map(
+                    function ($attribute) use ($escape) {
+                        return implode(
+                            '.',
+                            array_map($escape, explode('.', $attribute))
+                        );
+                    },
+                    $attributes
+                )
+            );
+        }
 
         $query = str_replace(
             '{{fields}}',

@@ -68,6 +68,14 @@ class Sort
     }
 
     /**
+     * @param string $modelClass
+     * @todo
+     */
+    public function validate($modelClass)
+    {
+    }
+
+    /**
      * @param object $parameters Request parameters
      * @param string $modelClass
      * @return Sort

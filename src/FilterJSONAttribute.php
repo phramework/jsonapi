@@ -21,7 +21,10 @@ namespace Phramework\JSONAPI;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-read string $key
+ * @property-read string      $attribute
+ * @property-read string      $operator
+ * @property-read mixed|null  $operand
+ * @property-read string      $key
  */
 class FilterJSONAttribute extends FilterAttribute
 {

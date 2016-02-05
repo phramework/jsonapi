@@ -27,7 +27,7 @@ use Phramework\Exceptions\RequestException;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @property-read string      $attribute
  * @property-read string      $operator
- * @property-read mixed|null $operand
+ * @property-read mixed|null  $operand
  */
 class FilterAttribute
 {

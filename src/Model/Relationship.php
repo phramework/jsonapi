@@ -17,6 +17,7 @@
 
 namespace Phramework\JSONAPI\Model;
 
+use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
@@ -72,9 +73,10 @@ abstract class Relationship extends Get
         $relationshipParameters = []
     ) {
         if (!static::relationshipExists($relationshipKey)) {
-            throw new \Phramework\Exceptions\ServerException(
-                'Not a valid relationship key'
-            );
+            throw new \Phramework\Exceptions\ServerException(sprintf(
+                '"%s" is not a valid relationship key',
+                $relationshipKey
+            ));
         }
 
         $relationship = static::getRelationship($relationshipKey);
@@ -93,12 +95,10 @@ abstract class Relationship extends Get
 
                 //And use it's relationships data for this relationship
                 return (
-                isset($resource->relationships->{$relationshipKey}->data)
+                    isset($resource->relationships->{$relationshipKey}->data)
                     ? $resource->relationships->{$relationshipKey}->data
                     : null
                 );
-
-                break;
             case \Phramework\JSONAPI\Relationship::TYPE_TO_MANY:
             default:
                 $callMethod = $relationship->dataCallback;
@@ -119,7 +119,6 @@ abstract class Relationship extends Get
                     $fields,
                     ...$relationshipParameters
                 );
-                break;
         }
     }
 
@@ -158,7 +157,7 @@ abstract class Relationship extends Get
         //check if relationship exists
         foreach ($include as $relationshipKey) {
             if (!static::relationshipExists($relationshipKey)) {
-                throw new \Phramework\Exceptions\RequestException(sprintf(
+                throw new RequestException(sprintf(
                     'Relationship "%s" not found',
                     $relationshipKey
                 ));
@@ -245,27 +244,6 @@ abstract class Relationship extends Get
 
                 $included[] = $resource;
             }
-
-            /*
-            foreach (array_unique($tempRelationshipIds->{$relationshipKey}) as $idAttribute) {
-                $additionalArgument = (
-                isset($additionalResourceParameters[$relationshipKey])
-                    ? $additionalResourceParameters[$relationshipKey]
-                    : []
-                );
-
-                $resource = call_user_func_array(
-                    $callMethod,
-                    array_merge([$idAttribute, $fields], $additionalArgument)
-                );
-
-                if (!$resource) {
-                    //throw new \Exception('Relationship resource cannot be accessed');
-                } else {
-                    //push to included
-                    $included[] = $resource;
-                }
-            }*/
         }
 
         return $included;
