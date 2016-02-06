@@ -78,7 +78,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
         $object = $modelClass::getById(
             $id,
             $fields, //$fields
-            $primaryDataParameters
+            ...$primaryDataParameters
         );
 
         //Check if object exists

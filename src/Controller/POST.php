@@ -118,12 +118,14 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $relationships = $queueItem->getRelationships();
 
             foreach ($relationships as $key => $relationship) {
+                //@TODO
                 //Call post relationship method to post each of relationships pairs
                 foreach ($relationship->resources as $resourceId) {
                     call_user_func(
                         $relationship->callback,
+                        $id,
                         $resourceId,
-                        $id
+                        null //$additionalAttributes
                     );
                 }
             }
@@ -352,19 +354,20 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 'getById'
             ];
 
+            $currentRelationshipParameters = (
+            isset($relationshipParameters[$relationshipKey])
+                ? $relationshipParameters[$relationshipKey]
+                : []
+            );
+
             //Check if relationship resources exists
             foreach ($tempIds as $tempId) {
                 self::exists(
-                    call_user_func_array(
+                    call_user_func(
                         $relationshipCallMethod,
-                        array_merge(
-                            [$tempId],
-                            (
-                                isset($relationshipParameters[$relationshipKey])
-                                ? $relationshipParameters[$relationshipKey]
-                                : []
-                            )
-                        )
+                        $tempId,
+                        null, //fields
+                        ...$currentRelationshipParameters
                     ),
                     sprintf(
                         'Resource of type "%s" and id "%d" is not found',

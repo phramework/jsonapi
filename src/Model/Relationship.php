@@ -128,7 +128,7 @@ abstract class Relationship extends Get
      * @param Resource|Resource[]  $primaryData Primary data resource or resources
      * @param string[]             $include     An array with the keys of relationships to include
      * @param Fields|null $fields
-     * @param array $$additionalResourceParameters *[Optional]*
+     * @param array $additionalResourceParameters *[Optional]*
      * @return Resource[]           An array with all included related data
      * @throws \Phramework\Exceptions\RequestException When a relationship is not found
      * @throws \Phramework\Exceptions\ServerException
@@ -221,7 +221,7 @@ abstract class Relationship extends Get
         foreach ($include as $relationshipKey) {
             $relationship = static::getRelationship($relationshipKey);
 
-            $relationshipModelClass = $relationship->modelClass();
+            $relationshipModelClass = $relationship->modelClass;
 
             $ids = array_unique($tempRelationshipIds->{$relationshipKey});
 
