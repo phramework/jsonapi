@@ -218,8 +218,33 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
+     * Get default fields for this resource model
+     * **MAY** be overwritten, default is `'table.*']` where table is accessed from this resource model's table
+     * @return Fields
+     * @since 1.0.0
+     */
+    public static function getDefaultFields()
+    {
+        return new Fields((object) [
+            static::getType() => [static::getTable() .  '.*']
+        ]);
+    }
+
+    /**
+     * Get default page for this resource model
+     * **MAY** be overwritten, default is with limit of 250 resource and offset 0
+     * @return Page
+     * @since 1.0.0
+     * @todo make current applied page somehow visible at meta
+     */
+    public static function getDefaultPage()
+    {
+        return new Page(250, 0);
+    }
+
+    /**
      * Get sort
-     * **MAY** be overwritten
+     * **MAY** be overwritten, default is sorting by id attribute ascending
      * @return Sort
      */
     public static function getSort()

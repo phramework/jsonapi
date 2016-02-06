@@ -27,7 +27,7 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @property-read int|null $limit
  * @property-read int      $offset
  */
-class Page
+class Page implements \JsonSerializable
 {
     /**
      * @var int
@@ -114,5 +114,10 @@ class Page
             'Undefined property via __get(): %s',
             $name
         ));
+    }
+
+    public function jsonSerialize()
+    {
+        return get_object_vars($this);
     }
 }

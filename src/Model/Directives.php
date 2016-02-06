@@ -132,6 +132,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param  string    $query    Query
      * @param  Page|null $page
      * @return string            Query
+     * @uses Model::getDefaultPage if page is null
      */
     private static function handlePage($query, $page = null)
     {
@@ -140,20 +141,23 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
          */
         $additionalQuery = [];
 
-        if ($page !== null) {
-            if ($page->limit !== null) {
-                $additionalQuery[] = sprintf(
-                    'LIMIT %s',
-                    $page->limit
-                );
-            }
+        if ($page === null) {
+            //Use resource model's default page
+            $page = static::getDefaultPage();
+        }
 
-            if ($page->offset) {
-                $additionalQuery[] = sprintf(
-                    'OFFSET %s',
-                    $page->offset
-                );
-            }
+        if ($page->limit !== null) {
+            $additionalQuery[] = sprintf(
+                'LIMIT %s',
+                $page->limit
+            );
+        }
+
+        if ($page->offset) {
+            $additionalQuery[] = sprintf(
+                'OFFSET %s',
+                $page->offset
+            );
         }
 
         $query = str_replace(
@@ -191,7 +195,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param  string       $query    Query
      * @param  Filter|null  $filter
      * @param  bool         $hasWhere *[Optional]* If query already has an WHERE directive, default is true
-     * @return string uery
+     * @return string Query
      * @throws \Phramework\Exceptions\NotImplementedException
      * @throws \Exception
      * @todo check if query work both in MySQL and postgreSQL
@@ -415,6 +419,8 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param Fields|null $fields
      * @return string
      * @since 1.0.0
+     * @todo add table prefix
+     * @uses Model::getDefaultFields if fields is null
      */
     private static function handleFields(
         $query,
@@ -422,44 +428,55 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
     ) {
         $type = static::getType();
 
-        $queryPart = '*';
+        //$queryPart = '*';
 
-        if ($fields !== null) {
-            $fields->validate(static::class);
-
-            //Get field attributes for this type and force id attribute
-            $attributes = array_unique(array_merge(
-                $fields->get($type),
-                [static::$idAttribute]
-            ));
-
-            $escape = function ($input) {
-                if ($input === '*') {
-                    return $input;
-                }
-                return sprintf('"%s"', $input);
-            };
-
-            /**
-             * This method will prepare the attributes by prefixing then with "
-             * - * ->
-             * - id -> "id"
-             * - table.id -> "table"."id"
-             * and glue them with comma separator
-             */
-            $queryPart = implode(
-                ',',
-                array_map(
-                    function ($attribute) use ($escape) {
-                        return implode(
-                            '.',
-                            array_map($escape, explode('.', $attribute))
-                        );
-                    },
-                    $attributes
-                )
-            );
+        if ($fields === null || empty($fields->get($type))) {
+            //Use resource model's default fields
+            $fields = static::getDefaultFields();
         }
+
+        //if ($fields !== null && !empty($fields->get($type))) {
+        $fields->validate(static::class);
+
+        //Get field attributes for this type and force id attribute
+        $attributes = array_unique(array_merge(
+            $fields->get($type),
+            [] //[static::$idAttribute]
+        ));
+
+        /**
+         * @param string $column
+         * @return string
+         */
+        $escape = function ($column) {
+            if ($column === '*') {
+                return $column;
+            }
+
+            return sprintf('"%s"', $column);
+        };
+
+        /**
+         * This method will prepare the attributes by prefixing then with "
+         * - * -> *
+         * - table.* -> "table".*
+         * - id -> "id"
+         * - table.id -> "table"."id"
+         * and glue them with comma separator
+         */
+        $queryPart = implode(
+            ',',
+            array_map(
+                function ($attribute) use ($escape) {
+                    return implode(
+                        '.',
+                        array_map($escape, explode('.', $attribute))
+                    );
+                },
+                $attributes
+            )
+        );
+        //}
 
         $query = str_replace(
             '{{fields}}',

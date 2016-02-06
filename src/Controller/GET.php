@@ -83,12 +83,20 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
             $relationshipParameters
         );
 
+        $meta = (object) [
+            'page' => (
+                $page === null
+                ? $modelClass::getDefaultPage()
+                : $page
+            )
+        ];
+
         return static::viewData(
             $data,
             (object)[
                 'self' => $modelClass::getSelfLink()
             ],
-            null,
+            $meta,
             (empty($requestInclude) ? null : $includedData)
         );
     }

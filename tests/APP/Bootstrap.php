@@ -104,4 +104,4 @@ class Bootstrap
     }
 }
 
-Bootstrap::prepare();
+//Bootstrap::prepare();
