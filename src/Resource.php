@@ -279,7 +279,6 @@ class Resource extends \stdClass implements \JsonSerializable
                     return call_user_func(
                         $relationshipObject->dataCallback,
                         $resource->id,
-                        $relationshipKey,
                         $fields,
                         $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
                     );

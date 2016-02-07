@@ -55,7 +55,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $modelClass,
         $primaryDataParameters = [],
         $relationshipParameters = [],
-        $validationCallbacks = []
+        $validationCallbacks = [],
+        $viewCallback = null
     ) {
         $queue = new \SplQueue();
 
@@ -72,7 +73,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
 
             $requestAttributes = (
-                isset($resource->attributes) && $resource->attributes
+            isset($resource->attributes) && $resource->attributes
                 ? $resource->attributes
                 : new \stdClass()
             );
@@ -135,7 +136,17 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $ids[] = $id;
         }
 
-        return $ids; //TODO REMOVE
+
+        if ($viewCallback !== null) {
+            if (!is_callable($viewCallback)) {
+                throw new \Exception('View callback is not callable!');
+            }
+
+            return call_user_func(
+                $viewCallback,
+                $ids
+            );
+        }
 
         if (count($ids) === 1) {
             //Prepare response with 201 Created status code
@@ -184,7 +195,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $validator = $modelClass::getValidationModel();
 
         $attributesValidator = (
-            isset($validator->attributes) && $validator->attributes
+        isset($validator->attributes) && $validator->attributes
             ? $validator->attributes
             : new ObjectValidator()
         );
@@ -318,13 +329,13 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         //Parse attributes using relationship's validation model
         $parsedRelationshipAttributes =
-        (
+            (
             isset($validator->relationships)
-            ? $validator->relationships->parse(
+                ? $validator->relationships->parse(
                 $relationshipAttributes
             )
-            : new \stdClass()
-        );
+                : new \stdClass()
+            );
 
         /**
          * Foreach request relationship
@@ -341,7 +352,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
 
             $tempIds = (
-                is_array($parsedRelationshipValue)
+            is_array($parsedRelationshipValue)
                 ? $parsedRelationshipValue
                 : [$parsedRelationshipValue]
             );

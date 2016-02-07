@@ -133,7 +133,6 @@ class Tag extends \Phramework\JSONAPI\APP\Model
      */
     public static function getRelationshipByArticle(
         $articleId,
-        //$relationshipKey,
         Fields $fields = null,
         $flags = Resource::PARSE_DEFAULT
     ) {

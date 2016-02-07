@@ -55,7 +55,13 @@ class ArticleController extends \Phramework\JSONAPI\Controller
             $params,
             $method,
             $headers,
-            Article::class
+            Article::class,
+            [],
+            [],
+            [],
+            function ($ids) {
+                self::viewData(new \stdClass());
+            }
         );
     }
 
