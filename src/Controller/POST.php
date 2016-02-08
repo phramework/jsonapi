@@ -18,9 +18,11 @@ namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\Controller\POST\QueueItem;
 use Phramework\JSONAPI\Util;
-use \Phramework\Models\Request;
-use \Phramework\Exceptions\RequestException;
-use \Phramework\JSONAPI\Relationship;
+use Phramework\Models\Request;
+use Phramework\Exceptions\RequestException;
+use Phramework\Exceptions\ServerException;
+use Phramework\JSONAPI\Relationship;
+use Phramework\Phramework;
 use Phramework\Validate\ObjectValidator;
 
 /**
@@ -67,13 +69,14 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $data = [$data];
         }
 
+        //Iterate multiple resources
         foreach ($data as $resource) {
             if (is_array($resource)) {
                 $resource = (object)$resource;
             }
 
             $requestAttributes = (
-            isset($resource->attributes) && $resource->attributes
+                isset($resource->attributes) && $resource->attributes
                 ? $resource->attributes
                 : new \stdClass()
             );
@@ -139,7 +142,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         if ($viewCallback !== null) {
             if (!is_callable($viewCallback)) {
-                throw new \Exception('View callback is not callable!');
+                throw new \ServerException('View callback is not callable!');
             }
 
             return call_user_func(
@@ -360,13 +363,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $relationship = $modelClass::getRelationship($relationshipKey);
             $relationshipModelClass = $relationship->modelClass;
 
-            $relationshipCallMethod = [
-                $relationshipModelClass,
-                'getById'
-            ];
-
             $currentRelationshipParameters = (
-            isset($relationshipParameters[$relationshipKey])
+                isset($relationshipParameters[$relationshipKey])
                 ? $relationshipParameters[$relationshipKey]
                 : []
             );
@@ -374,8 +372,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             //Check if relationship resources exists
             foreach ($tempIds as $tempId) {
                 self::exists(
-                    call_user_func(
-                        $relationshipCallMethod,
+                    $relationshipModelClass::getById(
                         $tempId,
                         null, //fields
                         ...$currentRelationshipParameters
@@ -389,6 +386,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
 
             if ($relationship->type == Relationship::TYPE_TO_ONE) {
+                //TODO investigate
                 /*if ($parsedRelationshipValue) {
                     //check if exists
                     self::exists(
@@ -439,37 +437,19 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
 
                 $relationship = $modelClass::getRelationship($relationshipKey);
-                $relationshipModelClass = $relationship->modelClass;
 
-                $relationshipCallMethod = [
-                    $relationshipModelClass,
-                    $relationshipModelClass::POST_RELATIONSHIP_BY_PREFIX
-                    . ucfirst($modelClass::getType())
-                ];
-
-                if (!is_callable($relationshipCallMethod)) {
-                    throw new \Phramework\Exceptions\ServerException(
-                        $relationshipCallMethod[0]
-                        . '::'
-                        . $relationshipCallMethod[1]
-                        . ' is not implemented'
-                    );
+                if (!isset($relationship->callbacks->{Phramework::METHOD_POST})) {
+                    throw new ServerException(sprintf(
+                       'POST callback is not implemented for relationship "%s"',
+                        $relationshipKey
+                    ));
                 }
 
                 //Push to queueRelationships
                 $queueRelationships->{$relationshipKey} = (object) [
-                    'callback' => $relationshipCallMethod, //callable
+                    'callback' => $relationship->callbacks->{Phramework::METHOD_POST}, //callable
                     'resources' => $parsedRelationshipValue //array
                 ];
-
-                //Call post relationship method to post each of relationships pairs
-                //foreach ($parsedRelationshipValue as $tempId) {
-                //    call_user_func(
-                //        $relationshipCallMethod,
-                //        $tempId,
-                //        $id
-                //    );
-                //}
             }
         }
 

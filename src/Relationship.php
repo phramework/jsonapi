@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Phramework;
+
 /**
  * JSONAPI relationship class
  * @since 0.0.0
@@ -24,7 +26,7 @@ namespace Phramework\JSONAPI;
  * @property-read string        $modelClass
  * @property-read int           $type
  * @property-read string|null   $recordDataAttribute
- * @property-read callable|null $dataCallback
+ * @property-read object        $callbacks
  * @property-read int           $flags
  */
 class Relationship
@@ -71,9 +73,9 @@ class Relationship
 
     /**
      * Callable method can be used to fetch relationship data, see TODO
-     * @var callable|null
+     * @var object
      */
-    protected $dataCallback;
+    protected $callbacks;
 
     /**
      * Relationship flags
@@ -85,11 +87,11 @@ class Relationship
      * @param string        $modelClass            Class path of relationship resource model
      * @param int           $type                  *[Optional] Relationship type
      * @param string|null   $recordDataAttribute   *[Optional] Attribute name in record containing relationship data
-     * @param callable|null $dataCallback          *[Optional] Callable method can be used
+     * @param callable|object|null $callbacks          *[Optional] Callable method can be used
      * to fetch relationship data, see TODO
      * @param int           $flags                 *[Optional] Relationship flags
      * @throws \Exception When modelClass  doesn't extend Phramework\JSONAPI\Model
-     * @throws \Exception When dataCallback is different than null and not callable
+     * @throws \Exception When is not null, callable or object of callables
      * @example
      * ```php
      * getValidationModel() {
@@ -115,13 +117,28 @@ class Relationship
      *     ];
      * }
      * ```
-     * @todo what about POST, PATCH callback ??
+     * @example
+     * ```php
+     * getValidationModel() {
+     *     return (object) [
+     *         'tag' => new Relationship(
+     *             Tag::class,
+     *             Relationship::TYPE_TO_MANY,
+     *             null,
+     *             (object) [
+     *                  'GET'  => [Tag::class, 'getRelationshipByArticle'],
+     *                  'POST' => [Tag::class, 'postRelationshipByArticle']
+     *             ]
+     *         );
+     *     ];
+     * }
+     * ```
      */
     public function __construct(
         $modelClass,
         $type = Relationship::TYPE_TO_ONE,
         $recordDataAttribute = null,
-        $dataCallback = null,
+        $callbacks = null,
         $flags = Relationship::FLAG_DEFAULT
     ) {
         if (!is_subclass_of($modelClass, Model::class)) {
@@ -131,14 +148,39 @@ class Relationship
             ));
         }
 
-        if ($dataCallback !== null && !is_callable($dataCallback)) {
-            throw new \Exception('dataCallback MUST be callable');
+        if ($callbacks !== null) {
+            if (is_object($callbacks)) {
+                foreach ($callbacks as $method => $callback) {
+                    if (!in_array($method, Phramework::$methodWhitelist)) {
+                        throw new \Exception(sprintf(
+                            'Not allowed method "%s" for callbacks',
+                            $method
+                        ));
+                    }
+
+                    if (!is_callable($callback)) {
+                        throw new \Exception(sprintf(
+                            'callbacks for method "%s" MUST be callable',
+                            $method
+                        ));
+                    }
+                }
+
+                $this->callbacks = $callbacks;
+            } elseif (is_callable($callbacks)) {
+                $this->callbacks = (object) [
+                    Phramework::METHOD_GET => $callbacks
+                ];
+            } else {
+                throw new \Exception('callbacks MUST be callable');
+            }
+        } else {
+            $this->callbacks = new \stdClass();
         }
 
         $this->modelClass           = $modelClass;
         $this->type                 = $type;
         $this->recordDataAttribute  = $recordDataAttribute;
-        $this->dataCallback         = $dataCallback;
         $this->flags                = $flags;
     }
 
@@ -156,8 +198,8 @@ class Relationship
                 return $this->type;
             case 'recordDataAttribute':
                 return $this->recordDataAttribute;
-            case 'dataCallback':
-                return $this->dataCallback;
+            case 'callbacks':
+                return $this->callbacks;
             case 'flags':
                 return $this->flags;
         }

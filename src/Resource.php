@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Phramework;
+
 /**
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -277,7 +279,7 @@ class Resource extends \stdClass implements \JsonSerializable
                     $flags
                 ) {
                     return call_user_func(
-                        $relationshipObject->dataCallback,
+                        $relationshipObject->callbacks->{Phramework::METHOD_GET},
                         $resource->id,
                         $fields,
                         $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
@@ -291,7 +293,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
                         if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
                             $relationshipEntryResource = $record->{$recordDataAttribute};
-                        } elseif ($relationshipObject->dataCallback !== null) { //available from callback
+                        } elseif (isset($relationshipObject->callbacks->{Phramework::METHOD_GET})) { //available from callback
                             $relationshipEntryResource = $dataCallback();
                         }
 
@@ -323,7 +325,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
                         if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
                             $relationshipEntryResources = $record->{$recordDataAttribute};
-                        } elseif ($relationshipObject->dataCallback !== null) { //available from callback
+                        } elseif (isset($relationshipObject->callbacks->{Phramework::METHOD_GET})) { //available from callback
                             $relationshipEntryResources = $dataCallback();
                         }
 

@@ -32,7 +32,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             ['modelClass', Tag::class],
             ['type', Relationship::TYPE_TO_ONE],
             ['recordDataAttribute', null],
-            ['dataCallback', null],
+            ['callbacks', new \stdClass()],
             ['flags', Relationship::FLAG_DEFAULT]
         ];
     }

@@ -21,6 +21,7 @@ use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
+use Phramework\Phramework;
 
 abstract class Relationship extends Get
 {
@@ -101,7 +102,11 @@ abstract class Relationship extends Get
                 );
             case \Phramework\JSONAPI\Relationship::TYPE_TO_MANY:
             default:
-                $callMethod = $relationship->dataCallback;
+                if (!isset($relationship->callbacks->{Phramework::METHOD_GET})) {
+                    return [];
+                }
+
+                $callMethod = $relationship->callbacks->{Phramework::METHOD_GET};
 
                 if (!is_callable($callMethod)) {
                     throw new \Phramework\Exceptions\ServerException(
