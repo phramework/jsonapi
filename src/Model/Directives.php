@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\NotImplementedException;
+use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Filter;
 use Phramework\JSONAPI\FilterAttribute;
@@ -147,6 +148,12 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         }
 
         if ($page->limit !== null) {
+            if ($page->limit > static::getMaxPageLimit()) {
+                throw new RequestException(
+                    'Page object limit is greater than resource mode`s maximum limit'
+                );
+            }
+
             $additionalQuery[] = sprintf(
                 'LIMIT %s',
                 $page->limit

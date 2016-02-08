@@ -135,7 +135,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
         return \Phramework\Database\Operations\Update::update(
             $id,
-            (array)$attributes,
+            (array) $attributes,
             static::getTable(),
             static::getIdAttribute()
         );
@@ -156,7 +156,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
             $id,
             (
                 $additionalAttributes !== null
-                ? (array)$additionalAttributes
+                ? (array) $additionalAttributes
                 : []
             ),
             static::getTable(),
@@ -253,5 +253,15 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
             static::getTable(),
             static::getIdAttribute()
         );
+    }
+
+    /**
+     * Get maximum page object's limit
+     * **MAY** be overwritten, default is with limit maximum of 25000
+     * @return int
+     */
+    public static function getMaxPageLimit()
+    {
+        return 25000;
     }
 }

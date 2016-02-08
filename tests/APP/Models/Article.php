@@ -25,6 +25,7 @@ use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\Sort;
 use Phramework\JSONAPI\ValidationModel;
 use Phramework\Models\Operator;
+use Phramework\Phramework;
 use \Phramework\Validate\ArrayValidator;
 use Phramework\Validate\IntegerValidator;
 use \Phramework\Validate\ObjectValidator;
@@ -165,7 +166,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
 
     public static function getRelationships()
     {
-        return (object)[
+        return (object) [
             'creator' => new Relationship(
                 User::class,
                 Relationship::TYPE_TO_ONE,
@@ -177,7 +178,10 @@ class Article extends \Phramework\JSONAPI\APP\Model
                 Tag::class,
                 Relationship::TYPE_TO_MANY,
                 null,
-                [Tag::class, 'getRelationshipByArticle'],
+                (object) [
+                    Phramework::METHOD_GET  => [Tag::class, 'getRelationshipByArticle'],
+                    Phramework::METHOD_POST => [Tag::class, 'postRelationshipByArticle']
+                ],
                 Relationship::FLAG_DEFAULT | Relationship::FLAG_DATA
             )
         ];
@@ -222,7 +226,7 @@ class Article extends \Phramework\JSONAPI\APP\Model
                 'meta' => (object)[
                     'keywords' => 'blog'
                 ],
-                Resource::META_MEMBER => (object)[
+                Resource::META_MEMBER => (object) [
                     'view' => 1000,
                     'unique' => 100
                 ]
