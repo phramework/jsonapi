@@ -17,8 +17,8 @@
 namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\Relationship;
-use \Phramework\Models\Request;
-use \Phramework\Exceptions\RequestException;
+use Phramework\Models\Request;
+use Phramework\Exceptions\RequestException;
 
 /**
  * Common controller internal methods
@@ -121,19 +121,10 @@ abstract class Base
     {
         //work with arrays
         if (!is_object($parameters) && is_array($parameters)) {
-            $parameters = (object)$parameters;
-        }
-
-        if (!isset($parameters->include) || empty($parameters->include)) {
-            return [];
+            $parameters = (object) $parameters;
         }
 
         $include = [];
-
-        //split parameter using , (for multiple values)
-        foreach (explode(',', $parameters->include) as $i) {
-            $include[] = trim($i);
-        }
 
         if ($modelClass !== null) {
             //Add additional include by default from resource model's relationships
@@ -144,6 +135,15 @@ abstract class Base
             }
         }
 
+        if (!isset($parameters->include) || empty($parameters->include)) {
+            return $include;
+        }
+
+        //split parameter using , (for multiple values)
+        foreach (explode(',', $parameters->include) as $i) {
+            $include[] = trim($i);
+        }
+
         return array_unique($include);
     }
 
@@ -152,10 +152,10 @@ abstract class Base
      * The request is expected to have json api structure
      * Like the following example:
      * ```
-     * [
-     *    data => [
+     * (object) [
+     *    data => (object) [
      *        'type' => 'user',
-     *        'attributes' => [
+     *        'attributes' => [(object)
      *            'email'    => 'nohponex@gmail.com',
      *            'password' => 'XXXXXXXXXXXXXXXXXX'
      *        ]
@@ -184,7 +184,7 @@ abstract class Base
             $parameters->data = (object) $parameters->data;
         }
 
-        return (object)$parameters->data->attributes;
+        return (object) $parameters->data->attributes;
     }
 
     /**
@@ -197,7 +197,7 @@ abstract class Base
     {
         //work with objects
         if (!is_object($parameters) && is_array($parameters)) {
-            $parameters = (object)$parameters;
+            $parameters = (object) $parameters;
         }
 
         //Require data
@@ -209,13 +209,13 @@ abstract class Base
     /**
      * Get request relationships if any attributes.
      * @param  object $parameters Request parameters
-     * @return \stdClass
+     * @return object
      */
     protected static function getRequestRelationships($parameters)
     {
         //work with objects
         if (!is_object($parameters) && is_array($parameters)) {
-            $parameters = (object)$parameters;
+            $parameters = (object) $parameters;
         }
 
         //Require data
@@ -223,7 +223,7 @@ abstract class Base
 
         //Require data['relationships']
         if (isset($parameters->data->relationships)) {
-            return (object)$parameters->data->relationships;
+            return (object) $parameters->data->relationships;
         } else {
             return new \stdClass();
         }

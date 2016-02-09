@@ -18,6 +18,7 @@ namespace Phramework\JSONAPI\Controller;
 
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Relationship;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 use \Phramework\Models\Filter;
@@ -107,6 +108,111 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
             'related' =>
                 $modelClass::getSelfLink($id) . '/' . $relationship
         ];
+
+        return static::viewData($data, $links);
+    }
+
+    /**
+     * Handle handleByIdRelationships requests
+     * @param object $parameters                          Request parameters
+     * @param string $method                          Request method
+     * @param array  $headers                         Request headers
+     * @param integer|string $id                      Resource's id
+     * @param string $relationship                    Requested relationship
+     * key
+     * @param string $modelClass                      Resource's primary model
+     * to be used
+     * @param string[] $allowedMethods                 Allowed methods
+     * @param array  $primaryDataParameters           [Optional] Array with any
+     * additional arguments that the primary data is requiring
+     * @param array  $relationshipParameters [Optional] Array with any
+     * additional arguments primary data's relationships are requiring
+     * @uses model's `getById` method to fetch primary data resource
+     * @return boolean
+     * @throws IncorrectParametersException When request method is not allowed
+     * @todo remove duplicates with handleByIdRelationships
+     * @todo only get is supported
+     */
+    protected static function handleByIdRelationshipsRelated(
+        $parameters,
+        $method,
+        $headers,
+        $id,
+        $relationship,
+        $modelClass,
+        $allowedMethods,
+        $primaryDataParameters = [],
+        $relationshipParameters = []
+    ) {
+        $relationship = Filter::string($relationship);
+
+        //Check if relationship exists
+        static::exists(
+            $modelClass::relationshipExists($relationship),
+            sprintf(
+                'Relationship "$relationship" not found',
+                $relationship
+            )
+        );
+
+        $fields = Fields::parseFromParameters($parameters, $modelClass);
+
+        $object = $modelClass::getById(
+            $id,
+            $fields, //$fields
+            ...$primaryDataParameters
+        );
+
+        //Check if object exists
+        static::exists($object);
+
+        //Check if requested method is allowed
+        (new EnumValidator($allowedMethods))->parse($method);
+
+        //Fetch relationship data
+        $data = $modelClass::getRelationshipData(
+            $relationship,
+            $id,
+            $fields,
+            $primaryDataParameters,
+            (
+            isset($relationshipParameters[$relationship])
+                ? $relationshipParameters[$relationship]
+                : []
+            )
+        );
+
+        //Add links
+        $links = [
+            'self'    =>
+                $modelClass::getSelfLink($id) . '/relationships/' . $relationship,
+            'related' =>
+                $modelClass::getSelfLink($id) . '/' . $relationship
+        ];
+
+        $ids = [];
+
+        //Gather ids form relationship
+        foreach ($data as $resource) {
+            $ids[] = $resource->id;
+        }
+
+        $relationshipObject = $modelClass::getRelationship($relationship);
+
+        $relationshipModelClass = $relationshipObject->modelClass;
+
+        $collection = $relationshipModelClass::getById($ids, $fields);
+
+        //Add links
+        $links = [
+            'self' => $modelClass::getSelfLink($id) . '/relationships/' . $relationship
+        ];
+
+        if ($relationshipObject->type == Relationship::TYPE_TO_ONE) {
+            return static::viewData($collection, $links);
+        } else {
+            return static::viewData(array_values((array)$collection), $links);
+        }
 
         return static::viewData($data, $links);
     }

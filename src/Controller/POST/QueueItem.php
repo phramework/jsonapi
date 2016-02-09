@@ -21,7 +21,7 @@ use \Phramework\Exceptions\RequestException;
 use \Phramework\JSONAPI\Relationship;
 
 /**
- * QueueItem
+ * POST queue item
  * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
@@ -55,7 +55,7 @@ class QueueItem
     /**
      * Get the value of QueueItem
      *
-     * @return mixed
+     * @return object
      */
     public function getAttributes()
     {
@@ -65,20 +65,19 @@ class QueueItem
     /**
      * Get the value of Relationships
      *
-     * @return mixed
+     * @return object
      */
     public function getRelationships()
     {
         return $this->relationships;
     }
 
-
     /**
      * Set the value of Relationships
      *
-     * @param mixed relationships
+     * @param object relationships
      *
-     * @return self
+     * @return $this
      */
     public function setRelationships($relationships)
     {
