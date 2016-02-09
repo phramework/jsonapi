@@ -83,6 +83,10 @@
 							</li>
 								</ul></li>
 					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
+					<li>
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
 							</li>
@@ -209,14 +213,14 @@
 
 			<td class="attributes"><code>
 				 protected static
-				
+				boolean
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_handlePATCH">#</a>
-			<code>handlePATCH( <span>object <var>$params</var></span>, <span>string <var>$method</var></span>, <span>array <var>$headers</var></span>, <span>integer|string <var>$id</var></span>, <span>string <var>$modelClass</var></span>, <span>array <var>$additionalGetArguments</var> = [] </span> )</code>
+			<code>handlePATCH( <span>object <var>$parameters</var></span>, <span>string <var>$method</var></span>, <span>array <var>$headers</var></span>, <span>integer|string <var>$id</var></span>, <span>string <var>$modelClass</var></span>, <span>array <var>$primaryDataParameters</var> = [] </span> )</code>
 
 			<div class="description short">
 				
@@ -228,7 +232,7 @@
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
-						<dt><var>$params</var></dt>
+						<dt><var>$parameters</var></dt>
 						<dd>Request parameters</dd>
 						<dt><var>$method</var></dt>
 						<dd>Request method</dd>
@@ -239,21 +243,34 @@
 						<dt><var>$modelClass</var></dt>
 						<dd><p>Resource's primary model
 to be used</p></dd>
-						<dt><var>$additionalGetArguments</var></dt>
+						<dt><var>$primaryDataParameters</var></dt>
 						<dd><p>[Optional] Array with any
 additional arguments that the primary data is requiring</p></dd>
 					</dl></div>
 
+					<h4>Returns</h4>
+					<div class="list">
+						boolean
+					</div>
 
 					<h4>Throws</h4>
 					<div class="list">
 						Phramework\Exceptions\NotFound<br>If resource not found<br>
-						Phramework\Exceptions\RequestException<br>If no fields are changed
+						Phramework\Exceptions\RequestException<br>If no fields are changed<br>
+						Exception<br>When Validation model for an attribute  is not set
 					</div>
 
+					<h4>Uses</h4>
+					<div class="list">
+							model's <code>getById</code> method to fetch resource<br>
+							$modelClass::patch method to update resources<br>
+					</div>
 					<h4>Todo</h4>
 					<div class="list">
+							clear call to getById<br>
 							allow null values<br>
+							patch relationship data<br>
+							rethink output<br>
 					</div>
 
 
@@ -297,7 +314,7 @@ additional arguments that the primary data is requiring</p></dd>
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestInclude">getRequestInclude()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestRelationships">getRequestRelationships()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_testUnknownError">testUnknownError()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view">view()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view"><span class="deprecated">view()</span></a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_viewData">viewData()</a></code>
 			</p>
 		</div>

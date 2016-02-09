@@ -83,6 +83,10 @@
 							</li>
 								</ul></li>
 					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
+					<li>
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
 							</li>
@@ -95,8 +99,18 @@
 			<h3>Classes</h3>
 			<ul>
 				<li><a href="class-Phramework.JSONAPI.Controller.html">Controller</a></li>
+				<li><a href="class-Phramework.JSONAPI.Fields.html">Fields</a></li>
+				<li><a href="class-Phramework.JSONAPI.Filter.html">Filter</a></li>
+				<li><a href="class-Phramework.JSONAPI.FilterAttribute.html">FilterAttribute</a></li>
+				<li><a href="class-Phramework.JSONAPI.FilterJSONAttribute.html">FilterJSONAttribute</a></li>
 				<li class="active"><a href="class-Phramework.JSONAPI.Model.html">Model</a></li>
+				<li><a href="class-Phramework.JSONAPI.Page.html">Page</a></li>
 				<li><a href="class-Phramework.JSONAPI.Relationship.html">Relationship</a></li>
+				<li><a href="class-Phramework.JSONAPI.RelationshipResource.html">RelationshipResource</a></li>
+				<li><a href="class-Phramework.JSONAPI.Resource.html">Resource</a></li>
+				<li><a href="class-Phramework.JSONAPI.Sort.html">Sort</a></li>
+				<li><a href="class-Phramework.JSONAPI.Util.html">Util</a></li>
+				<li><a href="class-Phramework.JSONAPI.ValidationModel.html">ValidationModel</a></li>
 			</ul>
 
 
@@ -119,6 +133,48 @@
 	<p>Base JSONAPI Model</p>
 	</div>
 
+	<dl class="tree well">
+		<dd style="padding-left:0px">
+			<a href="class-Phramework.JSONAPI.Model.Model.html"><span>Phramework\JSONAPI\Model\Model</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-Phramework.JSONAPI.Model.Cache.html"><span>Phramework\JSONAPI\Model\Cache</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:60px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-Phramework.JSONAPI.Model.Directives.html"><span>Phramework\JSONAPI\Model\Directives</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:90px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-Phramework.JSONAPI.Model.Get.html"><span>Phramework\JSONAPI\Model\Get</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:120px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-Phramework.JSONAPI.Model.Relationship.html"><span>Phramework\JSONAPI\Model\Relationship</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:150px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>Phramework\JSONAPI\Model</span></b>			
+			
+			
+		</dd>
+	</dl>
 
 
 
@@ -147,364 +203,11 @@
 		<div class="panel panel-default">
 			<div class="panel-heading"><h2>Methods summary</h2></div>
 			<table class="summary table table-bordered table-striped methods" id="methods">
-		<tr data-order="getCast" id="_getCast">
-
-			<td class="attributes"><code>
-				 public static
-				array
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getCast">#</a>
-			<code>getCast( )</code>
-
-			<div class="description short">
-				<p>Records's type casting schema</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Records's type casting schema</p>
-
-<p>This object contains the rules applied to fetched data from database in
-order to have correct data types.</p>
-
-
-
-					<h4>Returns</h4>
-					<div class="list">
-						array
-					</div>
-
-
-					<h4>Uses</h4>
-					<div class="list">
-							static::$cast If cast is not null<br>
-							<p>static::getValidationModel If static::$cast is null, it uses
-validationModel's attributes to extract the cast chema</p><br>
-					</div>
-					<h4>Todo</h4>
-					<div class="list">
-							Rewrite validationModel's attributes<br>
-					</div>
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getType" id="_getType">
-
-			<td class="attributes"><code>
-				 public static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getType">#</a>
-			<code>getType( )</code>
-
-			<div class="description short">
-				<p>Get resource's type</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Get resource's type</p>
-
-
-
-					<h4>Returns</h4>
-					<div class="list">
-						string
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getTable" id="_getTable">
-
-			<td class="attributes"><code>
-				 public static
-				string|null
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getTable">#</a>
-			<code>getTable( )</code>
-
-			<div class="description short">
-				<p>Get resource's table name</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Get resource's table name</p>
-
-
-
-					<h4>Returns</h4>
-					<div class="list">
-						string|null
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getSchema" id="_getSchema">
-
-			<td class="attributes"><code>
-				 public static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getSchema">#</a>
-			<code>getSchema( )</code>
-
-			<div class="description short">
-				<p>Get resource's table schema name</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Get resource's table schema name</p>
-
-
-
-					<h4>Returns</h4>
-					<div class="list">
-						string
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getIdAttribute" id="_getIdAttribute">
-
-			<td class="attributes"><code>
-				 public static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getIdAttribute">#</a>
-			<code>getIdAttribute( )</code>
-
-			<div class="description short">
-				<p>Resource's identification attribute (Primary key in database)</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Resource's identification attribute (Primary key in database)</p>
-
-
-
-					<h4>Returns</h4>
-					<div class="list">
-						string
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getEndpoint" id="_getEndpoint">
-
-			<td class="attributes"><code>
-				 public static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getEndpoint">#</a>
-			<code>getEndpoint( )</code>
-
-			<div class="description short">
-				<p>Get resource's endpoint</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Get resource's endpoint</p>
-
-
-
-					<h4>Returns</h4>
-					<div class="list">
-						string
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getSelfLink" id="_getSelfLink">
-
-			<td class="attributes"><code>
-				 public static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getSelfLink">#</a>
-			<code>getSelfLink( <span>string <var>$append</var> = <span class="php-quote">''</span></span> )</code>
-
-			<div class="description short">
-				<p>Get link to resource's self</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Get link to resource's self</p>
-
-
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$append</var></dt>
-						<dd>[description]</dd>
-					</dl></div>
-
-					<h4>Returns</h4>
-					<div class="list">
-						string
-					</div>
-
-
-					<h4>Uses</h4>
-					<div class="list">
-							Phramework::getSetting base<br>
-					</div>
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getRelationships" id="_getRelationships">
-
-			<td class="attributes"><code>
-				 public static
-				object
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getRelationships">#</a>
-			<code>getRelationships( )</code>
-
-			<div class="description short">
-				<p>Get resource's relationships</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Get resource's relationships</p>
-
-
-
-					<h4>Returns</h4>
-					<div class="list">
-						object<br>Object with Relationshipn objects as values
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getRelationship" id="_getRelationship">
-
-			<td class="attributes"><code>
-				 public static
-				
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getRelationship">#</a>
-			<code>getRelationship( <span> <var>$relationshipKey</var></span> )</code>
-
-			<div class="description short">
-				
-			</div>
-
-			<div class="description detailed hidden">
-				
-
-
-
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="relationshipExists" id="_relationshipExists">
-
-			<td class="attributes"><code>
-				 public static
-				Boolean
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_relationshipExists">#</a>
-			<code>relationshipExists( <span>string <var>$relationshipKey</var></span> )</code>
-
-			<div class="description short">
-				<p>Check if relationship exists</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Check if relationship exists</p>
-
-
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$relationshipKey</var></dt>
-						<dd>$relationship Relationship's key (alias)</dd>
-					</dl></div>
-
-					<h4>Returns</h4>
-					<div class="list">
-						Boolean
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
 		<tr data-order="getValidationModel" id="_getValidationModel">
 
 			<td class="attributes"><code>
 				 public static
-				Phramework\Validate\ObjectValidator
+				<code><a href="class-Phramework.JSONAPI.ValidationModel.html">Phramework\JSONAPI\ValidationModel</a></code>
 				
 				</code>
 			</td>
@@ -524,7 +227,7 @@ validationModel's attributes to extract the cast chema</p><br>
 
 					<h4>Returns</h4>
 					<div class="list">
-						Phramework\Validate\ObjectValidator
+						<code><a href="class-Phramework.JSONAPI.ValidationModel.html">Phramework\JSONAPI\ValidationModel</a></code>
 					</div>
 
 
@@ -574,14 +277,14 @@ property</p>
 
 			<td class="attributes"><code>
 				 public static
-				stdClass[]
+				<code><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a>[]</code>
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_collection">#</a>
-			<code>collection( <span>array[]|stdClass[] <var>$records</var> = []</span>, <span>boolean <var>$links</var> = <span class="php-keyword1">true</span></span> )</code>
+			<code>collection( <span>array[]|object[] <var>$records</var> = []</span>, <span><code><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></code> <var>$fields</var> = <span class="php-keyword1">null</span></span>, <span> <var>$flags</var> = Resource::PARSE_DEFAULT</span> )</code>
 
 			<div class="description short">
 				<p>Prepare a collection of resources</p>
@@ -594,17 +297,28 @@ property</p>
 					<h4>Parameters</h4>
 					<div class="list"><dl>
 						<dt><var>$records</var></dt>
-						<dd>Multiple records fetched from database</dd>
-						<dt><var>$links</var></dt>
-						<dd>[Optional] Write resource and relationship links, defauls is false</dd>
+						<dd><p>Multiple records fetched from database
+[Optional] Write resource and relationship links, defaults is false</p></dd>
+						<dt><var>$fields</var></dt>
+						<dd></dd>
+						<dt><var>$flags</var></dt>
+						<dd></dd>
 					</dl></div>
 
 					<h4>Returns</h4>
 					<div class="list">
-						stdClass[]
+						<code><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a>[]</code>
 					</div>
 
 
+					<h4>Uses</h4>
+					<div class="list">
+							Resource::parseFromRecords<br>
+					</div>
+					<h4>Todo</h4>
+					<div class="list">
+							Add example<br>
+					</div>
 
 
 			</div>
@@ -614,14 +328,14 @@ property</p>
 
 			<td class="attributes"><code>
 				 public static
-				stdClass|null
+				<code><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a></code>|null
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_resource">#</a>
-			<code>resource( <span>array|stdClass <var>$record</var></span>, <span>boolean <var>$links</var> = <span class="php-keyword1">true</span></span> )</code>
+			<code>resource( <span>array|object <var>$record</var></span>, <span><code><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></code> <var>$fields</var> = <span class="php-keyword1">null</span></span>, <span> <var>$flags</var> = Resource::PARSE_DEFAULT</span> )</code>
 
 			<div class="description short">
 				<p>Prepare an individual resource</p>
@@ -634,17 +348,31 @@ property</p>
 					<h4>Parameters</h4>
 					<div class="list"><dl>
 						<dt><var>$record</var></dt>
-						<dd>An individual record fetched from database</dd>
-						<dt><var>$links</var></dt>
-						<dd>[Optional] Write resource and relationship links, defauls is false</dd>
+						<dd>A single record fetched from database</dd>
+						<dt><var>$fields</var></dt>
+						<dd></dd>
+						<dt><var>$flags</var></dt>
+						<dd></dd>
 					</dl></div>
 
 					<h4>Returns</h4>
 					<div class="list">
-						stdClass|null
+						<code><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a></code>|null
 					</div>
 
+					<h4>Throws</h4>
+					<div class="list">
+						Exception
+					</div>
 
+					<h4>Uses</h4>
+					<div class="list">
+							Resource::parseFromRecord<br>
+					</div>
+					<h4>Todo</h4>
+					<div class="list">
+							Add example<br>
+					</div>
 
 
 			</div>
@@ -676,7 +404,7 @@ property</p>
 						<dt><var>$attributes</var></dt>
 						<dd></dd>
 						<dt><var>$return</var></dt>
-						<dd><p>type,
+						<dd><p>Return type,
 default is RETURN_ID</p></dd>
 					</dl></div>
 
@@ -699,14 +427,14 @@ default is RETURN_ID</p></dd>
 
 			<td class="attributes"><code>
 				 public static
-				number
+				integer
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_patch">#</a>
-			<code>patch( <span>mixex <var>$id</var></span>, <span>array <var>$attributes</var></span> )</code>
+			<code>patch( <span>mixed <var>$id</var></span>, <span>object <var>$attributes</var></span> )</code>
 
 			<div class="description short">
 				<p>Update selected attributes of a database record</p>
@@ -726,7 +454,7 @@ default is RETURN_ID</p></dd>
 
 					<h4>Returns</h4>
 					<div class="list">
-						number<br>of updated rows
+						integer<br>Number of updated rows
 					</div>
 
 
@@ -750,7 +478,7 @@ default is RETURN_ID</p></dd>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_delete">#</a>
-			<code>delete( <span>mixex <var>$id</var></span>, <span>array <var>$additionalAttributes</var> = []</span> )</code>
+			<code>delete( <span>mixed <var>$id</var></span>, <span>object <var>$additionalAttributes</var> = <span class="php-keyword1">null</span></span> )</code>
 
 			<div class="description short">
 				<p>Delete a database record</p>
@@ -765,7 +493,7 @@ default is RETURN_ID</p></dd>
 						<dt><var>$id</var></dt>
 						<dd>id attribute's value</dd>
 						<dt><var>$additionalAttributes</var></dt>
-						<dd><p>Key-value array with addiotnal fields
+						<dd><p>Object with additional fields
 to use in WHERE clause</p></dd>
 					</dl></div>
 
@@ -784,7 +512,7 @@ to use in WHERE clause</p></dd>
 
 			<td class="attributes"><code>
 				 public static
-				array
+				object
 				
 				</code>
 			</td>
@@ -794,20 +522,34 @@ to use in WHERE clause</p></dd>
 			<code>getFilterable( )</code>
 
 			<div class="description short">
-				<p>Get filterable attributes</p>
+				<p>Get filterable attribute keys
+<strong>MAY</strong> be overwritten</p>
 			</div>
 
 			<div class="description detailed hidden">
-				<p>Get filterable attributes</p>
+				<p>Get filterable attribute keys
+<strong>MAY</strong> be overwritten</p>
 
 
 
 					<h4>Returns</h4>
 					<div class="list">
-						array
+						object
 					</div>
 
 
+					<h4>Example</h4>
+					<div class="list">
+							<pre><code>$filterable = getFilterable();
+
+//Will return
+(object) [
+    'no-validator' =&gt; Operator::CLASS_COMPARABLE,
+    'status'       =&gt; Operator::CLASS_COMPARABLE,
+    'title'        =&gt; Operator::CLASS_COMPARABLE | Operator::CLASS_LIKE,
+]
+</code></pre><br>
+					</div>
 
 
 			</div>
@@ -827,11 +569,13 @@ to use in WHERE clause</p></dd>
 			<code>getMutable( )</code>
 
 			<div class="description short">
-				<p>Get attributes that can be updated using PATCH</p>
+				<p>Get attribute keys that can be updated using PATCH
+<strong>MAY</strong> be overwritten</p>
 			</div>
 
 			<div class="description detailed hidden">
-				<p>Get attributes that can be updated using PATCH</p>
+				<p>Get attribute keys that can be updated using PATCH
+<strong>MAY</strong> be overwritten</p>
 
 
 
@@ -846,11 +590,171 @@ to use in WHERE clause</p></dd>
 			</div>
 			</div></td>
 		</tr>
+		<tr data-order="getSortable" id="_getSortable">
+
+			<td class="attributes"><code>
+				 public static
+				string[]
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getSortable">#</a>
+			<code>getSortable( )</code>
+
+			<div class="description short">
+				<p>Get attribute keys that allowed to be used for sort
+<strong>MAY</strong> be overwritten</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Get attribute keys that allowed to be used for sort
+<strong>MAY</strong> be overwritten</p>
+
+
+
+					<h4>Returns</h4>
+					<div class="list">
+						string[]
+					</div>
+
+
+					<h4>Since</h4>
+					<div class="list">
+							1.0.0<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getFields" id="_getFields">
+
+			<td class="attributes"><code>
+				 public static
+				string[]
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getFields">#</a>
+			<code>getFields( )</code>
+
+			<div class="description short">
+				<p>Get attribute keys that allowed to be used for sort
+<strong>MAY</strong> be overwritten</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Get attribute keys that allowed to be used for sort
+<strong>MAY</strong> be overwritten</p>
+
+
+
+					<h4>Returns</h4>
+					<div class="list">
+						string[]
+					</div>
+
+
+					<h4>Since</h4>
+					<div class="list">
+							1.0.0<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getDefaultFields" id="_getDefaultFields">
+
+			<td class="attributes"><code>
+				 public static
+				<code><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></code>
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getDefaultFields">#</a>
+			<code>getDefaultFields( )</code>
+
+			<div class="description short">
+				<p>Get default fields for this resource model
+<strong>MAY</strong> be overwritten, default is <code>'table.*']</code> where table is accessed from this resource model's table</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Get default fields for this resource model
+<strong>MAY</strong> be overwritten, default is <code>'table.*']</code> where table is accessed from this resource model's table</p>
+
+
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></code>
+					</div>
+
+
+					<h4>Since</h4>
+					<div class="list">
+							1.0.0<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="getDefaultPage" id="_getDefaultPage">
+
+			<td class="attributes"><code>
+				 public static
+				<code><a href="class-Phramework.JSONAPI.Page.html">Phramework\JSONAPI\Page</a></code>
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_getDefaultPage">#</a>
+			<code>getDefaultPage( )</code>
+
+			<div class="description short">
+				<p>Get default page for this resource model
+<strong>MAY</strong> be overwritten, default is with limit of 250 resource and offset 0</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Get default page for this resource model
+<strong>MAY</strong> be overwritten, default is with limit of 250 resource and offset 0</p>
+
+
+
+					<h4>Returns</h4>
+					<div class="list">
+						<code><a href="class-Phramework.JSONAPI.Page.html">Phramework\JSONAPI\Page</a></code>
+					</div>
+
+
+					<h4>Since</h4>
+					<div class="list">
+							1.0.0<br>
+					</div>
+					<h4>Todo</h4>
+					<div class="list">
+							make current applied page somehow visible at meta<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
 		<tr data-order="getSort" id="_getSort">
 
 			<td class="attributes"><code>
 				 public static
-				object
+				<code><a href="class-Phramework.JSONAPI.Sort.html">Phramework\JSONAPI\Sort</a></code>
 				
 				</code>
 			</td>
@@ -860,20 +764,19 @@ to use in WHERE clause</p></dd>
 			<code>getSort( )</code>
 
 			<div class="description short">
-				<p>Get sort attributes and default</p>
+				<p>Get sort
+<strong>MAY</strong> be overwritten, default is sorting by id attribute ascending</p>
 			</div>
 
 			<div class="description detailed hidden">
-				<p>Get sort attributes and default</p>
+				<p>Get sort
+<strong>MAY</strong> be overwritten, default is sorting by id attribute ascending</p>
 
 
 
 					<h4>Returns</h4>
 					<div class="list">
-						object<br><p>Returns an object with attribute <code>attributes</code> containing
-an string[] with allowed sort attributes
-and attribute <code>default</code> a string|null having the value of default, boolean <code>ascending</code>
-sorting attribute</p>
+						<code><a href="class-Phramework.JSONAPI.Sort.html">Phramework\JSONAPI\Sort</a></code>
 					</div>
 
 
@@ -882,296 +785,36 @@ sorting attribute</p>
 			</div>
 			</div></td>
 		</tr>
-		<tr data-order="getRelationshipData" id="_getRelationshipData">
+		<tr data-order="getMaxPageLimit" id="_getMaxPageLimit">
 
 			<td class="attributes"><code>
 				 public static
-				stdClass|stdClass[]
+				integer
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
-			<a class="anchor" href="#_getRelationshipData">#</a>
-			<code>getRelationshipData( <span>static <var>$relationshipKey</var></span>, <span>string <var>$idAttributeValue</var></span>, <span> <var>$additionalGetArguments</var> = []</span>, <span> <var>$additionalArguments</var> = [] </span> )</code>
+			<a class="anchor" href="#_getMaxPageLimit">#</a>
+			<code>getMaxPageLimit( )</code>
 
 			<div class="description short">
-				<p>Get records from a relationship link</p>
+				<p>Get maximum page object's limit
+<strong>MAY</strong> be overwritten, default is with limit maximum of 25000</p>
 			</div>
 
 			<div class="description detailed hidden">
-				<p>Get records from a relationship link</p>
+				<p>Get maximum page object's limit
+<strong>MAY</strong> be overwritten, default is with limit maximum of 25000</p>
 
 
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$relationshipKey</var></dt>
-						<dd></dd>
-						<dt><var>$idAttributeValue</var></dt>
-						<dd></dd>
-						<dt><var>$additionalGetArguments</var></dt>
-						<dd></dd>
-						<dt><var>$additionalArguments</var></dt>
-						<dd></dd>
-					</dl></div>
 
 					<h4>Returns</h4>
 					<div class="list">
-						stdClass|stdClass[]
-					</div>
-
-					<h4>Throws</h4>
-					<div class="list">
-						Phramework\Exceptions\ServerException<br>If relationship doesn't exist<br>
-						Phramework\Exceptions\ServerException<br><p>If relationship's class method is
-not defined</p><br>
-						Phramework\Exceptions\ServerException<br><p>If resources's class
-<code>self::GET_RELATIONSHIP_BY_PREFIX . ucfirst(idAttribute)</code> method isn't
-defined</p>
+						integer
 					</div>
 
 
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="getIncludedData" id="_getIncludedData">
-
-			<td class="attributes"><code>
-				 public static
-				object[]
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_getIncludedData">#</a>
-			<code>getIncludedData( <span>object <var>$primaryData</var></span>, <span>string[] <var>$include</var> = []</span>, <span> <var>$additionalArguments</var> = [] </span> )</code>
-
-			<div class="description short">
-				<p>Get jsonapi's included object, selected by include argument,
-using id's of relationship's data from resources in primary data object</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Get jsonapi's included object, selected by include argument,
-using id's of relationship's data from resources in primary data object</p>
-
-
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$primaryData</var></dt>
-						<dd>Primary data object</dd>
-						<dt><var>$include</var></dt>
-						<dd>An array with the keys of relationships to include</dd>
-						<dt><var>$additionalArguments</var></dt>
-						<dd></dd>
-					</dl></div>
-
-					<h4>Returns</h4>
-					<div class="list">
-						object[]<br>An array with all included related data
-					</div>
-
-
-					<h4>Todo</h4>
-					<div class="list">
-							handle Relationship resource cannot be accessed<br>
-							include second level relationships<br>
-					</div>
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="handleSort" id="_handleSort">
-
-			<td class="attributes"><code>
-				 protected static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_handleSort">#</a>
-			<code>handleSort( <span>string <var>$query</var></span>, <span>null|object <var>$sort</var></span> )</code>
-
-			<div class="description short">
-				<p>This method will update <code>{{sort}}</code> string inside query parameter with
-the provided sort</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>This method will update <code>{{sort}}</code> string inside query parameter with
-the provided sort</p>
-
-
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$query</var></dt>
-						<dd>Query</dd>
-						<dt><var>$sort</var></dt>
-						<dd>string <code>table</code>, string <code>attribute</code>, boolean <code>ascending</code></dd>
-					</dl></div>
-
-					<h4>Returns</h4>
-					<div class="list">
-						string<br>Query
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="handlePagination" id="_handlePagination">
-
-			<td class="attributes"><code>
-				 protected static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_handlePagination">#</a>
-			<code>handlePagination( <span>string <var>$query</var></span>, <span>object <var>$page</var> = <span class="php-keyword1">null</span></span> )</code>
-
-			<div class="description short">
-				<p>This method will update <code>{{pagination}}</code> string inside query parameter with
-the provided pagination directives</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>This method will update <code>{{pagination}}</code> string inside query parameter with
-the provided pagination directives</p>
-
-
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$query</var></dt>
-						<dd>Query</dd>
-						<dt><var>$page</var></dt>
-						<dd></dd>
-					</dl></div>
-
-					<h4>Returns</h4>
-					<div class="list">
-						string<br>Query
-					</div>
-
-
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="handleFilter" id="_handleFilter">
-
-			<td class="attributes"><code>
-				 protected static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_handleFilter">#</a>
-			<code>handleFilter( <span>string <var>$query</var></span>, <span>object <var>$filter</var> = <span class="php-keyword1">null</span></span>, <span>boolean <var>$hasWhere</var> = <span class="php-keyword1">true</span> </span> )</code>
-
-			<div class="description short">
-				<p>This method will update <code>{{filter}}</code> string inside query parameter with
-the provided filter directives</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>This method will update <code>{{filter}}</code> string inside query parameter with
-the provided filter directives</p>
-
-
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$query</var></dt>
-						<dd>Query</dd>
-						<dt><var>$filter</var></dt>
-						<dd><p>This object has 3 attributes:
-primary, relationships and attributes
-- integer[] $primary
-- integer[] $relationships
-- array $attributes (each array item [$attribute, $operator, $operant])
-- array $attributesJSON (each array item [$attribute, $key, $operator, $operant])</p></dd>
-						<dt><var>$hasWhere</var></dt>
-						<dd>If query already has an WHERE, default is true</dd>
-					</dl></div>
-
-					<h4>Returns</h4>
-					<div class="list">
-						string<br>Query
-					</div>
-
-
-					<h4>Todo</h4>
-					<div class="list">
-							check if query work both in MySQL and postgre<br>
-					</div>
-
-
-			</div>
-			</div></td>
-		</tr>
-		<tr data-order="handleGet" id="_handleGet">
-
-			<td class="attributes"><code>
-				 protected static
-				string
-				
-				</code>
-			</td>
-
-			<td class="name"><div>
-			<a class="anchor" href="#_handleGet">#</a>
-			<code>handleGet( <span>string <var>$query</var></span>, <span>object <var>$page</var></span>, <span>object <var>$filter</var></span>, <span>null|object <var>$sort</var></span>, <span>boolean <var>$hasWhere</var> = <span class="php-keyword1">true</span> </span> )</code>
-
-			<div class="description short">
-				<p>Apply handle pagination, sort and filter to query,
-will replace <code>{{sort}}</code>, <code>{{pagination}}</code> and <code>{{filter}}</code> strings in
-query.</p>
-			</div>
-
-			<div class="description detailed hidden">
-				<p>Apply handle pagination, sort and filter to query,
-will replace <code>{{sort}}</code>, <code>{{pagination}}</code> and <code>{{filter}}</code> strings in
-query.</p>
-
-
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$query</var></dt>
-						<dd>Query</dd>
-						<dt><var>$page</var></dt>
-						<dd>See handlePagination $page parameter</dd>
-						<dt><var>$filter</var></dt>
-						<dd>See handleFilter $filter parameter</dd>
-						<dt><var>$sort</var></dt>
-						<dd>See handleSort $sort parameter</dd>
-						<dt><var>$hasWhere</var></dt>
-						<dd>If query already has an WHERE, default is true</dd>
-					</dl></div>
-
-					<h4>Returns</h4>
-					<div class="list">
-						string<br>Query
-					</div>
-
-
-					<h4>Uses</h4>
-					<div class="list">
-							Model::handlePagination<br>
-							Model::handleSort<br>
-							Model::handleFilter<br>
-					</div>
 
 
 			</div>
@@ -1180,6 +823,55 @@ query.</p>
 			</table>
 		</div>
 
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Model.Relationship.html#methods">Phramework\JSONAPI\Model\Relationship</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Relationship.html#_getIncludedData">getIncludedData()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Relationship.html#_getRelationship">getRelationship()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Relationship.html#_getRelationshipData">getRelationshipData()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Relationship.html#_getRelationships">getRelationships()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Relationship.html#_relationshipExists">relationshipExists()</a></code>
+			</p>
+		</div>
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Model.Get.html#methods">Phramework\JSONAPI\Model\Get</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Get.html#_get">get()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Get.html#_getById">getById()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Get.html#_parseFields">parseFields()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Get.html#_parseFilter">parseFilter()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Get.html#_parsePage">parsePage()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Get.html#_parseSort">parseSort()</a></code>
+			</p>
+		</div>
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Model.Directives.html#methods">Phramework\JSONAPI\Model\Directives</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Directives.html#_handleFilter">handleFilter()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Directives.html#_handleGet">handleGet()</a></code>
+			</p>
+		</div>
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Model.Cache.html#methods">Phramework\JSONAPI\Model\Cache</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Cache.html#_getCache">getCache()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Cache.html#_initializeCache">initializeCache()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Cache.html#_invalidateCache">invalidateCache()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Cache.html#_setCache">setCache()</a></code>
+			</p>
+		</div>
+		<div class="panel panel-default">
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Model.Model.html#methods">Phramework\JSONAPI\Model\Model</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#_getCast">getCast()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#_getEndpoint">getEndpoint()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#_getIdAttribute">getIdAttribute()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#_getSchema">getSchema()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#_getSelfLink">getSelfLink()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#_getTable">getTable()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#_getType">getType()</a></code>
+			</p>
+		</div>
 
 
 
@@ -1189,250 +881,66 @@ query.</p>
 
 		<div class="panel panel-default">
             <div class="panel-heading"><h2>Constants summary</h2></div>
-			<table class="summary table table-bordered table-striped constants" id="constants">
-			<tr data-order="GET_RELATIONSHIP_BY_PREFIX" id="GET_RELATIONSHIP_BY_PREFIX">
-
-				<td class="attributes"><code>string</code></td>
-				<td class="name">
-					<code>
-<b>GET_RELATIONSHIP_BY_PREFIX</b>					</code>
-
-					<div class="description short">
-						<p>Model's method prefix, following by ucfirst(Class)</p>
-					</div>
-
-					<div class="description detailed hidden">
-						<p>Model's method prefix, following by ucfirst(Class)</p>
-
-					</div>
-				</td>
-				<td class="value">
-					<div>
-						<a href="#GET_RELATIONSHIP_BY_PREFIX" class="anchor">#</a>
-						<code><span class="php-quote">'getRelationshipBy'</span></code>
-					</div>
-				</td>
-			</tr>
-			<tr data-order="POST_RELATIONSHIP_BY_PREFIX" id="POST_RELATIONSHIP_BY_PREFIX">
-
-				<td class="attributes"><code>string</code></td>
-				<td class="name">
-					<code>
-<b>POST_RELATIONSHIP_BY_PREFIX</b>					</code>
-
-					<div class="description short">
-						
-					</div>
-
-					<div class="description detailed hidden">
-						
-
-					</div>
-				</td>
-				<td class="value">
-					<div>
-						<a href="#POST_RELATIONSHIP_BY_PREFIX" class="anchor">#</a>
-						<code><span class="php-quote">'postRelationshipBy'</span></code>
-					</div>
-				</td>
-			</tr>
-			<tr data-order="GET_BY_PREFIX" id="GET_BY_PREFIX">
-
-				<td class="attributes"><code>string</code></td>
-				<td class="name">
-					<code>
-<b>GET_BY_PREFIX</b>					</code>
-
-					<div class="description short">
-						<p>Model's method prefix</p>
-					</div>
-
-					<div class="description detailed hidden">
-						<p>Model's method prefix</p>
-
-					</div>
-				</td>
-				<td class="value">
-					<div>
-						<a href="#GET_BY_PREFIX" class="anchor">#</a>
-						<code><span class="php-quote">'getBy'</span></code>
-					</div>
-				</td>
-			</tr>
-			</table>
 		</div>
 
+		<div class="panel panel-default">
+            <div class="panel-heading"><h3>Constants inherited from <a href="class-Phramework.JSONAPI.Model.Model.html#constants">Phramework\JSONAPI\Model\Model</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#GET_BY_PREFIX"><b><span class"deprecated">GET_BY_PREFIX</span></b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#GET_RELATIONSHIP_BY_PREFIX"><b>GET_RELATIONSHIP_BY_PREFIX</b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#POST_RELATIONSHIP_BY_PREFIX"><b>POST_RELATIONSHIP_BY_PREFIX</b></a></code>
+			</p>
+		</div>
 
 
 
 		<div class="panel panel-default">
             <div class="panel-heading"><h2>Properties summary</h2></div>
 			<table class="summary table table-bordered table-striped properties" id="properties">
-		<tr data-order="type" id="$type">
+		<tr data-order="caching" id="$caching">
 			<td class="attributes"><code>
 				protected static 
-				string
+				boolean
 			</code></td>
 
 			<td class="name">
-<var>$type</var>
+<var>$caching</var>
 				<div class="description short">
-					<p>Resource's type, used to describe resource objects that share
-common attributes and relationships
-<strong>Must</strong> be overwriten</p>
+					<p>Enable caching of resources</p>
 				</div>
 
 				<div class="description detailed hidden">
-					<p>Resource's type, used to describe resource objects that share
-common attributes and relationships
-<strong>Must</strong> be overwriten</p>
+					<p>Enable caching of resources</p>
 
 				</div>
 			</td>
 			<td class="value">
 				<div>
-					<a href="#$type" class="anchor">#</a>
-					<code><span class="php-keyword1">null</span></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="table" id="$table">
-			<td class="attributes"><code>
-				protected static 
-				string|null
-			</code></td>
-
-			<td class="name">
-<var>$table</var>
-				<div class="description short">
-					<p>Resource's table name
-Can be overwriten, default is null (no database)</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Resource's table name
-Can be overwriten, default is null (no database)</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$table" class="anchor">#</a>
-					<code><span class="php-keyword1">null</span></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="schema" id="$schema">
-			<td class="attributes"><code>
-				protected static 
-				string|null
-			</code></td>
-
-			<td class="name">
-<var>$schema</var>
-				<div class="description short">
-					<p>Resource's table's schema name
-Can be overwriten, default is null (no schema)</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Resource's table's schema name
-Can be overwriten, default is null (no schema)</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$schema" class="anchor">#</a>
-					<code><span class="php-keyword1">null</span></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="idAttribute" id="$idAttribute">
-			<td class="attributes"><code>
-				protected static 
-				string
-			</code></td>
-
-			<td class="name">
-<var>$idAttribute</var>
-				<div class="description short">
-					<p>Resource's identification attribute (Primary key in database).
-Can be overwriten, default is id</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Resource's identification attribute (Primary key in database).
-Can be overwriten, default is id</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$idAttribute" class="anchor">#</a>
-					<code><span class="php-quote">'id'</span></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="endpoint" id="$endpoint">
-			<td class="attributes"><code>
-				protected static 
-				string
-			</code></td>
-
-			<td class="name">
-<var>$endpoint</var>
-				<div class="description short">
-					<p>Resource's endpoint, usually it the same as type
-<strong>Must</strong> be overwriten</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Resource's endpoint, usually it the same as type
-<strong>Must</strong> be overwriten</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$endpoint" class="anchor">#</a>
-					<code><span class="php-keyword1">null</span></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="cast" id="$cast">
-			<td class="attributes"><code>
-				protected static 
-				array|null
-			</code></td>
-
-			<td class="name">
-<var>$cast</var>
-				<div class="description short">
-					<p>Records's type casting schema for database rectods
-Can be overwriten
-Also it can be set to empty array to disable type
-casting for this resource.</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Records's type casting schema for database rectods
-Can be overwriten
-Also it can be set to empty array to disable type
-casting for this resource.</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$cast" class="anchor">#</a>
-					<code><span class="php-keyword1">null</span></code>
+					<a href="#$caching" class="anchor">#</a>
+					<code><span class="php-keyword1">true</span></code>
 				</div>
 			</td>
 		</tr>
 			</table>
 		</div>
 
+		<div class="panel panel-default">
+            <div class="panel-heading"><h3>Properties inherited from <a href="class-Phramework.JSONAPI.Model.Cache.html#properties">Phramework\JSONAPI\Model\Cache</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Cache.html#$cache"><var>$cache</var></a></code>
+			</p>
+		</div>
+		<div class="panel panel-default">
+            <div class="panel-heading"><h3>Properties inherited from <a href="class-Phramework.JSONAPI.Model.Model.html#properties">Phramework\JSONAPI\Model\Model</a></h3></div>
+			<p class="elementList">
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#$cast"><var>$cast</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#$endpoint"><var>$endpoint</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#$idAttribute"><var>$idAttribute</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#$schema"><var>$schema</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#$table"><var>$table</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Model.Model.html#$type"><var>$type</var></a></code>
+			</p>
+		</div>
 
 
 

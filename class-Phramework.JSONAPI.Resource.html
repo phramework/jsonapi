@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>Class Phramework\JSONAPI\Relationship | phramework/jsonapi doc</title>
+	<title>Class Phramework\JSONAPI\Resource | phramework/jsonapi doc</title>
 
 	<link rel="stylesheet" href="resources/bootstrap.min.css?973e37a8502921d56bc02bb55321f45b072b6f71">
 	<link rel="stylesheet" href="resources/style.css?70c1d062672daa3f906b72e4f5d03d4bc5c4174d">
@@ -105,9 +105,9 @@
 				<li><a href="class-Phramework.JSONAPI.FilterJSONAttribute.html">FilterJSONAttribute</a></li>
 				<li><a href="class-Phramework.JSONAPI.Model.html">Model</a></li>
 				<li><a href="class-Phramework.JSONAPI.Page.html">Page</a></li>
-				<li class="active"><a href="class-Phramework.JSONAPI.Relationship.html">Relationship</a></li>
+				<li><a href="class-Phramework.JSONAPI.Relationship.html">Relationship</a></li>
 				<li><a href="class-Phramework.JSONAPI.RelationshipResource.html">RelationshipResource</a></li>
-				<li><a href="class-Phramework.JSONAPI.Resource.html">Resource</a></li>
+				<li class="active"><a href="class-Phramework.JSONAPI.Resource.html">Resource</a></li>
 				<li><a href="class-Phramework.JSONAPI.Sort.html">Sort</a></li>
 				<li><a href="class-Phramework.JSONAPI.Util.html">Util</a></li>
 				<li><a href="class-Phramework.JSONAPI.ValidationModel.html">ValidationModel</a></li>
@@ -126,15 +126,33 @@
 <div id="right">
 	<div id="rightInner">
 <div id="content" class="class">
-	<h1>Class Relationship</h1>
+	<h1>Class Resource</h1>
 
 
-	<div class="description">
-	<p>JSONAPI relationship class</p>
+
+	<dl class="tree well">
+		<dd style="padding-left:0px">
+stdClass
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>Phramework\JSONAPI\Resource</span></b>			
+			 implements 
+<span>JsonSerializable</span>
+			
+			
+		</dd>
+	</dl>
+
+
+	<div>
+		<h3>Direct known subclasses</h3>
+		<p class="elementList">
+			<code><a href="class-Phramework.JSONAPI.RelationshipResource.html">Phramework\JSONAPI\RelationshipResource</a></code>
+		</p>
 	</div>
-
-
-
 
 
 
@@ -152,8 +170,11 @@
 				<b>Author:</b>
 				Xenofon Spafaridis <a href="&#109;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#x6e;o&#104;&#112;&#x6f;&#x6e;&#101;&#120;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;.&#99;&#111;&#x6d;">&#x6e;o&#104;&#112;&#x6f;&#x6e;&#101;&#120;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;.&#99;&#111;&#x6d;</a><br>
 				<b>Since:</b>
-				0.0.0<br>
-			<b>Located at</b> Relationship.php		<br>
+				1.0.0<br>
+				<b>Todo:</b>
+				<p>add magic set and get, set will instantiate a property
+if it's null, to reduce output of json to minimal required</p><br>
+			<b>Located at</b> Resource.php		<br>
 	</div>
 
 
@@ -172,7 +193,43 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#___construct">#</a>
-			<code>__construct( <span>string <var>$modelClass</var></span>, <span>integer <var>$type</var> = Relationship::TYPE_TO_ONE</span>, <span>string|null <var>$recordDataAttribute</var> = <span class="php-keyword1">null</span></span>, <span>callable|object|null <var>$callbacks</var> = <span class="php-keyword1">null</span></span>, <span>integer <var>$flags</var> = Relationship::FLAG_DEFAULT </span> )</code>
+			<code>__construct( <span>string <var>$type</var></span>, <span>string <var>$id</var></span> )</code>
+
+			<div class="description short">
+				<p>Resource constructor.</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Resource constructor.</p>
+
+
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$type</var></dt>
+						<dd></dd>
+						<dt><var>$id</var></dt>
+						<dd></dd>
+					</dl></div>
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="__set" id="___set">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#___set">#</a>
+			<code>__set( <span> <var>$name</var></span>, <span> <var>$value</var></span> )</code>
 
 			<div class="description short">
 				
@@ -182,63 +239,9 @@
 				
 
 
-					<h4>Parameters</h4>
-					<div class="list"><dl>
-						<dt><var>$modelClass</var></dt>
-						<dd>Class path of relationship resource model</dd>
-						<dt><var>$type</var></dt>
-						<dd>*[Optional] Relationship type</dd>
-						<dt><var>$recordDataAttribute</var></dt>
-						<dd>*[Optional] Attribute name in record containing relationship data</dd>
-						<dt><var>$callbacks</var></dt>
-						<dd><p>*[Optional] Callable method can be used
-to fetch relationship data, see TODO</p></dd>
-						<dt><var>$flags</var></dt>
-						<dd>*[Optional] Relationship flags</dd>
-					</dl></div>
 
 
-					<h4>Throws</h4>
-					<div class="list">
-						Exception<br>When modelClass  doesn't extend Phramework\JSONAPI\Model<br>
-						Exception<br>When is not null, callable or object of callables
-					</div>
 
-					<h4>Example</h4>
-					<div class="list">
-							<pre>getValidationModel() {
-    <span class="php-keyword1">return</span> (object) [
-        <span class="php-quote">'author'</span> =&gt; <span class="php-keyword1">new</span> Relationship(
-            Tag::<span class="php-keyword1">class</span>,
-            Relationship::TYPE_TO_ONE,
-            <span class="php-quote">'author-user_id'</span>
-        );
-    ];
-}</pre><br>
-							<pre>getValidationModel() {
-    <span class="php-keyword1">return</span> (object) [
-        <span class="php-quote">'tag'</span> =&gt; <span class="php-keyword1">new</span> Relationship(
-            Tag::<span class="php-keyword1">class</span>,
-            Relationship::TYPE_TO_MANY,
-            <span class="php-keyword1">null</span>,
-            [Tag::<span class="php-keyword1">class</span>, <span class="php-quote">'getRelationshipByArticle'</span>]
-        );
-    ];
-}</pre><br>
-							<pre>getValidationModel() {
-    <span class="php-keyword1">return</span> (object) [
-        <span class="php-quote">'tag'</span> =&gt; <span class="php-keyword1">new</span> Relationship(
-            Tag::<span class="php-keyword1">class</span>,
-            Relationship::TYPE_TO_MANY,
-            <span class="php-keyword1">null</span>,
-            (object) [
-                 <span class="php-quote">'GET'</span>  =&gt; [Tag::<span class="php-keyword1">class</span>, <span class="php-quote">'getRelationshipByArticle'</span>],
-                 <span class="php-quote">'POST'</span> =&gt; [Tag::<span class="php-keyword1">class</span>, <span class="php-quote">'postRelationshipByArticle'</span>]
-            ]
-        );
-    ];
-}</pre><br>
-					</div>
 
 
 			</div>
@@ -286,18 +289,47 @@ to fetch relationship data, see TODO</p></dd>
 			</div>
 			</div></td>
 		</tr>
-		<tr data-order="__set" id="___set">
+		<tr data-order="parseFromRecords" id="_parseFromRecords">
 
 			<td class="attributes"><code>
-				 public 
+				 public static
 				
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
-			<a class="anchor" href="#___set">#</a>
-			<code>__set( <span>string <var>$name</var></span>, <span> <var>$value</var></span> )</code>
+			<a class="anchor" href="#_parseFromRecords">#</a>
+			<code>parseFromRecords( <span> <var>$records</var></span>, <span> <var>$modelClass</var></span>, <span><code><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></code> <var>$fields</var> = <span class="php-keyword1">null</span></span>, <span> <var>$flags</var> = Resource::PARSE_DEFAULT </span> )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="parseFromRecord" id="_parseFromRecord">
+
+			<td class="attributes"><code>
+				 public static
+				<code><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a></code>|null
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_parseFromRecord">#</a>
+			<code>parseFromRecord( <span>array|object <var>$record</var></span>, <span>string <var>$modelClass</var></span>, <span><code><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></code> <var>$fields</var> = <span class="php-keyword1">null</span></span>, <span> <var>$flags</var> = Resource::PARSE_DEFAULT </span> )</code>
 
 			<div class="description short">
 				
@@ -309,15 +341,19 @@ to fetch relationship data, see TODO</p></dd>
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
-						<dt><var>$name</var></dt>
+						<dt><var>$record</var></dt>
 						<dd></dd>
-						<dt><var>$value</var></dt>
+						<dt><var>$modelClass</var></dt>
+						<dd></dd>
+						<dt><var>$fields</var></dt>
+						<dd></dd>
+						<dt><var>$flags</var></dt>
 						<dd></dd>
 					</dl></div>
 
 					<h4>Returns</h4>
 					<div class="list">
-						<br>$this
+						<code><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a></code>|null
 					</div>
 
 					<h4>Throws</h4>
@@ -325,8 +361,54 @@ to fetch relationship data, see TODO</p></dd>
 						Exception
 					</div>
 
+					<h4>Example</h4>
+					<div class="list">
+							<pre>Resource::parseFromRecord(
+    [
+        <span class="php-quote">'id'</span>     =&gt; <span class="php-quote">'1'</span>,
+        <span class="php-quote">'status'</span> =&gt; <span class="php-quote">'enabled'</span>,
+        <span class="php-quote">'title'</span>  =&gt; <span class="php-quote">'blog'</span>
+    ],
+    Tag::<span class="php-keyword1">class</span>
+);</pre><br>
+					</div>
+					<h4>Todo</h4>
+					<div class="list">
+							what about getRelationshipData method ?<br>
+					</div>
 
 
+			</div>
+			</div></td>
+		</tr>
+		<tr data-order="jsonSerialize" id="_jsonSerialize">
+
+			<td class="attributes"><code>
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_jsonSerialize">#</a>
+			<code>jsonSerialize( )</code>
+
+			<div class="description short">
+				
+			</div>
+
+			<div class="description detailed hidden">
+				
+
+
+
+
+
+
+
+					<h4>Implementation of</h4>
+					<div class="list"><code>JsonSerializable::jsonSerialize()</code></div>
 			</div>
 			</div></td>
 		</tr>
@@ -343,12 +425,12 @@ to fetch relationship data, see TODO</p></dd>
 		<div class="panel panel-default">
             <div class="panel-heading"><h2>Constants summary</h2></div>
 			<table class="summary table table-bordered table-striped constants" id="constants">
-			<tr data-order="FLAG_DEFAULT" id="FLAG_DEFAULT">
+			<tr data-order="META_MEMBER" id="META_MEMBER">
 
-				<td class="attributes"><code>integer</code></td>
+				<td class="attributes"><code>string</code></td>
 				<td class="name">
 					<code>
-<b>FLAG_DEFAULT</b>					</code>
+<b>META_MEMBER</b>					</code>
 
 					<div class="description short">
 						
@@ -361,17 +443,155 @@ to fetch relationship data, see TODO</p></dd>
 				</td>
 				<td class="value">
 					<div>
-						<a href="#FLAG_DEFAULT" class="anchor">#</a>
-						<code><span class="php-num">0</span></code>
+						<a href="#META_MEMBER" class="anchor">#</a>
+						<code><span class="php-quote">'attributes-meta'</span></code>
 					</div>
 				</td>
 			</tr>
-			<tr data-order="FLAG_ATTRIBUTES" id="FLAG_ATTRIBUTES">
+			<tr data-order="PARSE_DEFAULT" id="PARSE_DEFAULT">
 
 				<td class="attributes"><code>integer</code></td>
 				<td class="name">
 					<code>
-<b>FLAG_ATTRIBUTES</b>					</code>
+<b>PARSE_DEFAULT</b>					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#PARSE_DEFAULT" class="anchor">#</a>
+						<code><span class="php-num">15</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="PARSE_ATTRIBUTES" id="PARSE_ATTRIBUTES">
+
+				<td class="attributes"><code>integer</code></td>
+				<td class="name">
+					<code>
+<b>PARSE_ATTRIBUTES</b>					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#PARSE_ATTRIBUTES" class="anchor">#</a>
+						<code><span class="php-num">1</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="PARSE_LINKS" id="PARSE_LINKS">
+
+				<td class="attributes"><code>integer</code></td>
+				<td class="name">
+					<code>
+<b>PARSE_LINKS</b>					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#PARSE_LINKS" class="anchor">#</a>
+						<code><span class="php-num">2</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="PARSE_RELATIONSHIP" id="PARSE_RELATIONSHIP">
+
+				<td class="attributes"><code>integer</code></td>
+				<td class="name">
+					<code>
+<b>PARSE_RELATIONSHIP</b>					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#PARSE_RELATIONSHIP" class="anchor">#</a>
+						<code><span class="php-num">4</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="PARSE_RELATIONSHIP_LINKS" id="PARSE_RELATIONSHIP_LINKS">
+
+				<td class="attributes"><code>integer</code></td>
+				<td class="name">
+					<code>
+<b>PARSE_RELATIONSHIP_LINKS</b>					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#PARSE_RELATIONSHIP_LINKS" class="anchor">#</a>
+						<code><span class="php-num">8</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="PARSE_RELATIONSHIP_DATA" id="PARSE_RELATIONSHIP_DATA">
+
+				<td class="attributes"><code>integer</code></td>
+				<td class="name">
+					<code>
+<b>PARSE_RELATIONSHIP_DATA</b>					</code>
+
+					<div class="description short">
+						
+					</div>
+
+					<div class="description detailed hidden">
+						
+
+					</div>
+				</td>
+				<td class="value">
+					<div>
+						<a href="#PARSE_RELATIONSHIP_DATA" class="anchor">#</a>
+						<code><span class="php-num">16</span></code>
+					</div>
+				</td>
+			</tr>
+			<tr data-order="PARSE_META" id="PARSE_META">
+
+				<td class="attributes"><code>integer</code></td>
+				<td class="name">
+					<code>
+<b>PARSE_META</b>					</code>
 
 					<div class="description short">
 						
@@ -382,106 +602,13 @@ to fetch relationship data, see TODO</p></dd>
 
 							<h4>Deprecated</h4>
 							<div class="list">
-									because relationships should not have attributes<br>
 							</div>
 					</div>
 				</td>
 				<td class="value">
 					<div>
-						<a href="#FLAG_ATTRIBUTES" class="anchor">#</a>
-						<code><span class="php-num">1</span></code>
-					</div>
-				</td>
-			</tr>
-			<tr data-order="FLAG_DATA" id="FLAG_DATA">
-
-				<td class="attributes"><code>integer</code></td>
-				<td class="name">
-					<code>
-<b>FLAG_DATA</b>					</code>
-
-					<div class="description short">
-						
-					</div>
-
-					<div class="description detailed hidden">
-						
-
-					</div>
-				</td>
-				<td class="value">
-					<div>
-						<a href="#FLAG_DATA" class="anchor">#</a>
-						<code><span class="php-num">2</span></code>
-					</div>
-				</td>
-			</tr>
-			<tr data-order="FLAG_INCLUDE_BY_DEFAULT" id="FLAG_INCLUDE_BY_DEFAULT">
-
-				<td class="attributes"><code>integer</code></td>
-				<td class="name">
-					<code>
-<b>FLAG_INCLUDE_BY_DEFAULT</b>					</code>
-
-					<div class="description short">
-						<p>Include relationship by default</p>
-					</div>
-
-					<div class="description detailed hidden">
-						<p>Include relationship by default</p>
-
-					</div>
-				</td>
-				<td class="value">
-					<div>
-						<a href="#FLAG_INCLUDE_BY_DEFAULT" class="anchor">#</a>
-						<code><span class="php-num">32</span></code>
-					</div>
-				</td>
-			</tr>
-			<tr data-order="TYPE_TO_ONE" id="TYPE_TO_ONE">
-
-				<td class="attributes"><code>integer</code></td>
-				<td class="name">
-					<code>
-<b>TYPE_TO_ONE</b>					</code>
-
-					<div class="description short">
-						<p>Relationship type to one resource.</p>
-					</div>
-
-					<div class="description detailed hidden">
-						<p>Relationship type to one resource.</p>
-
-					</div>
-				</td>
-				<td class="value">
-					<div>
-						<a href="#TYPE_TO_ONE" class="anchor">#</a>
-						<code><span class="php-num">1</span></code>
-					</div>
-				</td>
-			</tr>
-			<tr data-order="TYPE_TO_MANY" id="TYPE_TO_MANY">
-
-				<td class="attributes"><code>integer</code></td>
-				<td class="name">
-					<code>
-<b>TYPE_TO_MANY</b>					</code>
-
-					<div class="description short">
-						<p>Relationship type to zero, one or more resources.</p>
-					</div>
-
-					<div class="description detailed hidden">
-						<p>Relationship type to zero, one or more resources.</p>
-
-					</div>
-				</td>
-				<td class="value">
-					<div>
-						<a href="#TYPE_TO_MANY" class="anchor">#</a>
-						<code><span class="php-num">2</span></code>
+						<a href="#PARSE_META" class="anchor">#</a>
+						<code><span class="php-num">128</span></code>
 					</div>
 				</td>
 			</tr>
@@ -494,44 +621,20 @@ to fetch relationship data, see TODO</p></dd>
 		<div class="panel panel-default">
             <div class="panel-heading"><h2>Properties summary</h2></div>
 			<table class="summary table table-bordered table-striped properties" id="properties">
-		<tr data-order="modelClass" id="$modelClass">
+		<tr data-order="type" id="$type">
 			<td class="attributes"><code>
 				protected  
 				string
 			</code></td>
 
 			<td class="name">
-<var>$modelClass</var>
-				<div class="description short">
-					<p>Class path of relationship resource model</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Class path of relationship resource model</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$modelClass" class="anchor">#</a>
-					<code></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="type" id="$type">
-			<td class="attributes"><code>
-				protected  
-				integer
-			</code></td>
-
-			<td class="name">
 <var>$type</var>
 				<div class="description short">
-					<p>The type of relationship from the resource to relationship resource</p>
+					<p>Resource's type</p>
 				</div>
 
 				<div class="description detailed hidden">
-					<p>The type of relationship from the resource to relationship resource</p>
+					<p>Resource's type</p>
 
 				</div>
 			</td>
@@ -542,74 +645,28 @@ to fetch relationship data, see TODO</p></dd>
 				</div>
 			</td>
 		</tr>
-		<tr data-order="recordDataAttribute" id="$recordDataAttribute">
+		<tr data-order="id" id="$id">
 			<td class="attributes"><code>
 				protected  
-				string|null
+				string
 			</code></td>
 
 			<td class="name">
-<var>$recordDataAttribute</var>
+<var>$id</var>
 				<div class="description short">
-					<p>Attribute name in record containing relationship data</p>
+					<p><em>NOTE</em> The id member is not required when the resource object originates
+at the client and represents a new resource to be created on the server.</p>
 				</div>
 
 				<div class="description detailed hidden">
-					<p>Attribute name in record containing relationship data</p>
+					<p><em>NOTE</em> The id member is not required when the resource object originates
+at the client and represents a new resource to be created on the server.</p>
 
 				</div>
 			</td>
 			<td class="value">
 				<div>
-					<a href="#$recordDataAttribute" class="anchor">#</a>
-					<code></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="callbacks" id="$callbacks">
-			<td class="attributes"><code>
-				protected  
-				object
-			</code></td>
-
-			<td class="name">
-<var>$callbacks</var>
-				<div class="description short">
-					<p>Callable method can be used to fetch relationship data, see TODO</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Callable method can be used to fetch relationship data, see TODO</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$callbacks" class="anchor">#</a>
-					<code></code>
-				</div>
-			</td>
-		</tr>
-		<tr data-order="flags" id="$flags">
-			<td class="attributes"><code>
-				protected  
-				integer
-			</code></td>
-
-			<td class="name">
-<var>$flags</var>
-				<div class="description short">
-					<p>Relationship flags</p>
-				</div>
-
-				<div class="description detailed hidden">
-					<p>Relationship flags</p>
-
-				</div>
-			</td>
-			<td class="value">
-				<div>
-					<a href="#$flags" class="anchor">#</a>
+					<a href="#$id" class="anchor">#</a>
 					<code></code>
 				</div>
 			</td>
@@ -622,14 +679,86 @@ to fetch relationship data, see TODO</p></dd>
 		<div class="panel panel-default">
             <div class="panel-heading"><h3>Magic properties</h3></div>
 			<table class="summary table table-bordered table-striped properties" id="magicProperties">
-		<tr data-order="modelClass" id="m$modelClass">
+		<tr data-order="links" id="m$links">
+			<td class="attributes"><code>
+				public  
+				string
+			</code></td>
+
+			<td class="name">
+<var>$links</var>
+				<div class="description short">
+					
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+				</div>
+			</td>
+		</tr>
+		<tr data-order="attributes" id="m$attributes">
+			<td class="attributes"><code>
+				public  
+				string
+			</code></td>
+
+			<td class="name">
+<var>$attributes</var>
+				<div class="description short">
+					
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+				</div>
+			</td>
+		</tr>
+		<tr data-order="relationships" id="m$relationships">
+			<td class="attributes"><code>
+				public  
+				string
+			</code></td>
+
+			<td class="name">
+<var>$relationships</var>
+				<div class="description short">
+					
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+				</div>
+			</td>
+		</tr>
+		<tr data-order="data" id="m$data">
+			<td class="attributes"><code>
+				public  
+				string
+			</code></td>
+
+			<td class="name">
+<var>$data</var>
+				<div class="description short">
+					
+				</div>
+
+				<div class="description detailed hidden">
+					
+
+				</div>
+			</td>
+		</tr>
+		<tr data-order="id" id="m$id">
 			<td class="attributes"><code>
 				public  read-only
 				string
 			</code></td>
 
 			<td class="name">
-<var>$modelClass</var>
+<var>$id</var>
 				<div class="description short">
 					
 				</div>
@@ -643,65 +772,11 @@ to fetch relationship data, see TODO</p></dd>
 		<tr data-order="type" id="m$type">
 			<td class="attributes"><code>
 				public  read-only
-				integer
+				string
 			</code></td>
 
 			<td class="name">
 <var>$type</var>
-				<div class="description short">
-					
-				</div>
-
-				<div class="description detailed hidden">
-					
-
-				</div>
-			</td>
-		</tr>
-		<tr data-order="recordDataAttribute" id="m$recordDataAttribute">
-			<td class="attributes"><code>
-				public  read-only
-				string|null
-			</code></td>
-
-			<td class="name">
-<var>$recordDataAttribute</var>
-				<div class="description short">
-					
-				</div>
-
-				<div class="description detailed hidden">
-					
-
-				</div>
-			</td>
-		</tr>
-		<tr data-order="callbacks" id="m$callbacks">
-			<td class="attributes"><code>
-				public  read-only
-				object
-			</code></td>
-
-			<td class="name">
-<var>$callbacks</var>
-				<div class="description short">
-					
-				</div>
-
-				<div class="description detailed hidden">
-					
-
-				</div>
-			</td>
-		</tr>
-		<tr data-order="flags" id="m$flags">
-			<td class="attributes"><code>
-				public  read-only
-				integer
-			</code></td>
-
-			<td class="name">
-<var>$flags</var>
 				<div class="description short">
 					
 				</div>

@@ -83,6 +83,10 @@
 							</li>
 								</ul></li>
 					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
+					<li>
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
 							</li>
@@ -120,7 +124,7 @@
 
 
 	<div class="description">
-	<p>Common methods</p>
+	<p>Common controller internal methods</p>
 	</div>
 
 
@@ -179,7 +183,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_view">#</a>
-			<code>view( <span>array|object <var>$parameters</var> = []</span> )</code>
+			<code class="deprecated">view( <span>array|object <var>$parameters</var> = []</span> )</code>
 
 			<div class="description short">
 				<p>Shortcut to \Phramework\Phramework::view.</p>
@@ -188,6 +192,10 @@
 			<div class="description detailed hidden">
 				<p>Shortcut to \Phramework\Phramework::view.</p>
 
+					<h4>Deprecated</h4>
+					<div class="list">
+							since 1.0.0<br>
+					</div>
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
@@ -292,14 +300,14 @@
 
 			<td class="attributes"><code>
 				 public static
-				
+				boolean
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_viewData">#</a>
-			<code>viewData( <span>stdClass <var>$data</var></span>, <span> <var>$links</var> = <span class="php-keyword1">null</span></span>, <span> <var>$meta</var> = <span class="php-keyword1">null</span></span>, <span> <var>$included</var> = <span class="php-keyword1">null</span> </span> )</code>
+			<code>viewData( <span>object <var>$data</var></span>, <span> <var>$links</var> = <span class="php-keyword1">null</span></span>, <span> <var>$meta</var> = <span class="php-keyword1">null</span></span>, <span> <var>$included</var> = <span class="php-keyword1">null</span> </span> )</code>
 
 			<div class="description short">
 				<p>View JSONAPI data</p>
@@ -321,15 +329,15 @@
 						<dd></dd>
 					</dl></div>
 
+					<h4>Returns</h4>
+					<div class="list">
+						boolean
+					</div>
 
 
 					<h4>Uses</h4>
 					<div class="list">
 							\Phramework\Viewers\JSONAPI<br>
-					</div>
-					<h4>Todo</h4>
-					<div class="list">
-							use \Phramework\Phramework::view<br>
 					</div>
 
 
@@ -347,7 +355,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getRequestInclude">#</a>
-			<code>getRequestInclude( <span>object <var>$params</var> = []</span> )</code>
+			<code>getRequestInclude( <span>object <var>$parameters</var></span>, <span>string|null <var>$modelClass</var> = <span class="php-keyword1">null</span></span> )</code>
 
 			<div class="description short">
 				<p>Extract included related resources from parameters</p>
@@ -359,8 +367,10 @@
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
-						<dt><var>$params</var></dt>
+						<dt><var>$parameters</var></dt>
 						<dd>Request parameters</dd>
+						<dt><var>$modelClass</var></dt>
+						<dd>If not null, will add additional include by default from resource model's relationships</dd>
 					</dl></div>
 
 					<h4>Returns</h4>
@@ -378,14 +388,14 @@
 
 			<td class="attributes"><code>
 				 protected static
-				stdClass
+				object
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getRequestAttributes">#</a>
-			<code>getRequestAttributes( <span>object <var>$params</var> = []</span> )</code>
+			<code>getRequestAttributes( <span>object <var>$parameters</var></span> )</code>
 
 			<div class="description short">
 				<p>Get request data attributes.
@@ -416,13 +426,13 @@ Like the following example:</p>
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
-						<dt><var>$params</var></dt>
+						<dt><var>$parameters</var></dt>
 						<dd>Request parameters</dd>
 					</dl></div>
 
 					<h4>Returns</h4>
 					<div class="list">
-						stdClass
+						object
 					</div>
 
 
@@ -439,26 +449,39 @@ Like the following example:</p>
 
 			<td class="attributes"><code>
 				 protected static
-				
+				object|object[]
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getRequestData">#</a>
-			<code>getRequestData( <span> <var>$params</var> = []</span> )</code>
+			<code>getRequestData( <span>object <var>$parameters</var></span> )</code>
 
 			<div class="description short">
-				
+				<p>Get request primary data</p>
 			</div>
 
 			<div class="description detailed hidden">
-				
+				<p>Get request primary data</p>
 
 
+					<h4>Parameters</h4>
+					<div class="list"><dl>
+						<dt><var>$parameters</var></dt>
+						<dd>Request parameters</dd>
+					</dl></div>
+
+					<h4>Returns</h4>
+					<div class="list">
+						object|object[]
+					</div>
 
 
-
+					<h4>Uses</h4>
+					<div class="list">
+							Request::requireParameters<br>
+					</div>
 
 
 			</div>
@@ -475,7 +498,7 @@ Like the following example:</p>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getRequestRelationships">#</a>
-			<code>getRequestRelationships( <span>object <var>$params</var> = []</span> )</code>
+			<code>getRequestRelationships( <span>object <var>$parameters</var></span> )</code>
 
 			<div class="description short">
 				<p>Get request relationships if any attributes.</p>
@@ -487,7 +510,7 @@ Like the following example:</p>
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
-						<dt><var>$params</var></dt>
+						<dt><var>$parameters</var></dt>
 						<dd>Request parameters</dd>
 					</dl></div>
 
@@ -513,28 +536,28 @@ Like the following example:</p>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_checkIfUnsupportedRequestWithId">#</a>
-			<code>checkIfUnsupportedRequestWithId( <span>object <var>$resource</var></span> )</code>
+			<code>checkIfUnsupportedRequestWithId( <span>object|resource <var>$resource</var></span> )</code>
 
 			<div class="description short">
-				<p>Throw a Forbidden exception if resource's id is set.</p>
+				<p>Throw a Forbidden exception if resource's id is set.     *
+Unsupported request to create a resource with a client-generated ID</p>
 			</div>
 
 			<div class="description detailed hidden">
-				<p>Throw a Forbidden exception if resource's id is set.</p>
-
-<p>Unsupported request to create a resource with a client-generated ID</p>
+				<p>Throw a Forbidden exception if resource's id is set.     *
+Unsupported request to create a resource with a client-generated ID</p>
 
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
 						<dt><var>$resource</var></dt>
-						<dd>[description]</dd>
+						<dd></dd>
 					</dl></div>
 
 
 					<h4>Throws</h4>
 					<div class="list">
-						Phamework\Phramework\Exceptions\ForbiddenException
+						Phramework\Exceptions\ForbiddenException
 					</div>
 
 

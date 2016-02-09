@@ -80,6 +80,10 @@
 							</li>
 								</ul></li>
 					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
+					<li>
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
 							</li>
@@ -100,8 +104,23 @@
 				<li><a href="class-Phramework.JSONAPI.Controller.POST.html">Phramework\JSONAPI\Controller\POST</a></li>
 				<li><a href="class-Phramework.JSONAPI.Controller.POST.QueueItem.html">Phramework\JSONAPI\Controller\POST\QueueItem</a></li>
 				<li><a href="class-Phramework.JSONAPI.Controller.Relationships.html">Phramework\JSONAPI\Controller\Relationships</a></li>
+				<li><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></li>
+				<li><a href="class-Phramework.JSONAPI.Filter.html">Phramework\JSONAPI\Filter</a></li>
+				<li><a href="class-Phramework.JSONAPI.FilterAttribute.html">Phramework\JSONAPI\FilterAttribute</a></li>
+				<li><a href="class-Phramework.JSONAPI.FilterJSONAttribute.html">Phramework\JSONAPI\FilterJSONAttribute</a></li>
 				<li><a href="class-Phramework.JSONAPI.Model.html">Phramework\JSONAPI\Model</a></li>
+				<li><a href="class-Phramework.JSONAPI.Model.Cache.html">Phramework\JSONAPI\Model\Cache</a></li>
+				<li><a href="class-Phramework.JSONAPI.Model.Directives.html">Phramework\JSONAPI\Model\Directives</a></li>
+				<li><a href="class-Phramework.JSONAPI.Model.Get.html">Phramework\JSONAPI\Model\Get</a></li>
+				<li><a href="class-Phramework.JSONAPI.Model.Model.html">Phramework\JSONAPI\Model\Model</a></li>
+				<li><a href="class-Phramework.JSONAPI.Model.Relationship.html">Phramework\JSONAPI\Model\Relationship</a></li>
+				<li><a href="class-Phramework.JSONAPI.Page.html">Phramework\JSONAPI\Page</a></li>
 				<li><a href="class-Phramework.JSONAPI.Relationship.html">Phramework\JSONAPI\Relationship</a></li>
+				<li><a href="class-Phramework.JSONAPI.RelationshipResource.html">Phramework\JSONAPI\RelationshipResource</a></li>
+				<li><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a></li>
+				<li><a href="class-Phramework.JSONAPI.Sort.html">Phramework\JSONAPI\Sort</a></li>
+				<li><a href="class-Phramework.JSONAPI.Util.html">Phramework\JSONAPI\Util</a></li>
+				<li><a href="class-Phramework.JSONAPI.ValidationModel.html">Phramework\JSONAPI\ValidationModel</a></li>
 				<li><a href="class-Phramework.JSONAPI.Viewers.JSONAPI.html">Phramework\JSONAPI\Viewers\JSONAPI</a></li>
 			</ul>
 
@@ -120,6 +139,30 @@
 <div id="content">
 	<h1>Todo</h1>
 
+			<div class="panel panel-default">
+                <div class="panel-heading"><h2>Classes summary</h2></div>
+				<table class="summary table table-bordered table-striped" id="classes">
+	<tr>
+		<td class="name"><a href="class-Phramework.JSONAPI.RelationshipResource.html">Phramework\JSONAPI\RelationshipResource</a></td>
+		<td>
+					view http://jsonapi.org/format/#document-resource-identifier-objects MUST: id, type MAY: meta<br>
+		</td>
+	</tr>
+	<tr>
+		<td class="name"><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a></td>
+		<td>
+					<p>add magic set and get, set will instantiate a property
+if it's null, to reduce output of json to minimal required</p><br>
+		</td>
+	</tr>
+	<tr>
+		<td class="name"><a href="class-Phramework.JSONAPI.Sort.html">Phramework\JSONAPI\Sort</a></td>
+		<td>
+					allow multiple values for sort<br>
+		</td>
+	</tr>
+				</table>
+			</div>
 
 
 
@@ -128,33 +171,74 @@
                 <div class="panel-heading"><h2>Methods summary</h2></div>
 				<table class="summary table table-bordered table-striped" id="methods">
 					<tr>
-						<td class="name"><a href="class-Phramework.JSONAPI.Controller.Base.html">Phramework\JSONAPI\Controller\Base</a></td>
-						<td class="name"><code><a href="class-Phramework.JSONAPI.Controller.Base.html#_viewData">viewData()</a></code></td>
+						<td class="name"><a href="class-Phramework.JSONAPI.Controller.GET.html">Phramework\JSONAPI\Controller\GET</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Controller.GET.html#_handleGET">handleGET()</a></code></td>
 						<td>
-										use \Phramework\Phramework::view<br>
+										Force parsing of relationship data when included<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Controller.GETById.html">Phramework\JSONAPI\Controller\GETById</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Controller.GETById.html#_handleGETByid">handleGETByid()</a></code></td>
+						<td>
+										Force parsing of relationship data when included<br>
 						</td>
 					</tr>
 					<tr>
 						<td class="name"><a href="class-Phramework.JSONAPI.Controller.PATCH.html">Phramework\JSONAPI\Controller\PATCH</a></td>
 						<td class="name"><code><a href="class-Phramework.JSONAPI.Controller.PATCH.html#_handlePATCH">handlePATCH()</a></code></td>
 						<td>
+										clear call to getById<br>
 										allow null values<br>
+										patch relationship data<br>
+										rethink output<br>
 						</td>
 					</tr>
 					<tr>
 						<td class="name"><a href="class-Phramework.JSONAPI.Controller.POST.html">Phramework\JSONAPI\Controller\POST</a></td>
 						<td class="name"><code><a href="class-Phramework.JSONAPI.Controller.POST.html#_handlePOST">handlePOST()</a></code></td>
 						<td>
-										<p>handle as transaction queue, Since models usualy are not producing exceptions.
+										<p>handle as transaction queue, Since models usually are not producing exceptions.
 Prepare data until last possible moment,
-so that any exceptions can be thrown, and finaly invoke the execution of the queue.</p><br>
+so that any exceptions can be thrown, and finally invoke the execution of the queue.</p><br>
+										validate type<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Fields.html">Phramework\JSONAPI\Fields</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Fields.html#_validate">validate()</a></code></td>
+						<td>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Filter.html">Phramework\JSONAPI\Filter</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Filter.html#_validate">validate()</a></code></td>
+						<td>
+										add relationship validator<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Filter.html">Phramework\JSONAPI\Filter</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Filter.html#_parseFromParameters">parseFromParameters()</a></code></td>
+						<td>
+										allow strings and integers as id<br>
+										Todo use filterValidation model for relationships<br>
+										allowed operator for JSON properties<br>
+										add support for operators of class in, parsing input using explode <code>,</code> (as array)<br>
 						</td>
 					</tr>
 					<tr>
 						<td class="name"><a href="class-Phramework.JSONAPI.Model.html">Phramework\JSONAPI\Model</a></td>
-						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.html#_getCast">getCast()</a></code></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.html#_collection">collection()</a></code></td>
 						<td>
-										Rewrite validationModel's attributes<br>
+										Add example<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Model.html">Phramework\JSONAPI\Model</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.html#_resource">resource()</a></code></td>
+						<td>
+										Add example<br>
 						</td>
 					</tr>
 					<tr>
@@ -173,17 +257,62 @@ so that any exceptions can be thrown, and finaly invoke the execution of the que
 					</tr>
 					<tr>
 						<td class="name"><a href="class-Phramework.JSONAPI.Model.html">Phramework\JSONAPI\Model</a></td>
-						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.html#_getIncludedData">getIncludedData()</a></code></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.html#_getDefaultPage">getDefaultPage()</a></code></td>
 						<td>
-										handle Relationship resource cannot be accessed<br>
-										include second level relationships<br>
+										make current applied page somehow visible at meta<br>
 						</td>
 					</tr>
 					<tr>
-						<td class="name"><a href="class-Phramework.JSONAPI.Model.html">Phramework\JSONAPI\Model</a></td>
-						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.html#_handleFilter">handleFilter()</a></code></td>
+						<td class="name"><a href="class-Phramework.JSONAPI.Model.Directives.html">Phramework\JSONAPI\Model\Directives</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.Directives.html#_handleFilter">handleFilter()</a></code></td>
 						<td>
-										check if query work both in MySQL and postgre<br>
+										check if query work both in MySQL and postgreSQL<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Model.Model.html">Phramework\JSONAPI\Model\Model</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.Model.html#_getCast">getCast()</a></code></td>
+						<td>
+										Rewrite validationModel's attributes<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Model.Relationship.html">Phramework\JSONAPI\Model\Relationship</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Model.Relationship.html#_getIncludedData">getIncludedData()</a></code></td>
+						<td>
+										handle Relationship resource cannot be accessed<br>
+										include second level relationships<br>
+										multiple (batch) getById at once<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Page.html">Phramework\JSONAPI\Page</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Page.html#_parseFromParameters">parseFromParameters()</a></code></td>
+						<td>
+										<p>add default pagination based on $modelClass</p>
+
+<pre><span class="php-var">$page</span> = Page::parseFromParameters(
+    (object) [
+        <span class="php-quote">'page'</span> =&gt; [
+            <span class="php-quote">'limit'</span> =&gt; <span class="php-num">0</span>,
+            <span class="php-quote">'offset'</span> =&gt; <span class="php-num">0</span>
+        ]
+    ], <span class="php-comment">//Request parameters object</span>
+    Article::<span class="php-keyword1">class</span>
+);</pre><br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Resource.html">Phramework\JSONAPI\Resource</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Resource.html#_parseFromRecord">parseFromRecord()</a></code></td>
+						<td>
+										what about getRelationshipData method ?<br>
+						</td>
+					</tr>
+					<tr>
+						<td class="name"><a href="class-Phramework.JSONAPI.Sort.html">Phramework\JSONAPI\Sort</a></td>
+						<td class="name"><code><a href="class-Phramework.JSONAPI.Sort.html#_validate">validate()</a></code></td>
+						<td>
 						</td>
 					</tr>
 				</table>

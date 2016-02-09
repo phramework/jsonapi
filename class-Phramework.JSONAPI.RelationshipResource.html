@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>Class Phramework\JSONAPI\Controller | phramework/jsonapi doc</title>
+	<title>Class Phramework\JSONAPI\RelationshipResource | phramework/jsonapi doc</title>
 
 	<link rel="stylesheet" href="resources/bootstrap.min.css?973e37a8502921d56bc02bb55321f45b072b6f71">
 	<link rel="stylesheet" href="resources/style.css?70c1d062672daa3f906b72e4f5d03d4bc5c4174d">
@@ -98,7 +98,7 @@
 		<div id="elements">
 			<h3>Classes</h3>
 			<ul>
-				<li class="active"><a href="class-Phramework.JSONAPI.Controller.html">Controller</a></li>
+				<li><a href="class-Phramework.JSONAPI.Controller.html">Controller</a></li>
 				<li><a href="class-Phramework.JSONAPI.Fields.html">Fields</a></li>
 				<li><a href="class-Phramework.JSONAPI.Filter.html">Filter</a></li>
 				<li><a href="class-Phramework.JSONAPI.FilterAttribute.html">FilterAttribute</a></li>
@@ -106,7 +106,7 @@
 				<li><a href="class-Phramework.JSONAPI.Model.html">Model</a></li>
 				<li><a href="class-Phramework.JSONAPI.Page.html">Page</a></li>
 				<li><a href="class-Phramework.JSONAPI.Relationship.html">Relationship</a></li>
-				<li><a href="class-Phramework.JSONAPI.RelationshipResource.html">RelationshipResource</a></li>
+				<li class="active"><a href="class-Phramework.JSONAPI.RelationshipResource.html">RelationshipResource</a></li>
 				<li><a href="class-Phramework.JSONAPI.Resource.html">Resource</a></li>
 				<li><a href="class-Phramework.JSONAPI.Sort.html">Sort</a></li>
 				<li><a href="class-Phramework.JSONAPI.Util.html">Util</a></li>
@@ -126,65 +126,28 @@
 <div id="right">
 	<div id="rightInner">
 <div id="content" class="class">
-	<h1>Class Controller</h1>
+	<h1>Class RelationshipResource</h1>
 
 
-	<div class="description">
-	<p>Base JSONAPI controller</p>
-	</div>
 
 	<dl class="tree well">
 		<dd style="padding-left:0px">
-			<a href="class-Phramework.JSONAPI.Controller.Base.html"><span>Phramework\JSONAPI\Controller\Base</span></a>
-			
+stdClass
 			
 			
 		</dd>
 		<dd style="padding-left:30px">
 			<img src="resources/inherit.png" alt="Extended by">
-			<a href="class-Phramework.JSONAPI.Controller.Relationships.html"><span>Phramework\JSONAPI\Controller\Relationships</span></a>
+			<a href="class-Phramework.JSONAPI.Resource.html"><span>Phramework\JSONAPI\Resource</span></a>
 			
+			 implements 
+<span>JsonSerializable</span>
 			
 			
 		</dd>
 		<dd style="padding-left:60px">
 			<img src="resources/inherit.png" alt="Extended by">
-			<a href="class-Phramework.JSONAPI.Controller.GETById.html"><span>Phramework\JSONAPI\Controller\GETById</span></a>
-			
-			
-			
-		</dd>
-		<dd style="padding-left:90px">
-			<img src="resources/inherit.png" alt="Extended by">
-			<a href="class-Phramework.JSONAPI.Controller.GET.html"><span>Phramework\JSONAPI\Controller\GET</span></a>
-			
-			
-			
-		</dd>
-		<dd style="padding-left:120px">
-			<img src="resources/inherit.png" alt="Extended by">
-			<a href="class-Phramework.JSONAPI.Controller.POST.html"><span>Phramework\JSONAPI\Controller\POST</span></a>
-			
-			
-			
-		</dd>
-		<dd style="padding-left:150px">
-			<img src="resources/inherit.png" alt="Extended by">
-			<a href="class-Phramework.JSONAPI.Controller.PATCH.html"><span>Phramework\JSONAPI\Controller\PATCH</span></a>
-			
-			
-			
-		</dd>
-		<dd style="padding-left:180px">
-			<img src="resources/inherit.png" alt="Extended by">
-			<a href="class-Phramework.JSONAPI.Controller.DELETE.html"><span>Phramework\JSONAPI\Controller\DELETE</span></a>
-			
-			
-			
-		</dd>
-		<dd style="padding-left:210px">
-			<img src="resources/inherit.png" alt="Extended by">
-<b><span>Phramework\JSONAPI\Controller</span></b>			
+<b><span>Phramework\JSONAPI\RelationshipResource</span></b>			
 			
 			
 		</dd>
@@ -198,7 +161,7 @@
 
 
 	<div class="alert alert-info">
-		<b>Abstract</b><br>
+		
 		
 		<b>Namespace:</b> <a href="namespace-Phramework.html">Phramework</a>\<a href="namespace-Phramework.JSONAPI.html">JSONAPI</a><br>
 		
@@ -209,7 +172,9 @@
 				Xenofon Spafaridis <a href="&#109;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#x6e;o&#104;&#112;&#x6f;&#x6e;&#101;&#120;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;.&#99;&#111;&#x6d;">&#x6e;o&#104;&#112;&#x6f;&#x6e;&#101;&#120;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;.&#99;&#111;&#x6d;</a><br>
 				<b>Since:</b>
 				1.0.0<br>
-			<b>Located at</b> Controller.php		<br>
+				<b>Todo:</b>
+				view http://jsonapi.org/format/#document-resource-identifier-objects MUST: id, type MAY: meta<br>
+			<b>Located at</b> RelationshipResource.php		<br>
 	</div>
 
 
@@ -219,63 +184,68 @@
 		</div>
 
 		<div class="panel panel-default">
-	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Controller.DELETE.html#methods">Phramework\JSONAPI\Controller\DELETE</a></h3></div>
+	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Resource.html#methods">Phramework\JSONAPI\Resource</a></h3></div>
 			<p class="elementList">
-				<code><a href="class-Phramework.JSONAPI.Controller.DELETE.html#_handleDELETE">handleDELETE()</a></code>
+				<code><a href="class-Phramework.JSONAPI.Resource.html#___construct">__construct()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#___get">__get()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#___set">__set()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#_jsonSerialize">jsonSerialize()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#_parseFromRecord">parseFromRecord()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#_parseFromRecords">parseFromRecords()</a></code>
 			</p>
 		</div>
+
+
+
+
+
+
+
 		<div class="panel panel-default">
-	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Controller.PATCH.html#methods">Phramework\JSONAPI\Controller\PATCH</a></h3></div>
-			<p class="elementList">
-				<code><a href="class-Phramework.JSONAPI.Controller.PATCH.html#_handlePATCH">handlePATCH()</a></code>
-			</p>
+            <div class="panel-heading"><h2>Constants summary</h2></div>
 		</div>
+
 		<div class="panel panel-default">
-	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Controller.POST.html#methods">Phramework\JSONAPI\Controller\POST</a></h3></div>
+            <div class="panel-heading"><h3>Constants inherited from <a href="class-Phramework.JSONAPI.Resource.html#constants">Phramework\JSONAPI\Resource</a></h3></div>
 			<p class="elementList">
-				<code><a href="class-Phramework.JSONAPI.Controller.POST.html#_handlePOST">handlePOST()</a></code>
+				<code><a href="class-Phramework.JSONAPI.Resource.html#META_MEMBER"><b>META_MEMBER</b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#PARSE_ATTRIBUTES"><b>PARSE_ATTRIBUTES</b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#PARSE_DEFAULT"><b>PARSE_DEFAULT</b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#PARSE_LINKS"><b>PARSE_LINKS</b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#PARSE_META"><b><span class"deprecated">PARSE_META</span></b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#PARSE_RELATIONSHIP"><b>PARSE_RELATIONSHIP</b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#PARSE_RELATIONSHIP_DATA"><b>PARSE_RELATIONSHIP_DATA</b></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#PARSE_RELATIONSHIP_LINKS"><b>PARSE_RELATIONSHIP_LINKS</b></a></code>
 			</p>
 		</div>
+
+
+
 		<div class="panel panel-default">
-	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Controller.GET.html#methods">Phramework\JSONAPI\Controller\GET</a></h3></div>
-			<p class="elementList">
-				<code><a href="class-Phramework.JSONAPI.Controller.GET.html#_handleGET">handleGET()</a></code>
-			</p>
+            <div class="panel-heading"><h2>Properties summary</h2></div>
 		</div>
+
 		<div class="panel panel-default">
-	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Controller.GETById.html#methods">Phramework\JSONAPI\Controller\GETById</a></h3></div>
+            <div class="panel-heading"><h3>Properties inherited from <a href="class-Phramework.JSONAPI.Resource.html#properties">Phramework\JSONAPI\Resource</a></h3></div>
 			<p class="elementList">
-				<code><a href="class-Phramework.JSONAPI.Controller.GETById.html#_handleGETByid">handleGETByid()</a></code>
+				<code><a href="class-Phramework.JSONAPI.Resource.html#$id"><var>$id</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#$type"><var>$type</var></a></code>
 			</p>
 		</div>
+
+
+
 		<div class="panel panel-default">
-	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Controller.Relationships.html#methods">Phramework\JSONAPI\Controller\Relationships</a></h3></div>
+            <div class="panel-heading"><h3>Magic properties inherited from <a href="class-Phramework.JSONAPI.Resource.html#properties">Phramework\JSONAPI\Resource</a></h3></div>
 			<p class="elementList">
-				<code><a href="class-Phramework.JSONAPI.Controller.Relationships.html#_handleByIdRelationships">handleByIdRelationships()</a></code>
+				<code><a href="class-Phramework.JSONAPI.Resource.html#m$attributes"><var>$attributes</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#m$data"><var>$data</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#m$id"><var>$id</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#m$links"><var>$links</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#m$relationships"><var>$relationships</var></a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Resource.html#m$type"><var>$type</var></a></code>
 			</p>
 		</div>
-		<div class="panel panel-default">
-	        <div class="panel-heading"><h3>Methods inherited from <a href="class-Phramework.JSONAPI.Controller.Base.html#methods">Phramework\JSONAPI\Controller\Base</a></h3></div>
-			<p class="elementList">
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_checkIfUnsupportedRequestWithId">checkIfUnsupportedRequestWithId()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_exists">exists()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestAttributes">getRequestAttributes()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestData">getRequestData()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestInclude">getRequestInclude()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestRelationships">getRequestRelationships()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_testUnknownError">testUnknownError()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view"><span class="deprecated">view()</span></a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_viewData">viewData()</a></code>
-			</p>
-		</div>
-
-
-
-
-
-
-
-
 
 
 </div>

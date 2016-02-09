@@ -83,6 +83,10 @@
 							</li>
 								</ul></li>
 					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
+					<li>
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
 							</li>
@@ -191,14 +195,14 @@
 
 			<td class="attributes"><code>
 				 protected static
-				
+				boolean
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_handleGETByid">#</a>
-			<code>handleGETByid( <span>object <var>$params</var></span>, <span>integer|string <var>$id</var></span>, <span>string <var>$modelClass</var></span>, <span>array <var>$additionalGetArguments</var> = []</span>, <span>array <var>$additionalRelationshipsArguments</var> = [] </span> )</code>
+			<code>handleGETByid( <span>object <var>$parameters</var></span>, <span>integer|string <var>$id</var></span>, <span>string <var>$modelClass</var></span>, <span>array <var>$primaryDataParameters</var> = []</span>, <span>array <var>$relationshipParameters</var> = [] </span> )</code>
 
 			<div class="description short">
 				<p>handles GETById requests</p>
@@ -210,23 +214,35 @@
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
-						<dt><var>$params</var></dt>
+						<dt><var>$parameters</var></dt>
 						<dd>Request parameters</dd>
 						<dt><var>$id</var></dt>
 						<dd>Requested resource's id</dd>
 						<dt><var>$modelClass</var></dt>
 						<dd><p>Resource's primary model
 to be used</p></dd>
-						<dt><var>$additionalGetArguments</var></dt>
+						<dt><var>$primaryDataParameters</var></dt>
 						<dd><p>[Optional] Array with any
 additional arguments that the primary data is requiring</p></dd>
-						<dt><var>$additionalRelationshipsArguments</var></dt>
+						<dt><var>$relationshipParameters</var></dt>
 						<dd><p>[Optional] Array with any
-additional arguemnt primary data's relationships are requiring</p></dd>
+additional argument primary data's relationships are requiring</p></dd>
 					</dl></div>
 
+					<h4>Returns</h4>
+					<div class="list">
+						boolean
+					</div>
 
 
+					<h4>Uses</h4>
+					<div class="list">
+							model's <code>getById</code> method to fetch resource<br>
+					</div>
+					<h4>Todo</h4>
+					<div class="list">
+							Force parsing of relationship data when included<br>
+					</div>
 
 
 			</div>
@@ -251,7 +267,7 @@ additional arguemnt primary data's relationships are requiring</p></dd>
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestInclude">getRequestInclude()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestRelationships">getRequestRelationships()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_testUnknownError">testUnknownError()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view">view()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view"><span class="deprecated">view()</span></a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_viewData">viewData()</a></code>
 			</p>
 		</div>

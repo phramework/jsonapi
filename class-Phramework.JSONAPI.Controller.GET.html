@@ -83,6 +83,10 @@
 							</li>
 								</ul></li>
 					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
+					<li>
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
 							</li>
@@ -197,14 +201,14 @@
 
 			<td class="attributes"><code>
 				 protected static
-				
+				boolean
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_handleGET">#</a>
-			<code>handleGET( <span>object <var>$params</var></span>, <span>string <var>$modelClass</var></span>, <span>array <var>$additionalGetArguments</var> = []</span>, <span>array <var>$additionalRelationshipsArguments</var> = []</span>, <span>boolean <var>$filterable</var> = <span class="php-keyword1">true</span></span>, <span>boolean <var>$filterableJSON</var> = <span class="php-keyword1">false</span></span>, <span>boolean <var>$sortable</var> = <span class="php-keyword1">true</span> </span> )</code>
+			<code>handleGET( <span>object <var>$parameters</var></span>, <span>string <var>$modelClass</var></span>, <span>array <var>$primaryDataParameters</var> = []</span>, <span>array <var>$relationshipParameters</var> = [] </span>, <span>boolean <var>$filterable</var>,…</span>, <span>boolean <var>$filterableJSON</var>,…</span>, <span>boolean <var>$sortable</var>,…</span> )</code>
 
 			<div class="description short">
 				<p>handles GET requests</p>
@@ -216,31 +220,48 @@
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
-						<dt><var>$params</var></dt>
+						<dt><var>$parameters</var></dt>
 						<dd>Request parameters</dd>
 						<dt><var>$modelClass</var></dt>
-						<dd><p>Resource's primary model
+						<dd><p>Resource's primary model class name
 to be used</p></dd>
-						<dt><var>$additionalGetArguments</var></dt>
-						<dd><p>[Optional] Array with any
+						<dt><var>$primaryDataParameters</var></dt>
+						<dd><p><em>[Optional]</em> Array with any
 additional arguments that the primary data is requiring</p></dd>
-						<dt><var>$additionalRelationshipsArguments</var></dt>
+						<dt><var>$relationshipParameters</var></dt>
 						<dd><p>[Optional] Array with any
-additional arguemnt primary data's relationships are requiring</p></dd>
-						<dt><var>$filterable</var></dt>
-						<dd><p>[Optional] Deafult is
-true, if true allowes <code>filter</code> URI parameters to be parsed for filtering</p></dd>
-						<dt><var>$filterableJSON</var></dt>
-						<dd><p>[Optional] Deafult is
-false, if true allowes <code>filter</code> URI parameters to be parsed for filtering
+additional argument primary data's relationships are requiring</p></dd>
+						<dt><var>$filterable</var>,…</dt>
+						<dd><p><em>[Optional]</em> Default is
+true, if true allows <code>filter</code> URI parameters to be parsed for filtering</p></dd>
+						<dt><var>$filterableJSON</var>,…</dt>
+						<dd><p><em>[Optional]</em> Default is
+false, if true allows <code>filter</code> URI parameters to be parsed for filtering
 for JSON encoded fields</p></dd>
-						<dt><var>$sortable</var></dt>
-						<dd><p>[Optional] Deafult is
-true, if true allowes sorting</p></dd>
+						<dt><var>$sortable</var>,…</dt>
+						<dd><p><em>[Optional]</em> Default is
+true, if true allows sorting</p></dd>
 					</dl></div>
 
+					<h4>Returns</h4>
+					<div class="list">
+						boolean
+					</div>
 
+					<h4>Throws</h4>
+					<div class="list">
+						Exception<br>
+						Phramework\Exceptions\RequestException
+					</div>
 
+					<h4>Uses</h4>
+					<div class="list">
+							$modelClass::get method to fetch resource collection<br>
+					</div>
+					<h4>Todo</h4>
+					<div class="list">
+							Force parsing of relationship data when included<br>
+					</div>
 
 
 			</div>
@@ -271,7 +292,7 @@ true, if true allowes sorting</p></dd>
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestInclude">getRequestInclude()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestRelationships">getRequestRelationships()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_testUnknownError">testUnknownError()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view">view()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view"><span class="deprecated">view()</span></a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_viewData">viewData()</a></code>
 			</p>
 		</div>

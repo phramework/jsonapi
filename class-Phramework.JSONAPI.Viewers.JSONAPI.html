@@ -82,6 +82,10 @@
 							POST						</a>
 							</li>
 								</ul></li>
+					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
 					<li class="active">
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
@@ -114,9 +118,9 @@
 
 
 	<div class="description">
-	<p>Implementation of IViewer for jsonapi</p>
+	<p>Implementation of IViewer for JSON API</p>
 
-<p>Sends <code>Content-Type: application/vnd.api+json</code> response to client</p>
+<p>Also sends <code>Content-Type: application/vnd.api+json;charset=utf-8</code> header as response</p>
 
 <p>JSONP Support is disabled</p>
 	</div>
@@ -160,6 +164,43 @@
 		<div class="panel panel-default">
 			<div class="panel-heading"><h2>Methods summary</h2></div>
 			<table class="summary table table-bordered table-striped methods" id="methods">
+		<tr data-order="header" id="_header">
+
+			<td class="attributes"><code>
+				 public static
+				boolean
+				
+				</code>
+			</td>
+
+			<td class="name"><div>
+			<a class="anchor" href="#_header">#</a>
+			<code>header( )</code>
+
+			<div class="description short">
+				<p>Send JSON API headers</p>
+			</div>
+
+			<div class="description detailed hidden">
+				<p>Send JSON API headers</p>
+
+
+
+					<h4>Returns</h4>
+					<div class="list">
+						boolean<br>Returns false if headers are already sent, else true
+					</div>
+
+
+					<h4>See</h4>
+					<div class="list">
+							header https://secure.php.net/manual/en/function.header.php<br>
+					</div>
+
+
+			</div>
+			</div></td>
+		</tr>
 		<tr data-order="view" id="_view">
 
 			<td class="attributes"><code>
@@ -171,14 +212,14 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_view">#</a>
-			<code>view( <span>array <var>$parameters</var></span> )</code>
+			<code>view( <span>object|array <var>$parameters</var></span> )</code>
 
 			<div class="description short">
-				<p>Display output</p>
+				<p>Send output</p>
 			</div>
 
 			<div class="description detailed hidden">
-				<p>Display output</p>
+				<p>Send output</p>
 
 
 					<h4>Parameters</h4>

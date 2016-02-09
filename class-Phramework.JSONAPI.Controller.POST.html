@@ -83,6 +83,10 @@
 							</li>
 								</ul></li>
 					<li>
+						<a href="namespace-Phramework.JSONAPI.Model.html">
+							Model						</a>
+							</li>
+					<li>
 						<a href="namespace-Phramework.JSONAPI.Viewers.html">
 							Viewers						</a>
 							</li>
@@ -203,14 +207,14 @@
 
 			<td class="attributes"><code>
 				 protected static
-				
+				int[]
 				
 				</code>
 			</td>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_handlePOST">#</a>
-			<code>handlePOST( <span>object <var>$params</var></span>, <span>string <var>$method</var></span>, <span>array <var>$headers</var></span>, <span><code><a href="class-Phramework.JSONAPI.Model.html">Phramework\JSONAPI\Model</a></code> <var>$modelClass</var></span>, <span>array <var>$additionalGetArguments</var> = []</span>, <span>array <var>$additionalRelationshipsArguments</var> = []</span>, <span>callable[] <var>$validationCallbacks</var> = [] </span> )</code>
+			<code>handlePOST( <span>object <var>$params</var></span>, <span>string <var>$method</var></span>, <span>array <var>$headers</var></span>, <span>string <var>$modelClass</var></span>, <span>array <var>$primaryDataParameters</var> = []</span>, <span>array <var>$relationshipParameters</var> = []</span>, <span>callable[] <var>$validationCallbacks</var> = []</span>, <span> <var>$viewCallback</var> = <span class="php-keyword1">null</span> </span> )</code>
 
 			<div class="description short">
 				
@@ -230,23 +234,34 @@
 						<dd>Request headers</dd>
 						<dt><var>$modelClass</var></dt>
 						<dd>Resource's primary model</dd>
-						<dt><var>$additionalGetArguments</var></dt>
+						<dt><var>$primaryDataParameters</var></dt>
 						<dd><p><em>[Optional]</em> Array with any
 additional arguments that the primary data is requiring</p></dd>
-						<dt><var>$additionalRelationshipsArguments</var></dt>
+						<dt><var>$relationshipParameters</var></dt>
 						<dd><p><em>[Optional]</em> Array with any
-additional arguemnt primary data's relationships are requiring</p></dd>
+additional argument primary data's relationships are requiring</p></dd>
 						<dt><var>$validationCallbacks</var></dt>
-						<dd>$$validationCallbacks</dd>
+						<dd></dd>
+						<dt><var>$viewCallback</var></dt>
+						<dd></dd>
 					</dl></div>
 
+					<h4>Returns</h4>
+					<div class="list">
+						int[]
+					</div>
 
 
+					<h4>Uses</h4>
+					<div class="list">
+							$modelClass::post method to create resources<br>
+					</div>
 					<h4>Todo</h4>
 					<div class="list">
-							<p>handle as transaction queue, Since models usualy are not producing exceptions.
+							<p>handle as transaction queue, Since models usually are not producing exceptions.
 Prepare data until last possible moment,
-so that any exceptions can be thrown, and finaly invoke the execution of the queue.</p><br>
+so that any exceptions can be thrown, and finally invoke the execution of the queue.</p><br>
+							validate type<br>
 					</div>
 
 
@@ -284,7 +299,7 @@ so that any exceptions can be thrown, and finaly invoke the execution of the que
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestInclude">getRequestInclude()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_getRequestRelationships">getRequestRelationships()</a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_testUnknownError">testUnknownError()</a></code>, 
-				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view">view()</a></code>, 
+				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_view"><span class="deprecated">view()</span></a></code>, 
 				<code><a href="class-Phramework.JSONAPI.Controller.Base.html#_viewData">viewData()</a></code>
 			</p>
 		</div>
