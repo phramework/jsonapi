@@ -41,8 +41,9 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
      * additional argument primary data's relationships are requiring
      * @uses model's `getById` method to fetch resource
      * @return boolean
+     * @todo Force parsing of relationship data when included
      */
-    protected static function handleGETByid(
+    protected static function handleGETById(
         $parameters,
         $id,
         $modelClass,
@@ -60,6 +61,8 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
 
         $fields = $modelClass::parseFields($parameters);
 
+        $requestInclude = static::getRequestInclude($parameters, $modelClass);
+
         $data = $modelClass::getById(
             $id,
             $fields,
@@ -68,8 +71,6 @@ abstract class GETById extends \Phramework\JSONAPI\Controller\Relationships
 
         //Check if resource exists
         static::exists($data);
-
-        $requestInclude = static::getRequestInclude($parameters);
 
         $includedData = $modelClass::getIncludedData(
             $data,

@@ -36,7 +36,7 @@ class Resource extends \stdClass implements \JsonSerializable
     const META_MEMBER = 'attributes-meta';
 
     const PARSE_DEFAULT            = Resource::PARSE_ATTRIBUTES   | Resource::PARSE_LINKS
-                                   | Resource::PARSE_RELATIONSHIP | Resource::PARSE_RELATIONSHIP_LINKS;
+                                   | Resource::PARSE_RELATIONSHIP | Resource::PARSE_RELATIONSHIP_LINKS; //15
 
     const PARSE_ATTRIBUTES              = 1;
     const PARSE_LINKS                   = 2;

@@ -209,4 +209,22 @@ class Relationship
             $name
         ));
     }
+
+    /**
+     * @param string $name
+     * @param $value
+     * @return $this
+     * @throws \Exception
+     */
+    public function __set($name, $value) {
+        if (in_array($name, ['flag'])) {
+            $this->{$name} = $value;
+            return $this;
+        }
+
+        throw new \Exception(sprintf(
+            'Undefined property via __get(): %s',
+            $name
+        ));
+    }
 }

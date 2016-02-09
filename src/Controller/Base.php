@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\JSONAPI\Relationship;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 
@@ -112,10 +113,11 @@ abstract class Base
 
     /**
      * Extract included related resources from parameters
-     * @param  object $parameters Request parameters
+     * @param object $parameters Request parameters
+     * @param string|null $modelClass If not null, will add additional include by default from resource model's relationships
      * @return string[]
      */
-    protected static function getRequestInclude($parameters)
+    protected static function getRequestInclude($parameters, $modelClass = null)
     {
         //work with arrays
         if (!is_object($parameters) && is_array($parameters)) {
@@ -131,6 +133,15 @@ abstract class Base
         //split parameter using , (for multiple values)
         foreach (explode(',', $parameters->include) as $i) {
             $include[] = trim($i);
+        }
+
+        if ($modelClass !== null) {
+            //Add additional include by default from resource model's relationships
+            foreach ($modelClass::getRelationships() as $relationshipKey => $relationship) {
+                if (($relationship->flags & Relationship::FLAG_INCLUDE_BY_DEFAULT) != 0) {
+                    $include[] = $include;
+                }
+            }
         }
 
         return array_unique($include);

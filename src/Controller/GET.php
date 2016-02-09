@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\JSONAPI\Filter;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\Sort;
 use Phramework\JSONAPI\Model;
 use \Phramework\Models\Request;
@@ -53,6 +54,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
      * @throws \Exception
      * @throws RequestException
      * @return boolean
+     * @todo Force parsing of relationship data when included
      */
     protected static function handleGET(
         $parameters,
@@ -65,6 +67,8 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
         $sort   = $modelClass::parseSort($parameters);
         $fields = $modelClass::parseFields($parameters);
 
+        $requestInclude = static::getRequestInclude($parameters, $modelClass);
+
         $data = $modelClass::get(
             $page,
             $filter,
@@ -72,8 +76,6 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
             $fields,
             ...$primaryDataParameters
         );
-
-        $requestInclude = static::getRequestInclude($parameters);
 
         //Get included data
         $includedData = $modelClass::getIncludedData(

@@ -29,43 +29,22 @@ use \Phramework\JSONAPI\Relationship;
 abstract class Model
 {
     /**
-     * Model's method prefix, following by ucfirst(type of resource)
-     * for example `getRelationshipByInput_template` if is was `input_template`
-     * $resource->id,
-     * $relationshipKey,
-     * $filter
-     */
-    const GET_RELATIONSHIP_BY_PREFIX = 'getRelationshipBy';
-
-    /**
-     * Model's method prefix, following by ucfirst(type of resource)
-     * for example `postRelationshipByInput_template` if is was `input_template`
-     */
-    const POST_RELATIONSHIP_BY_PREFIX = 'postRelationshipBy';
-
-    /**
-     * Model's method prefix
-     * @deprecated
-     */
-    const GET_BY_PREFIX = 'getBy';
-
-    /**
      * Resource's type, used to describe resource objects that share
-     * common attributes and relationships
+     * common attributes and relationships.
      * **MUST** be overwritten
      * @var string
      */
     protected static $type = null;
 
     /**
-     * Resource's table name
+     * Resource's table name.
      * **MAY** be overwritten, default is null (no database)
      * @var string|null
      */
     protected static $table = null;
 
     /**
-     * Resource's table's schema name
+     * Resource's table's schema name.
      * **MAY** be overwritten, default is null (no schema)
      * @var string|null
      */
@@ -79,18 +58,19 @@ abstract class Model
     protected static $idAttribute = 'id';
 
     /**
-     * Resource's endpoint, used for access by external request, usually it the same as type
+     * Resource's endpoint, used for access by external request, usually it the same as type.
      * **MUST** be overwritten
      * @var string
      */
     protected static $endpoint = null;
 
     /**
-     * Records's type casting schema for database records
+     * Records's type casting schema for database records.
      * **MAY** be overwritten
      * Also it can be set to empty array to disable type
      * casting for this resource.
      * @var array|null
+     * @deprecated
      */
     protected static $cast = null;
 
@@ -104,6 +84,7 @@ abstract class Model
      * validationModel's attributes to extract the cast schema
      * @return array
      * @todo Rewrite validationModel's attributes
+     * @deprecated
      */
     public static function getCast()
     {
