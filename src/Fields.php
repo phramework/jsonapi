@@ -150,6 +150,14 @@ class Fields
 
         $fields = new Fields();
 
+        //Convert to string[]
+        if (is_string($parameters->fields)) {
+            $parameters->fields = array_map(
+                'trim',
+                explode(',', $parameters->fields)
+            );
+        }
+
         foreach ($parameters->fields as $resourceType => $value) {
             if ($primaryResourceModelClass::getType() == $resourceType) {
                 //check if $resourceType allowed (primary)

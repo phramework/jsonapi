@@ -134,6 +134,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param  Page|null $page
      * @return string            Query
      * @uses Model::getDefaultPage if page is null
+     * @throws RequestException
      */
     private static function handlePage($query, $page = null)
     {
@@ -150,7 +151,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         if ($page->limit !== null) {
             if ($page->limit > static::getMaxPageLimit()) {
                 throw new RequestException(
-                    'Page object limit is greater than resource mode`s maximum limit'
+                    'Page object limit is greater than resource model`s maximum limit'
                 );
             }
 
@@ -435,21 +436,26 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
     ) {
         $type = static::getType();
 
-        //$queryPart = '*';
-
         if ($fields === null || empty($fields->get($type))) {
             //Use resource model's default fields
             $fields = static::getDefaultFields();
+            $attributes = $fields->get($type);
+        } else {
+            $attributes = $fields->get($type);
+
+            if ($fields->get($type) !== ['*']) {
+                //Get field attributes for this type and force id attribute
+                $attributes = array_merge(
+                    $fields->get($type),
+                    [static::$idAttribute]
+                );
+            }
         }
 
         //if ($fields !== null && !empty($fields->get($type))) {
         $fields->validate(static::class);
 
-        //Get field attributes for this type and force id attribute
-        $attributes = array_unique(array_merge(
-            $fields->get($type),
-            [] //[static::$idAttribute]
-        ));
+        $attributes = array_unique($attributes);
 
         /**
          * @param string $column
