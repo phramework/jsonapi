@@ -65,7 +65,7 @@ class FilterAttribute
     /**
      * @param string $filterKey
      * @param string|string[] $filterValue
-     * @return FilterAttributes[]|FilterJSONAttribute[]
+     * @return FilterAttribute[]|FilterJSONAttribute[]
      * @throws RequestException
      */
     public static function parse($filterKey, $filterValue)
