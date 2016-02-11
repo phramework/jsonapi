@@ -71,7 +71,7 @@ class FilterAttribute
     public static function parse($filterKey, $filterValue)
     {
         /**
-         * @var FilterAttributes[]
+         * @var FilterAttribute[]
          */
         $filterAttributes = [];
 
