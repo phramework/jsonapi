@@ -26,6 +26,7 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @property-read int|null $limit
  * @property-read int      $offset
+ * @todo add validate method
  */
 class Page implements \JsonSerializable
 {
@@ -58,7 +59,7 @@ class Page implements \JsonSerializable
      * $page = Page::parseFromParameters(
      *     (object) [
      *         'page' => [
-     *             'limit' => 0,
+     *             'limit' => 1,
      *             'offset' => 0
      *         ]
      *     ], //Request parameters object
@@ -83,7 +84,7 @@ class Page implements \JsonSerializable
 
         if (isset($parameters->page['limit'])) {
             $limit =
-                (new UnsignedIntegerValidator())
+                (new UnsignedIntegerValidator(1))
                     ->parse($parameters->page['limit']);
         }
 

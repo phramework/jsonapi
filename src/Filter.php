@@ -234,12 +234,12 @@ class Filter
             }
 
             //Check if operator is allowed
-            if (!in_array(
+            if (!$isJSONFilter && !in_array(
                 $filterAttribute->operator,
                 Operator::getByClassFlags($operatorClass)
             )) {
                 throw new RequestException(sprintf(
-                    'Filter operator "%" is not allowed for attribute "%s"',
+                    'Filter operator "%s" is not allowed for attribute "%s"',
                     $filterAttribute->operator,
                     $filterAttribute->attribute
                 ));
