@@ -72,7 +72,7 @@ class Relationship
     protected $recordDataAttribute;
 
     /**
-     * Callable method can be used to fetch relationship data, see TODO
+     * Callable method can be used to fetch relationship data
      * @var object
      */
     protected $callbacks;

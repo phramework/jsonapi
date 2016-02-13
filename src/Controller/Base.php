@@ -228,19 +228,4 @@ abstract class Base
             return new \stdClass();
         }
     }
-
-    /**
-     * Throw a Forbidden exception if resource's id is set.     *
-     * Unsupported request to create a resource with a client-generated ID
-     * @throws \Phramework\Exceptions\ForbiddenException
-     * @param  object|resource $resource
-     */
-    public static function checkIfUnsupportedRequestWithId($resource)
-    {
-        if (isset($resource->id)) {
-            throw new \Phramework\Exceptions\ForbiddenException(
-                'Unsupported request to create a resource with a client-generated ID'
-            );
-        }
-    }
 }

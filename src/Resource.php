@@ -190,7 +190,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
         //Work with objects
         if (!is_object($record) && is_array($record)) {
-            $record = (object)$record;
+            $record = (object) $record;
         }
 
         $idAttribute = $modelClass::getIdAttribute();
@@ -208,7 +208,7 @@ class Resource extends \stdClass implements \JsonSerializable
         //Initialize resource
         $resource = new $resourceClass(
             $modelClass::getType(),
-            (string)$record->{$idAttribute}
+            (string) $record->{$idAttribute}
         );
 
         //Delete $idAttribute from record's attributes

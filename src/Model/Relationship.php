@@ -139,7 +139,13 @@ abstract class Relationship extends Get
      * @throws \Phramework\Exceptions\ServerException
      * @todo handle Relationship resource cannot be accessed
      * @todo include second level relationships
-     * @todo multiple (batch) getById at once
+     * @example
+     * ```php
+     * Relationship::getIncludedData(
+     *     Article::get(),
+     *     ['tag', 'author']
+     * );
+     * ```
      */
     public static function getIncludedData(
         $primaryData,

@@ -131,7 +131,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
      * @return boolean
      * @throws IncorrectParametersException When request method is not allowed
      * @todo remove duplicates with handleByIdRelationships
-     * @todo only get is supported
+     * @todo only get is supported for now
      */
     protected static function handleByIdRelationshipsRelated(
         $parameters,

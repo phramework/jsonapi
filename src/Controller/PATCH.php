@@ -86,18 +86,17 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
 
         $requestAttributes = static::getRequestAttributes($parameters);
 
+        if (count((array) $requestAttributes)  === 0) {
+            //@todo throw exception only both attributes and relationships are 0
+            throw new RequestException('No fields updated');
+        }
+
         $attributes = $validator->parse($requestAttributes);
-        $attributesCount = 0;
 
         foreach ($attributes as $key => $attribute) {
             if ($attribute === null) {
                 unset($attributes->{$key});
             }
-            ++$attributesCount;
-        }
-
-        if ($attributesCount === 0) {
-            throw new RequestException('No fields updated');
         }
 
         //Fetch data, to check if resource exists

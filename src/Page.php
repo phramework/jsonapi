@@ -51,10 +51,17 @@ class Page implements \JsonSerializable
     }
 
     /**
+     * @param string $modelClass
+     * @todo
+     */
+    public function validate($modelClass)
+    {
+    }
+
+    /**
      * @param object $parameters Request parameters
      * @return Page|null
      * @throws IncorrectParametersException
-     * @todo add default pagination based on $modelClass
      * ```php
      * $page = Page::parseFromParameters(
      *     (object) [

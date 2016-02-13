@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\Exceptions\ForbiddenException;
+use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\JSONAPI\Controller\POST\QueueItem;
 use Phramework\JSONAPI\Util;
 use Phramework\Models\Request;
@@ -48,7 +50,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * so that any exceptions can be thrown, and finally invoke the execution of the queue.
      * @uses $modelClass::post method to create resources
      * @return int[]
-     * @todo validate type
+     * @throws RequestException
+     * @throws IncorrectParametersException
+     * @throws ForbiddenException
+     * @throws ServerException when view callback is not callable
      */
     protected static function handlePOST(
         $params,
@@ -72,7 +77,26 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         //Iterate multiple resources
         foreach ($data as $resource) {
             if (is_array($resource)) {
-                $resource = (object)$resource;
+                $resource = (object) $resource;
+            }
+
+            Request::requireParameters($resource, 'type');
+            if ($resource->type != $modelClass::getType()) {
+                throw new IncorrectParametersException(
+                    ['type'],
+                    sprintf(
+                        'Incorrect type "%s"',
+                        $resource->type
+                    )
+                );
+            }
+
+            //Throw a Forbidden exception if resource's id is set.     *
+            //Unsupported request to create a resource with a client-generated ID
+            if (isset($resource->id)) {
+                throw new ForbiddenException(
+                    'Unsupported request to create a resource with a client-generated ID'
+                );
             }
 
             $requestAttributes = (
@@ -142,7 +166,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         if ($viewCallback !== null) {
             if (!is_callable($viewCallback)) {
-                throw new \ServerException('View callback is not callable!');
+                throw new ServerException('View callback is not callable!');
             }
 
             return call_user_func(
@@ -182,7 +206,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @throws \Exception
      * @throws \Phramework\Exceptions\NotFoundException
      * @throws \Phramework\Exceptions\ServerException
-     * @todo validate request and resource's type
      */
     private static function handlePOSTResource(
         $params,

@@ -70,9 +70,19 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      * Prepare a collection of resources
      * @param  array[]|object[] $records Multiple records fetched from database
      * [Optional] Write resource and relationship links, defaults is false
+     * @param Fields|null $fields
+     * @param int $flags
      * @return Resource[]
      * @uses Resource::parseFromRecords
-     * @todo Add example
+     * @example
+     * ```php
+     * Model::collection([
+     *     [
+     *         'id' => '10',
+     *         'title' => 'Hello world'
+     *     ]
+     * ]);
+     * ```
      */
     public static function collection($records = [], Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
     {
@@ -86,11 +96,23 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
     /**
      * Prepare an individual resource
-     * @param  array|object $record A single record fetched from database
+     * @param array|object $record A single record fetched from database
+     * @param Fields|null $fields
+     * @param int $flags
      * @return Resource|null
      * @throws \Exception
      * @uses Resource::parseFromRecord
-     * @todo Add example
+     * @example
+     * ```php
+     * Model::resource(
+     *     [
+     *         'id' => '10',
+     *         'title' => 'Hello world'
+     *     ],
+     *     null,
+     *     Resource::PARSE_DEFAULT | Resource::PARSE_RELATIONSHIP_DATA
+     * );
+     * ```
      */
     public static function resource($record, Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
     {
@@ -219,7 +241,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
 
     /**
      * Get default fields for this resource model
-     * **MAY** be overwritten, default is `'table.*']` where table is accessed from this resource model's table
+     * **MAY** be overwritten, default is `['table.*']` where table is accessed from this resource model's table
      * @return Fields
      * @since 1.0.0
      */
@@ -235,7 +257,6 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      * **MAY** be overwritten, default is with limit of 250 resource and offset 0
      * @return Page
      * @since 1.0.0
-     * @todo make current applied page somehow visible at meta
      */
     public static function getDefaultPage()
     {
