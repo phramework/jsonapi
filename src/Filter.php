@@ -109,10 +109,11 @@ class Filter
         }
 
         foreach ($relationships as $relationshipKey => $relationshipValue) {
-            if (!is_array($relationshipValue)) {
+            if (!is_array($relationshipValue) &&  $relationshipValue !== Operator::OPERATOR_EMPTY) {
                 throw new \Exception(sprintf(
-                    'Values for relationship filter "%s" MUST be an array',
-                    $relationshipKey
+                    'Values for relationship filter "%s" MUST be an array or Operator::"%s"',
+                    $relationshipKey,
+                    Operator::OPERATOR_EMPTY
                 ));
             }
         }
@@ -168,7 +169,7 @@ class Filter
          */
 
         if ($this->relationships !== null) {
-            foreach ($this->relationships as $relationshipKey => $value) {
+            foreach ($this->relationships as $relationshipKey => $relationshipValue) {
                 if (!$modelClass::relationshipExists($relationshipKey)) {
                     throw new RequestException(sprintf(
                         'Not a valid relationship for filter relationship "%"',
@@ -176,11 +177,15 @@ class Filter
                     ));
                 }
 
+                if ($relationshipValue === Operator::OPERATOR_EMPTY) {
+                    continue;
+                }
+
                 //@TODO add relationship validator
                 $relationshipValidator = [UnsignedIntegerValidator::class, 'parseStatic'];
 
                 //Run validator, if any value is incorrect IncorrectParametersException will be thrown
-                foreach ($value as $id) {
+                foreach ($relationshipValue as $id) {
                     call_user_func($relationshipValidator, $id);
                 }
             }
@@ -296,6 +301,16 @@ class Filter
      *     Article::class
      * );
      * ```
+     * @example
+     * ```php
+     * $filter = Filter::parseFromParameters(
+     *     (object) [
+     *         'filter' => [
+     *             'tag'       => Operator::OPERATOR_EMPTY
+     *         ]
+     *     ],
+     *     Article::class
+     * );
      * @throws RequestException
      * @throws \Exception
      * @throws IncorrectParametersException
@@ -352,18 +367,22 @@ class Filter
                     ));
                 }
 
-                //Todo use filterValidation model
-                //$function = 'intval';
+                if ($filterValue === Operator::OPERATOR_EMPTY) {
+                    $values = Operator::OPERATOR_EMPTY;
+                } else {
+                    //Todo use filterValidation model
+                    //$function = 'intval';
 
-                //Split multiples and trim additional spaces and force string
-                $values = array_map(
-                    'strval',
-                    //array_map(
-                    //    $function,
-                    //    array_map('trim', explode(',', trim($filterValue)))
-                    //)
-                    array_map('trim', explode(',', trim($filterValue)))
-                );
+                    //Split multiples and trim additional spaces and force string
+                    $values = array_map(
+                        'strval',
+                        //array_map(
+                        //    $function,
+                        //    array_map('trim', explode(',', trim($filterValue)))
+                        //)
+                        array_map('trim', explode(',', trim($filterValue)))
+                    );
+                }
 
                 $filterRelationships->{$filterKey} = $values;
             } else {

@@ -250,13 +250,21 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                 $relationship = $relationships->{$relationshipKey};
 
                 if ($relationship->type === Relationship::TYPE_TO_ONE) {
-                    $additionalQuery[] = sprintf(
-                        '%s "%s"."%s" IN (%s)',
-                        ($hasWhere ? 'AND' : 'WHERE'),
-                        static::$table,
-                        $relationship->recordDataAttribute,
-                        self::handleFilterParseIn($relationshipFilterValue)
-                    );
+                    if ($relationshipFilterValue === Operator::OPERATOR_EMPTY) {
+                        $additionalQuery[] = sprintf(
+                            '%s "%s"."%s" IS NULL',
+                            ($hasWhere ? 'AND' : 'WHERE'),
+                            $relationship->recordDataAttribute
+                        );
+                    } else {
+                        $additionalQuery[] = sprintf(
+                            '%s "%s"."%s" IN (%s)',
+                            ($hasWhere ? 'AND' : 'WHERE'),
+                            static::$table,
+                            $relationship->recordDataAttribute,
+                            self::handleFilterParseIn($relationshipFilterValue)
+                        );
+                    }
                     $hasWhere = true;
                 } else {
                     throw new NotImplementedException(

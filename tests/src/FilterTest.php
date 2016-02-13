@@ -126,6 +126,27 @@ class FilterTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromParameters
      */
+    public function testParseFromParametersRelationshipEmpty()
+    {
+        $parameters = (object) [
+            'filter' => (object) [ //Will accept both arrays and object
+                'tag' => Operator::OPERATOR_EMPTY
+            ]
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            Article::class //Use article resource model's filters
+        );
+
+        $this->assertInstanceOf(Filter::class, $filter);
+
+        $this->assertEquals(Operator::OPERATOR_EMPTY, $filter->relationships->tag);
+    }
+
+    /**
+     * @covers ::parseFromParameters
+     */
     public function testParseFromParametersEmpty()
     {
         $filter = Filter::parseFromParameters(
