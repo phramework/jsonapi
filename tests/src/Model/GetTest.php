@@ -20,6 +20,7 @@ use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Resource;
+use Phramework\JSONAPI\Sort;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model\Get
@@ -85,6 +86,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
 
         //Fetch multiple resources
         $resources = Article::getById($ids);
+
         //Request again to access cached
         $resources = Article::getById($ids);
 
@@ -160,5 +162,37 @@ class GetTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(Tag::getType(), $trendTemplate->type);
 
         return $id;
+    }
+
+    /**
+     * @covers ::parseSort
+     */
+    public function testParseSort()
+    {
+       $this->assertInstanceOf(Sort::class, Article::parseSort((object) []));
+    }
+
+    /**
+     * @covers ::parsePage
+     */
+    public function testParsePage()
+    {
+        $this->assertNull(Article::parsePage((object) []));
+    }
+
+    /**
+     * @covers ::parseFields
+     */
+    public function testParseFields()
+    {
+        $this->assertNull(Article::parseFields((object) []));
+    }
+
+    /**
+     * @covers ::parseFilter
+     */
+    public function testParseFilter()
+    {
+        $this->assertNull(Article::parseFilter((object) []));
     }
 }

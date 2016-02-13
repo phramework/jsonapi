@@ -18,6 +18,7 @@ namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Relationship;
+use Phramework\Phramework;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Relationship
@@ -63,6 +64,34 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     */
+    public function testConstruct2()
+    {
+        new Relationship(
+            Tag::class,
+            Relationship::TYPE_TO_ONE,
+            'tag-id',
+            [Tag::class, 'getRelationshipByArticle']
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstruct3()
+    {
+        new Relationship(
+            Tag::class,
+            Relationship::TYPE_TO_ONE,
+            'tag-id',
+            (object) [
+                Phramework::METHOD_GET => [Tag::class, 'getRelationshipByArticle']
+            ]
+        );
+    }
+
+    /**
+     * @covers ::__construct
      * @expectedException \Exception
      */
     public function testConstructFailure1()
@@ -89,6 +118,38 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @expectedException \Exception
+     */
+    public function testConstructFailureInvalidCallbackMethod()
+    {
+        new Relationship(
+            Tag::class,
+            Relationship::TYPE_TO_ONE,
+            null,
+            (object) [
+                'HTTPMETODNOTALLOWED' => [Tag::class, 'getRelationshipByArticle']
+            ]
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @expectedException \Exception
+     */
+    public function testConstructFailureInvalidMethodNotCallable()
+    {
+        new Relationship(
+            Tag::class,
+            Relationship::TYPE_TO_ONE,
+            null,
+            (object) [
+                Phramework::METHOD_GET => [Tag::class, 'getRelationshipByArticleNotCallable']
+            ]
+        );
+    }
+
+    /**
      * @covers ::__get
      * @param string $property
      * @param mixed $expected
@@ -106,5 +167,24 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     public function testGetFailure()
     {
         $this->relationship->{'not-found'};
+    }
+
+    /**
+     * @covers ::__set
+     */
+    public function testSet()
+    {
+        $this->relationship->{'flag'} = Relationship::FLAG_INCLUDE_BY_DEFAULT;
+
+        $this->assertSame(Relationship::FLAG_INCLUDE_BY_DEFAULT, $this->relationship->{'flag'});
+    }
+
+    /**
+     * @covers ::__set
+     * @expectedException \Exception
+     */
+    public function testSetFailure()
+    {
+        $this->relationship->{'modelClass'} = Tag::class;
     }
 }

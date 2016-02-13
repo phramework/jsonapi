@@ -253,6 +253,18 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__set
+     */
+    public function testSetId()
+    {
+        $resource = new Resource(Tag::getType(), '1');
+
+        $resource->{'id'} = '2';
+
+        $this->assertEquals('2', $resource->{'id'});
+    }
+
+    /**
+     * @covers ::__set
      * @param string $property
      * @dataProvider getAvailableProperties
      * @expectedException \Exception

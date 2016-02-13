@@ -133,7 +133,7 @@ class Fields
      * $fields = Fields::parseFromParameters(
      *     (object) [
      *         'fields' => [
-     *             Article::getType() => ['title, updated'],
+     *             Article::getType() => ['title', updated'],
      *             Tag::getType()     => ['title']
      *         ]
      *     ], //Request parameters object

@@ -134,7 +134,6 @@ class Filter
      * @throws \Exception
      * @throws IncorrectParametersException When filter for primary id attribute is incorrect
      * @throws IncorrectParametersException When filter for relationship is incorrect
-     * @todo add relationship validator
      * @example
      * ```php
      * $filter = new Filter([1, 2, 3]);
@@ -181,8 +180,27 @@ class Filter
                     continue;
                 }
 
-                //@TODO add relationship validator
-                $relationshipValidator = [UnsignedIntegerValidator::class, 'parseStatic'];
+                $relationshipObject = $modelClass::getRelationship($relationshipKey);
+                $relationshipObjectModelClass = $relationshipObject->modelClass;
+                $relationshipValidationModel = $relationshipObjectModelClass::getValidationModel();
+                $relationshipFilterValidationModel = $relationshipObjectModelClass::getValidationModel();
+
+                if ($relationshipFilterValidationModel !== null
+                    && isset($relationshipFilterValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()})) {
+                    $relationshipValidator = [
+                        $relationshipFilterValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()},
+                        'parse'
+                    ];
+                } elseif ($relationshipValidationModel !== null
+                    && isset($relationshipValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()})
+                ) {
+                    $relationshipValidator = [
+                        $relationshipValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()},
+                        'parse'
+                    ];
+                } else {
+                    $relationshipValidator = [UnsignedIntegerValidator::class, 'parseStatic'];
+                }
 
                 //Run validator, if any value is incorrect IncorrectParametersException will be thrown
                 foreach ($relationshipValue as $id) {
