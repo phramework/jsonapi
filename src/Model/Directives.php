@@ -253,6 +253,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                     if ($relationshipFilterValue === Operator::OPERATOR_EMPTY) {
                         $additionalQuery[] = sprintf(
                             '%s "%s"."%s" IS NULL',
+                            static::$table,
                             ($hasWhere ? 'AND' : 'WHERE'),
                             $relationship->recordDataAttribute
                         );
