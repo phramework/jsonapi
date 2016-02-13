@@ -27,6 +27,17 @@ use Phramework\JSONAPI\APP\Models\User;
  */
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
+    public function getAvailableProperties()
+    {
+        return [
+            ['type', Tag::getType()],
+            ['links', null],
+            ['attributes', null],
+            ['relationships', null],
+            ['meta', null]
+        ];
+    }
+
     /**
      * @covers ::__construct
      */
@@ -216,5 +227,64 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             'id' => '1',
             'tag-id' => [new \stdClass(), 5]
         ]);
+    }
+
+    /**
+     * @covers ::__set
+     * @param string $property
+     * @dataProvider getAvailableProperties
+     */
+    public function testSet($property)
+    {
+        if (in_array($property, ['id', 'type'])) {
+            return;
+        }
+
+        $resource = new Resource(Tag::getType(), '1');
+
+        $obj = (object) [
+            'title' => 'hello'
+        ];
+
+        $resource->{$property} = $obj;
+
+        $this->assertEquals($obj, $resource->{$property});
+    }
+
+    /**
+     * @covers ::__set
+     * @param string $property
+     * @dataProvider getAvailableProperties
+     * @expectedException \Exception
+     */
+    public function testSetFailure($property)
+    {
+        $resource = new Resource(Tag::getType(), '1');
+
+        $resource->{'not-found'} = '5';
+    }
+
+    /**
+     * @covers ::__get
+     * @param string $property
+     * @param mixed $expected
+     * @dataProvider getAvailableProperties
+     */
+    public function testGet($property, $expected)
+    {
+        $resource = new Resource(Tag::getType(), '1');
+
+        $this->assertEquals($expected, $resource->{$property});
+    }
+
+    /**
+     * @covers ::__get
+     * @expectedException \Exception
+     */
+    public function testGetFailure()
+    {
+        $resource = new Resource(Tag::getType(), '1');
+
+        $resource->{'not-found'};
     }
 }

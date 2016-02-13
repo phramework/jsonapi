@@ -70,14 +70,14 @@ class Resource extends \stdClass implements \JsonSerializable
     public function __construct($type, $id)
     {
         $this->type = $type;
-        $this->id   = (string)$id;
-
-        //$this->links         = new \stdClass();
-        //$this->attributes    = new \stdClass();
-        //$this->relationships = new \stdClass();
-        //$this->meta          = new \stdClass();
+        $this->id   = (string) $id;
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @throws \Exception
+     */
     public function __set($name, $value)
     {
         if (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
@@ -241,7 +241,7 @@ class Resource extends \stdClass implements \JsonSerializable
         }
 
         //Attach relationships if resource's relationships are set
-        if ($flagRelationships && ($relationships = $modelClass::getRelationships())) {
+        if (/*$flagRelationships &&*/ ($relationships = $modelClass::getRelationships())) {
             $resourceRelationships = new \stdClass();
             //Parse relationships
             foreach ($relationships as $relationshipKey => $relationshipObject) {
@@ -286,7 +286,7 @@ class Resource extends \stdClass implements \JsonSerializable
                     );
                 };
 
-                if ($flagRelationshipData || $relationshipFlagData) {
+                if ($flagRelationships && ($flagRelationshipData || $relationshipFlagData)) {
                     //Include data only if $flagRelationshipData is true
                     if ($relationshipType == Relationship::TYPE_TO_ONE) {
                         $relationshipEntryResource = null;
@@ -367,9 +367,12 @@ class Resource extends \stdClass implements \JsonSerializable
 
                 //Push relationship to relationships
                 $resourceRelationships->{$relationshipKey} = $relationshipEntry;
-                //$resource->relationships->{$relationshipKey} = $relationshipEntry; REMOVE
             }
-            $resource->relationships = $resourceRelationships;
+
+            //Attach only if set
+            if ($flagRelationships) {
+                $resource->relationships = $resourceRelationships;
+            }
         }
 
         //Attach resource attributes
