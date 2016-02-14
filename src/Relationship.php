@@ -27,7 +27,7 @@ use Phramework\Phramework;
  * @property-read int           $type
  * @property-read string|null   $recordDataAttribute
  * @property-read object        $callbacks
- * @property-read int           $flags
+ * @property int           $flags
  */
 class Relationship
 {
@@ -191,17 +191,8 @@ class Relationship
      */
     public function __get($name)
     {
-        switch ($name) {
-            case 'modelClass':
-                return $this->modelClass;
-            case 'type':
-                return $this->type;
-            case 'recordDataAttribute':
-                return $this->recordDataAttribute;
-            case 'callbacks':
-                return $this->callbacks;
-            case 'flags':
-                return $this->flags;
+        if (in_array($name, ['modelClass', 'type', 'recordDataAttribute', 'callbacks', 'flags'])) {
+            return $this->{$name};
         }
 
         throw new \Exception(sprintf(
@@ -217,7 +208,7 @@ class Relationship
      * @throws \Exception
      */
     public function __set($name, $value) {
-        if (in_array($name, ['flag'])) {
+        if (in_array($name, ['flags'])) {
             $this->{$name} = $value;
             return $this;
         }

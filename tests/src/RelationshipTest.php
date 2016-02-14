@@ -174,9 +174,9 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testSet()
     {
-        $this->relationship->{'flag'} = Relationship::FLAG_INCLUDE_BY_DEFAULT;
+        $this->relationship->{'flags'} = Relationship::FLAG_INCLUDE_BY_DEFAULT;
 
-        $this->assertSame(Relationship::FLAG_INCLUDE_BY_DEFAULT, $this->relationship->{'flag'});
+        $this->assertSame(Relationship::FLAG_INCLUDE_BY_DEFAULT, $this->relationship->{'flags'});
     }
 
     /**

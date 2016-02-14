@@ -425,13 +425,8 @@ class Filter
      */
     public function __get($name)
     {
-        switch ($name) {
-            case 'primary':
-                return $this->primary;
-            case 'relationships':
-                return $this->relationships;
-            case 'attributes':
-                return $this->attributes;
+        if (in_array($name, ['primary', 'relationships', 'attributes'])) {
+            return $this->{$name};
         }
 
         throw new \Exception(sprintf(
