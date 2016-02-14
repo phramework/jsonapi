@@ -136,9 +136,6 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
     protected static function handleByIdRelationshipsRelated(
         $parameters,
         $method,
-        $headers,
-        $id,
-        $relationship,
         $modelClass,
         $allowedMethods,
         $primaryDataParameters = [],
