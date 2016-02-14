@@ -16,12 +16,6 @@
  */
 namespace Phramework\JSONAPI;
 
-use \Phramework\Models\Request;
-use \Phramework\Validate\Validate;
-use \Phramework\Models\Util;
-use \Phramework\Models\Filter;
-use \Phramework\Models\Operator;
-use \Phramework\Exceptions\RequestException;
 
 /**
  * Base JSONAPI controller
