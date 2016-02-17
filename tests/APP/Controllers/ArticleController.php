@@ -74,7 +74,17 @@ class ArticleController extends \Phramework\JSONAPI\Controller
             $method,
             $headers,
             $id,
-            Article::class
+            Article::class,
+            [],
+            [
+                function (
+                    $requestAttributes,
+                    $requestRelationships,
+                    $attributes,
+                    $parsedRelationshipAttributes
+                ) {
+                }
+            ]
         );
     }
 

@@ -108,7 +108,7 @@ class Tag extends \Phramework\JSONAPI\APP\Model
      * @param  integer $return               [description]
      * @return integer                       [description]
      */
-    public static function postRelationshipByArticle(
+    public static function postRelationshipArticle(
         $tagId,
         $articleId,
         $additionalAttributes = null,
@@ -127,11 +127,19 @@ class Tag extends \Phramework\JSONAPI\APP\Model
         return 1;
     }
 
+    public static function patchRelationshipArticle(
+        $tagId,
+        $articleId,
+        $additionalAttributes = null
+    ) {
+        return true;
+    }
+
     /**
      * @param $articleId
      * @return RelationshipResource[]
      */
-    public static function getRelationshipByArticle(
+    public static function getRelationshipArticle(
         $articleId,
         Fields $fields = null,
         $flags = Resource::PARSE_DEFAULT

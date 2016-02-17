@@ -71,7 +71,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             Tag::class,
             Relationship::TYPE_TO_ONE,
             'tag-id',
-            [Tag::class, 'getRelationshipByArticle']
+            [Tag::class, 'getRelationshipArticle']
         );
     }
 
@@ -85,7 +85,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             Relationship::TYPE_TO_ONE,
             'tag-id',
             (object) [
-                Phramework::METHOD_GET => [Tag::class, 'getRelationshipByArticle']
+                Phramework::METHOD_GET => [Tag::class, 'getRelationshipArticle']
             ]
         );
     }

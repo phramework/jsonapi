@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\JSONAPI\APP\Models\User;
 use \Phramework\Phramework;
 
 /**
@@ -48,25 +49,28 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_URI'] = '/article/1';
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_PATCH;
 
-        $_POST['data'] = [
+        $_POST['data'] = (object) [
             'type' => 'article',
-            'id'   => 1,
+            'id'   => '1',
             'attributes' => [
                 'title' => 'omg'
             ],
-            'relationships' => [
-                'creator' => [
-                    'data' => [
-                        'type' => 'user', 'id' => '1'
+            'relationships' => (object) [
+                'creator' => (object)[
+                    'data' => (object)[
+                        'type' => 'user',
+                        'id' => '1'
                     ]
                 ],
-                'tag' => [
+                'tag' => (object) [
                     'data' => [
-                        [
-                            'type' => 'tag', 'id' => '3'
+                        (object) [
+                            'type' => 'tag',
+                            'id' => '3'
                         ],
-                        [
-                            'type' => 'tag', 'id' => '2'
+                        (object) [
+                            'type' => 'tag',
+                            'id' => '2'
                         ]
                     ]
                 ]
@@ -98,12 +102,12 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
     public function testPATCHSuccess()
     {
         $this->prepare();
-        //ob_clean();
         $this->phramework->invoke();
 
-        //ob_end_clean();
-        //Access parameters written by invoked phramework's viewer
         $parameters = $this->parameters;
+
+        //var_dump($parameters);
+
         return;
 
         $this->assertInternalType('object', $parameters);
@@ -148,11 +152,10 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
      */
     public function testPATCHFailureToOne()
     {
-        return;
         $this->prepare();
 
         //Set a non existing id for creator relationship
-        $_PATCH['data']['relationships']['creator']['data']['id'] = 4235454365434;
+        $_POST['data']->relationships->creator->data->id = 4235454365434;
 
         $this->phramework->invoke();
 
@@ -175,11 +178,10 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
      */
     public function testPATCHFailureToMany()
     {
-        return;
         $this->prepare();
 
         //Set a non existing id for tag relationship
-        $_PATCH['data']['relationships']['tag']['data'][0]['id'] = 4235454365434;
+        $_POST['data']->relationships->tag->data[0]->id = 4235454365434;
 
         $this->phramework->invoke();
 

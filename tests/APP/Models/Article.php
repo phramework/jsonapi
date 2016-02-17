@@ -179,8 +179,9 @@ class Article extends \Phramework\JSONAPI\APP\Model
                 Relationship::TYPE_TO_MANY,
                 null,
                 (object) [
-                    Phramework::METHOD_GET  => [Tag::class, 'getRelationshipByArticle'],
-                    Phramework::METHOD_POST => [Tag::class, 'postRelationshipByArticle']
+                    Phramework::METHOD_GET   => [Tag::class, 'getRelationshipArticle'],
+                    Phramework::METHOD_POST  => [Tag::class, 'postRelationshipArticle'],
+                    Phramework::METHOD_PATCH => [Tag::class, 'patchRelationshipArticle']
                 ],
                 Relationship::FLAG_DEFAULT | Relationship::FLAG_DATA
             )

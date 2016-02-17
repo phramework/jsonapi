@@ -16,8 +16,11 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\Exceptions\ServerException;
+use Phramework\JSONAPI\Relationship;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
+use Phramework\Phramework;
 use Phramework\Validate\ObjectValidator;
 
 /**
@@ -29,7 +32,7 @@ use Phramework\Validate\ObjectValidator;
 abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
 {
     /**
-     * @param  object $parameters                          Request parameters
+     * @param  object $parameters                      Request parameters
      * @param  string $method                          Request method
      * @param  array  $headers                         Request headers
      * @param  integer|string $id                      Requested resource's id
@@ -37,6 +40,8 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
      * to be used
      * @param  array $primaryDataParameters           [Optional] Array with any
      * additional arguments that the primary data is requiring
+     * @param  callable[] $validationCallbacks
+     * @param  callable|null $viewCallback
      * @throws \Phramework\Exceptions\NotFound         If resource not found
      * @throws \Phramework\Exceptions\RequestException If no fields are changed
      * @uses model's `getById` method to fetch resource
@@ -47,6 +52,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
      * @throws \Exception When Validation model for an attribute  is not set
      * @return boolean
      * @todo rethink output
+
      */
     protected static function handlePATCH(
         $parameters,
@@ -54,7 +60,9 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $headers,
         $id,
         $modelClass,
-        $primaryDataParameters = []
+        $primaryDataParameters = [],
+        $validationCallbacks = [],
+        $viewCallback = null
     ) {
         //Construct a validator
         $validator = new ObjectValidator(
@@ -86,32 +94,98 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
 
         $requestAttributes = static::getRequestAttributes($parameters);
 
-        if (count((array) $requestAttributes)  === 0) {
-            //@todo throw exception only both attributes and relationships are 0
+        if (($requestData = self::getRequestData($parameters)) !== null
+            && property_exists($requestData, 'relationships')) {
+            $requestRelationships = $requestData->relationships;
+        } else {
+            $requestRelationships = new \stdClass();
+        }
+
+        if (count((array) $requestAttributes) === 0 && count((array) $requestRelationships) === 0) {
             throw new RequestException('No fields updated');
         }
 
         $attributes = $validator->parse($requestAttributes);
 
+        //Parse relationship attributes, NOTE type TO_ONE relationships are writing their data back to $attributes object
+        $parsedRelationshipAttributes = self::getParsedRelationshipAttributes(
+            $modelClass,
+            $attributes,
+            $requestRelationships
+        );
+
+        //Check if callbacks for TO_MANY relationships are set
+        foreach ($parsedRelationshipAttributes as $relationshipKey => $relationshipValues) {
+            $relationship = $modelClass::getRelationship($relationshipKey);
+
+            if ($relationship->type == Relationship::TYPE_TO_MANY) {
+                if (!isset($relationship->callbacks->{Phramework::METHOD_PATCH})) {
+                    throw new ServerException(sprintf(
+                        'PATCH callback is not implemented for relationship "%s"',
+                        $relationshipKey
+                    ));
+                }
+            }
+        }
+
+        //TODO allow nulls
         foreach ($attributes as $key => $attribute) {
             if ($attribute === null) {
                 unset($attributes->{$key});
             }
         }
 
+        //Call validation callbacks if set
+        foreach ($validationCallbacks as $callback) {
+            call_user_func(
+                $callback,
+                $requestAttributes,
+                $requestRelationships,
+                $attributes,
+                $parsedRelationshipAttributes
+            );
+        }
+
         //Fetch data, to check if resource exists
-        $data = $modelClass::getById(
+        $currentResource = $modelClass::getById(
             $id,
-            null, //fields
+            null, //fields todo maybe add []
             ...$primaryDataParameters
         );
 
         //Check if resource exists (MUST exist!)
-        static::exists($data);
+        static::exists($currentResource);
 
-        $patch = $modelClass::patch($id, (array) $attributes);
+        //Update the resource's attributes directly if any of then is requested to PATCH
+        if (count((array) $attributes) > 0) {
+            $patch = $modelClass::patch($id, (array)$attributes);
+            self::testUnknownError($patch, 'PATCH operation was not successful');
+        }
 
-        self::testUnknownError($patch, 'PATCH operation was not successful');
+        //Call TO_MANY callbacks to PATCH relationships
+        foreach ($parsedRelationshipAttributes as $relationshipKey => $relationshipValues) {
+            $relationship = $modelClass::getRelationship($relationshipKey);
+
+            if ($relationship->type == Relationship::TYPE_TO_MANY) {
+                call_user_func(
+                    $relationship->callbacks->{Phramework::METHOD_PATCH},
+                    $relationshipValues, //complete replacement
+                    $id,
+                    null //$additionalAttributes
+                );
+            }
+        }
+
+        if ($viewCallback !== null) {
+            if (!is_callable($viewCallback)) {
+                throw new ServerException('View callback is not callable!');
+            }
+
+            return call_user_func(
+                $viewCallback,
+                $id
+            );
+        }
 
         static::viewData(
             $modelClass::resource(['id' => $id]),

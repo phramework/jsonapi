@@ -51,23 +51,23 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_URI'] = '/article/';
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_POST;
 
-        $_POST['data'] = [
+        $_POST['data'] = (object) [
             'type' => 'article',
-            'attributes' => [
+            'attributes' => (object) [
                 'title' => 'omg'
             ],
-            'relationships' => [
-                'creator' => [
-                    'data' => [
+            'relationships' => (object) [
+                'creator' => (object) [
+                    'data' => (object) [
                         'type' => 'user', 'id' => '1'
                     ]
                 ],
-                'tag' => [
+                'tag' => (object) [
                     'data' => [
-                        [
+                        (object) [
                             'type' => 'tag', 'id' => '3'
                         ],
-                        [
+                        (object) [
                             'type' => 'tag', 'id' => '2'
                         ]
                     ]
@@ -174,11 +174,10 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     public function testPOSTFailureToOne()
     {
-        return;
         $this->prepare();
 
         //Set a non existing id for creator relationship
-        $_POST['data']['relationships']['creator']['data']['id'] = 4235454365434;
+        $_POST['data']->relationships->creator->data->id = 4235454365434;
 
         $this->phramework->invoke();
 
@@ -201,11 +200,10 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     public function testPOSTFailureToMany()
     {
-        return;
         $this->prepare();
 
         //Set a non existing id for tag relationship
-        $_POST['data']['relationships']['tag']['data'][0]['id'] = 4235454365434;
+        $_POST['data']->relationships->tag->data[0]->id = 4235454365434;
 
         $this->phramework->invoke();
 

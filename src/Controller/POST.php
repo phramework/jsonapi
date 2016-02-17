@@ -45,6 +45,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @param  array $relationshipParameters *[Optional]* Array with any
      * additional argument primary data's relationships are requiring
      * @param  callable[] $validationCallbacks
+     * @param  callable|null $viewCallback
      * @todo handle as transaction queue, Since models usually are not producing exceptions.
      * Prepare data until last possible moment,
      * so that any exceptions can be thrown, and finally invoke the execution of the queue.
@@ -128,7 +129,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         }
 
         /**
-         * @var int[]
+         * @var string[]
          */
         $ids = [];
 
@@ -146,7 +147,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $relationships = $queueItem->getRelationships();
 
             foreach ($relationships as $key => $relationship) {
-                //@TODO
                 //Call post relationship method to post each of relationships pairs
                 foreach ($relationship->resources as $resourceId) {
                     call_user_func(
@@ -221,7 +221,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $validator = $modelClass::getValidationModel();
 
         $attributesValidator = (
-        isset($validator->attributes) && $validator->attributes
+            isset($validator->attributes) && $validator->attributes
             ? $validator->attributes
             : new ObjectValidator()
         );
@@ -230,7 +230,71 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         //Parse request attributes using $validationModel to validate the data
         $attributes = $attributesValidator->parse($requestAttributes);
 
-        $relationships = $modelClass::getRelationships();
+        $parsedRelationshipAttributes = self::getParsedRelationshipAttributes(
+            $modelClass,
+            $attributes,
+            $requestRelationships,
+            $relationshipParameters
+        );
+
+        //Call Validation callbacks
+        foreach ($validationCallbacks as $callback) {
+            call_user_func(
+                $callback,
+                $requestAttributes,
+                $requestRelationships,
+                $attributes,
+                $parsedRelationshipAttributes
+            );
+        }
+
+        $queueRelationships = new \stdClass();
+
+        /**
+         * Call POST_RELATIONSHIP_BY_PREFIX handler for TO_MANY relationships
+         * This handler should post into database these relationships
+         */
+        foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
+            $relationship = $modelClass::getRelationship($relationshipKey);
+
+            if ($relationship->type == Relationship::TYPE_TO_MANY) {
+                $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
+
+                $relationship = $modelClass::getRelationship($relationshipKey);
+
+                if (!isset($relationship->callbacks->{Phramework::METHOD_POST})) {
+                    throw new ServerException(sprintf(
+                       'POST callback is not implemented for relationship "%s"',
+                        $relationshipKey
+                    ));
+                }
+
+                //Push to queueRelationships
+                $queueRelationships->{$relationshipKey} = (object) [
+                    'callback' => $relationship->callbacks->{Phramework::METHOD_POST}, //callable
+                    'resources' => $parsedRelationshipValue //array
+                ];
+            }
+        }
+
+        return new \Phramework\JSONAPI\Controller\POST\QueueItem(
+            $attributes,
+            $queueRelationships
+        );
+    }
+
+    /**
+     * @param string $modelClass
+     * @param object $attributes
+     * @param object $requestRelationships
+     * @throws RequestException
+     * @throws \Exception
+     * @throws \Phramework\Exceptions\NotFoundException
+     * @return object
+     */
+    protected static function getParsedRelationshipAttributes($modelClass, &$attributes, $requestRelationships, $relationshipParameters = [])
+    {
+        $validator = $modelClass::getValidationModel();
 
         /**
          * Format, object with
@@ -354,14 +418,13 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         }
 
         //Parse attributes using relationship's validation model
-        $parsedRelationshipAttributes =
-            (
+        $parsedRelationshipAttributes = (
             isset($validator->relationships)
                 ? $validator->relationships->parse(
                 $relationshipAttributes
             )
-                : new \stdClass()
-            );
+            : new \stdClass()
+        );
 
         /**
          * Foreach request relationship
@@ -378,7 +441,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
 
             $tempIds = (
-            is_array($parsedRelationshipValue)
+                is_array($parsedRelationshipValue)
                 ? $parsedRelationshipValue
                 : [$parsedRelationshipValue]
             );
@@ -437,48 +500,6 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
         }
 
-        //Call Validation callbacks
-        foreach ($validationCallbacks as $callback) {
-            call_user_func(
-                $callback,
-                $requestAttributes,
-                $requestRelationships,
-                $attributes
-            );
-        }
-
-        $queueRelationships = new \stdClass();
-
-        /**
-         * Call POST_RELATIONSHIP_BY_PREFIX handler for TO_MANY relationships
-         * This handler should post into database these relationships
-         */
-        foreach ($requestRelationships as $relationshipKey => $relationshipValue) {
-            $relationship = $modelClass::getRelationship($relationshipKey);
-
-            if ($relationship->type == Relationship::TYPE_TO_MANY) {
-                $parsedRelationshipValue = $parsedRelationshipAttributes->{$relationshipKey};
-
-                $relationship = $modelClass::getRelationship($relationshipKey);
-
-                if (!isset($relationship->callbacks->{Phramework::METHOD_POST})) {
-                    throw new ServerException(sprintf(
-                       'POST callback is not implemented for relationship "%s"',
-                        $relationshipKey
-                    ));
-                }
-
-                //Push to queueRelationships
-                $queueRelationships->{$relationshipKey} = (object) [
-                    'callback' => $relationship->callbacks->{Phramework::METHOD_POST}, //callable
-                    'resources' => $parsedRelationshipValue //array
-                ];
-            }
-        }
-
-        return new \Phramework\JSONAPI\Controller\POST\QueueItem(
-            $attributes,
-            $queueRelationships
-        );
+        return $parsedRelationshipAttributes;
     }
 }

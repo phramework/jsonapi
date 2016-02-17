@@ -36,7 +36,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
 
         //print_r($articles);
 
-        $relationship = Tag::getRelationshipByArticle(
+        $relationship = Tag::getRelationshipArticle(
             '1',
             null
         );
