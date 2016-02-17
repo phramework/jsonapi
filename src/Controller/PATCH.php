@@ -92,7 +92,31 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
             );
         }
 
-        $requestAttributes = static::getRequestAttributes($parameters);
+        Request::requireParameters($parameters, ['data']);
+        Request::requireParameters($parameters->data, ['id', 'type']);
+
+        if ($parameters->data->type !== $modelClass::getType()) {
+            throw new RequestException(sprintf(
+                'Expecting type "%s" got "%s"',
+                $modelClass::getType(),
+                $parameters->data->type
+            ));
+        }
+
+        if ($parameters->data->id != $id) {
+            throw new RequestException(sprintf(
+                'Expecting id "%s" got "%s"',
+                $id,
+                $parameters->data->id
+            ));
+        }
+
+        if (($requestData = self::getRequestData($parameters)) !== null
+            && property_exists($requestData, 'attributes')) {
+            $requestAttributes = $requestData->attributes;
+        } else {
+            $requestAttributes = new \stdClass();
+        }
 
         if (($requestData = self::getRequestData($parameters)) !== null
             && property_exists($requestData, 'relationships')) {
@@ -139,6 +163,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         foreach ($validationCallbacks as $callback) {
             call_user_func(
                 $callback,
+                $id,
                 $requestAttributes,
                 $requestRelationships,
                 $attributes,

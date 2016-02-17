@@ -56,8 +56,8 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
                 'title' => 'omg'
             ],
             'relationships' => (object) [
-                'creator' => (object)[
-                    'data' => (object)[
+                'creator' => (object) [
+                    'data' => (object) [
                         'type' => 'user',
                         'id' => '1'
                     ]
