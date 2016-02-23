@@ -230,6 +230,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         //Parse request attributes using $validationModel to validate the data
         $attributes = $attributesValidator->parse($requestAttributes);
 
+        if (empty((array) $attributes)) {
+            $attributes = new \stdClass();
+        }
+
         $parsedRelationshipAttributes = self::getParsedRelationshipAttributes(
             $modelClass,
             $attributes,

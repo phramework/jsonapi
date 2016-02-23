@@ -131,6 +131,10 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
 
         $attributes = $validator->parse($requestAttributes);
 
+        if (empty((array) $attributes)) {
+            $attributes = new \stdClass();
+        }
+
         //Parse relationship attributes, NOTE type TO_ONE relationships are writing their data back to $attributes object
         $parsedRelationshipAttributes = self::getParsedRelationshipAttributes(
             $modelClass,
