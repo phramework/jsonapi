@@ -504,6 +504,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             }
         }
 
-        return $parsedRelationshipAttributes;
+        return (
+            $parsedRelationshipAttributes
+            ? $parsedRelationshipAttributes
+            : new \stdClass()
+        );
     }
 }
