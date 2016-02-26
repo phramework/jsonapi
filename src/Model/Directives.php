@@ -110,10 +110,15 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         if ($sort !== null) {
             $sort ->validate(static::class);
 
+            $tableAttribute = (
+                $sort->table === null
+                ? $sort->attribute
+                : $sort->table . '"."' .$sort->attribute
+            );
+
             $replace = "\n" . sprintf(
-                'ORDER BY "%s"."%s" %s',
-                $sort->table,
-                $sort->attribute,
+                'ORDER BY "%s" %s',
+                $tableAttribute,
                 ($sort->ascending ? 'ASC' : 'DESC')
             );
         }
@@ -223,9 +228,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
             if (count($filter->primary)) {
                 $additionalQuery[] = sprintf(
-                    '%s "%s"."%s" IN (%s)',
+                    '%s "%s" IN (%s)', //'%s "%s"."%s" IN (%s)',
                     ($hasWhere ? 'AND' : 'WHERE'),
-                    static::$table,
+                    //static::$table,
                     static::$idAttribute,
                     self::handleFilterParseIn($filter->primary)
                 );
@@ -252,16 +257,16 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                 if ($relationship->type === Relationship::TYPE_TO_ONE) {
                     if ($relationshipFilterValue === Operator::OPERATOR_EMPTY) {
                         $additionalQuery[] = sprintf(
-                            '%s "%s"."%s" IS NULL',
+                            '%s "%s" IS NULL', //'%s "%s"."%s" IS NULL',
                             ($hasWhere ? 'AND' : 'WHERE'),
-                            static::$table,
+                            //static::$table,
                             $relationship->recordDataAttribute
                         );
                     } else {
                         $additionalQuery[] = sprintf(
-                            '%s "%s"."%s" IN (%s)',
+                            '%s "%s" IN (%s)', //'%s "%s"."%s" IN (%s)',
                             ($hasWhere ? 'AND' : 'WHERE'),
-                            static::$table,
+                            //static::$table,
                             $relationship->recordDataAttribute,
                             self::handleFilterParseIn($relationshipFilterValue)
                         );
@@ -286,9 +291,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalQuery[] = sprintf(
-                        '%s "%s"."%s" %s \'%s\'',
+                        '%s "%s" %s \'%s\'', //'%s "%s"."%s" %s \'%s\'',
                         ($hasWhere ? 'AND' : 'WHERE'),
-                        static::$table,
+                        //static::$table,
                         $attribute,
                         $operator,
                         $operand
@@ -301,9 +306,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                     ];
 
                     $additionalQuery[] = sprintf(
-                        '%s "%s"."%s" %s ',
+                        '%s "%s" %s ', //'%s "%s"."%s" %s ',
                         ($hasWhere ? 'AND' : 'WHERE'),
-                        static::$table,
+                        //static::$table,
                         $attribute,
                         (
                             array_key_exists($operator, $transformation)
@@ -320,10 +325,10 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                     ];
 
                     $additionalQuery[] = sprintf(//$operand ANY (array)
-                        '%s %s (\'%s\' %s("%s"."%s")) ',
+                        '%s %s (\'%s\' %s("%s")) ', //'%s %s (\'%s\' %s("%s"."%s")) ',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         (
-                        in_array($operator, [Operator::OPERATOR_NOT_IN_ARRAY])
+                            in_array($operator, [Operator::OPERATOR_NOT_IN_ARRAY])
                             ? 'NOT'
                             : ''
                         ),
@@ -333,7 +338,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                             ? $transformation[$operator]
                             : $operator
                         ),
-                        static::$table,
+                        //static::$table,
                         $attribute
                     );
                     $hasWhere = true;
@@ -346,9 +351,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
                     //LIKE '%text%', force lower - case insensitive
                     $additionalQuery[] = sprintf(
-                        '%s LOWER("%s"."%s") %s \'%%%s%%\'',
+                        '%s LOWER("%s") %s \'%%%s%%\'', //'%s LOWER("%s"."%s") %s \'%%%s%%\'',
                         ($hasWhere ? 'AND' : 'WHERE'),
-                        static::$table,
+                        //static::$table,
                         $attribute,
                         (
                         array_key_exists($operator, $transformation)
@@ -366,9 +371,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                     ];
 
                     $additionalQuery[] = sprintf(
-                        '%s "%s"."%s" %s (%s)',
+                        '%s "%s"."%s" %s (%s)', // '%s "%s"."%s" %s (%s)',
                         ($hasWhere ? 'AND' : 'WHERE'),
-                        static::$table,
+                        //static::$table,
                         $attribute,
                         (
                         array_key_exists($operator, $transformation)
@@ -401,9 +406,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalQuery[] = sprintf(
-                        '%s "%s"."%s"->>\'%s\' %s \'%s\'',
+                        '%s "%s"->>\'%s\' %s \'%s\'', //'%s "%s"."%s"->>\'%s\' %s \'%s\'',
                         ($hasWhere ? 'AND' : 'WHERE'),
-                        static::$table,
+                        //static::$table,
                         $attribute,
                         $key,
                         $operator,

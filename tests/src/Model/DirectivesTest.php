@@ -72,6 +72,40 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::handleSort
+     */
+    public function testHandleSortNull()
+    {
+        $sort = new Sort(
+            null,
+            Tag::getIdAttribute()
+        );
+
+        $query = sprintf(
+            'SELECT * FROM "%s"
+              {{sort}}',
+            Tag::getTable()
+        );
+
+        $query = Bootstrap::invokeStaticMethod(
+            Tag::class,
+            'handleSort',
+            $query,
+            $sort
+        );
+
+        $this->assertInternalType('string', $query);
+
+        $pattern = sprintf(
+            '/^SELECT \* FROM "%s"\s+ORDER BY "%s" ASC$/',
+            Tag::getTable(),
+            Tag::getIdAttribute()
+        );
+
+        $this->assertRegExp($pattern, trim($query));
+    }
+
+    /**
      * @covers ::handlePage
      */
     public function testHandlePage()

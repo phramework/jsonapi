@@ -31,7 +31,7 @@ use Phramework\Exceptions\RequestException;
 class Sort
 {
     /**
-     * @var string
+     * @var null|string
      */
     protected $table;
 
@@ -53,7 +53,7 @@ class Sort
 
     /**
      * Sort constructor.
-     * @param $table
+     * @param string|null $table
      * @param string $attribute
      * @param bool $ascending
      */
@@ -69,7 +69,7 @@ class Sort
 
     /**
      * @param string $modelClass
-     * @todo
+     * @todo implement
      */
     public function validate($modelClass)
     {

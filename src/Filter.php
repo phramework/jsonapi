@@ -140,6 +140,7 @@ class Filter
      *
      * $filter->validate(Article::class);
      * ```
+     * @todo add relationship idAttribute validators
      */
     public function validate($modelClass)
     {
