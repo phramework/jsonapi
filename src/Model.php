@@ -248,7 +248,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     public static function getDefaultFields()
     {
         return new Fields((object) [
-            static::getType() => [static::getTable() .  '.*']
+            static::getType() => ['*']
         ]);
     }
 

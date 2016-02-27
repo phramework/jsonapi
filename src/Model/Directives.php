@@ -453,9 +453,10 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         if ($fields === null || empty($fields->get($type))) {
             //Use resource model's default fields
             $fields = static::getDefaultFields();
+
             $attributes =  array_merge(
                 $fields->get($type),
-                [static::getTable() . '.' . static::getIdAttribute()]
+                [static::getIdAttribute()] //[static::getTable() . '.' . static::getIdAttribute()]
             );
         } else {
             $attributes = $fields->get($type);

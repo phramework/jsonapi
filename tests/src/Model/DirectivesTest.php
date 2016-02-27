@@ -191,9 +191,9 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
         );
 
         $pattern = sprintf(
-            '/^SELECT "%s"\.\*,"%s"\."%s" FROM "%s"$/',
-            Tag::getTable(),
-            Tag::getTable(),
+            '/^SELECT \*,"%s" FROM "%s"$/', //'/^SELECT "%s"\.\*,"%s"\."%s" FROM "%s"$/',
+            //Tag::getTable(),
+            //Tag::getTable(),
             Tag::getIdAttribute(),
             Tag::getTable()
         );

@@ -40,19 +40,43 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
      * to be used
      * @param  array $primaryDataParameters           [Optional] Array with any
      * additional arguments that the primary data is requiring
-     * @param  callable[] $validationCallbacks
+     * @param  callable[] $validationCallbacks         Signature:
+     * ```function ($id,
+     * $requestAttributes,
+     * $requestRelationships,
+     * $attributes,
+     * $parsedRelationshipAttributes)```
      * @param  callable|null $viewCallback
      * @throws \Phramework\Exceptions\NotFound         If resource not found
      * @throws \Phramework\Exceptions\RequestException If no fields are changed
      * @uses model's `getById` method to fetch resource
      * @uses $modelClass::patch method to update resources
-     * @todo clear call to getById
-     * @todo allow null values
-     * @todo patch relationship data
+     * @todo allow nulls
      * @throws \Exception When Validation model for an attribute  is not set
      * @return boolean
-     * @todo rethink output
-
+     * @example ```php
+     * self::handlePATCH(
+     *     $params,
+     *     $method,
+     *     $headers,
+     *     $id,
+     *     Message::class,
+     *     [$user->id],
+     *     [
+     *         function (
+     *             $id,
+     *             $requestAttributes,
+     *             $requestRelationships,
+     *             $attributes,
+     *             $parsedRelationshipAttributes
+     *         ) {
+     *             if ($requestAttributes->state != Message::STATE_NEW) {
+     *                 throw new RequestException('Cannot be changed');
+     *             }
+     *         }
+     *     ]
+     * );
+     * ```
      */
     protected static function handlePATCH(
         $parameters,

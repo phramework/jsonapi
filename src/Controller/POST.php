@@ -46,6 +46,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * additional argument primary data's relationships are requiring
      * @param  callable[] $validationCallbacks
      * @param  callable|null $viewCallback
+     * @param  int|null      $bulkLimit Null is no limit.
      * @todo handle as transaction queue, Since models usually are not producing exceptions.
      * Prepare data until last possible moment,
      * so that any exceptions can be thrown, and finally invoke the execution of the queue.
@@ -55,6 +56,29 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @throws IncorrectParametersException
      * @throws ForbiddenException
      * @throws ServerException when view callback is not callable
+     * @example ```php
+     * self::handlePOST(
+     *     $params,
+     *     $method,
+     *     $headers,
+     *     Message::class,
+     *     [$user->id],
+     *     [],
+     *     [
+     *         function (
+     *             $id,
+     *             $requestAttributes,
+     *             $requestRelationships,
+     *             $attributes,
+     *             $parsedRelationshipAttributes
+     *         ) {
+     *             if ($requestAttributes->state != Message::STATE_NEW) {
+     *                 throw new RequestException('Cannot be changed');
+     *             }
+     *         }
+     *     ]
+     * );
+     * ```
      */
     protected static function handlePOST(
         $params,
@@ -64,7 +88,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $primaryDataParameters = [],
         $relationshipParameters = [],
         $validationCallbacks = [],
-        $viewCallback = null
+        $viewCallback = null,
+        $bulkLimit = null
     ) {
         $queue = new \SplQueue();
 
@@ -73,6 +98,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         //Treat single requests as an array of resources
         if (is_object($data) || is_array($data) && Util::isArrayAssoc($data)) {
             $data = [$data];
+        }
+
+        if ($bulkLimit !== null && count($data) > $bulkLimit) {
+            throw new RequestException('Number of batch requests is exceeding the maximum of ' . $bulkLimit);
         }
 
         //Iterate multiple resources
