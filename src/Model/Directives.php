@@ -363,7 +363,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         strtolower($operand)
                     );
                     $hasWhere = true;
-                } elseif (in_array($operator, [Operator::OPERATOR_IN, Operator::OPERATOR_NOT_IN])) {
+                } elseif (in_array($operator, Operator::getInOperators())) {
                     //@todo add operator class in
                     //Define a transformation matrix, operator to SQL operator
                     $transformation = [
@@ -371,7 +371,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                     ];
 
                     $additionalQuery[] = sprintf(
-                        '%s "%s"."%s" %s (%s)', // '%s "%s"."%s" %s (%s)',
+                        '%s "%s" %s (%s)',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         //static::$table,
                         $attribute,
