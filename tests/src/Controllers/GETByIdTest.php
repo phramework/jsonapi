@@ -46,7 +46,7 @@ class GETByIdTest extends \PHPUnit_Framework_TestCase
 
     protected function prepare()
     {
-        $_SERVER['REQUEST_URI'] = '/article/1';
+        $_SERVER['REQUEST_URI'] = 'article/1';
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_GET;
 
         $this->phramework = \Phramework\JSONAPI\APP\Bootstrap::prepare();
@@ -56,6 +56,7 @@ class GETByIdTest extends \PHPUnit_Framework_TestCase
         );
 
         $that = $this;
+        
         \Phramework\JSONAPI\APP\Viewers\PHPUnit::setCallback(
             function (
                 $parameters

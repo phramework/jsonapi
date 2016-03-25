@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Models\Operator;
+use Phramework\Util\Util;
 use Phramework\Validate\StringValidator;
 use Phramework\Validate\UnsignedIntegerValidator;
 

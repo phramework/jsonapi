@@ -36,7 +36,7 @@ class Bootstrap
         $settings = include __DIR__ . '/../../settings.php';
 
         $URIStrategy = new \Phramework\URIStrategy\URITemplate([
-            ['article/',  NS . 'ArticleController', 'GET', Phramework::METHOD_GET],
+            ['article/', NS . 'ArticleController', 'GET', Phramework::METHOD_GET],
             ['article/', NS . 'ArticleController', 'POST', Phramework::METHOD_POST],
             ['article/{id}', NS . 'ArticleController', 'GETById', Phramework::METHOD_GET],
             ['article/{id}', NS . 'ArticleController', 'PATCH', Phramework::METHOD_PATCH],

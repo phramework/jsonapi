@@ -1,6 +1,5 @@
 language: php
 php:
-  - 5.6
   - 7.0
 install:
  - composer self-update
@@ -9,7 +8,9 @@ before_script:
   - mkdir -p build/
   - mkdir -p build/logs
 script:
- - composer test
+ - find src/ -name '*.php' -print0 | xargs -0 -L 1 php -l
+ - find tests/ -name '*.php' -print0 | xargs -0 -L 1 php -l
+ - php vendon/bin/phpunit
 after_script:
  - php vendor/bin/coveralls -v
  - php vendor/bin/codacycoverage clover build/logs/clover.xml

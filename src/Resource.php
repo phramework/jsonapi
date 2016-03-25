@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\Phramework;
+use Phramework\Util\Util;
 
 /**
  * @since 1.0.0
@@ -303,7 +304,7 @@ class Resource extends \stdClass implements \JsonSerializable
                                 //If returned $relationshipEntryResource is an id string
                                 $relationshipEntry->data = new RelationshipResource(
                                     $relationshipResourceType,
-                                    (string)$relationshipEntryResource
+                                    (string) $relationshipEntryResource
                                 );
                             } elseif ($relationshipEntryResource instanceof RelationshipResource) {
                                 //If returned $relationshipEntryResource is RelationshipResource

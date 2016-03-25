@@ -19,12 +19,12 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\Exceptions\ForbiddenException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\JSONAPI\Controller\POST\QueueItem;
-use Phramework\JSONAPI\Util;
 use Phramework\Models\Request;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\ServerException;
 use Phramework\JSONAPI\Relationship;
 use Phramework\Phramework;
+use Phramework\Util\Util;
 use Phramework\Validate\ObjectValidator;
 
 /**
