@@ -95,7 +95,7 @@ abstract class GET extends \Phramework\JSONAPI\Controller\GETById
 
         return static::viewData(
             $data,
-            (object)[
+            (object) [
                 'self' => $modelClass::getSelfLink()
             ],
             $meta,

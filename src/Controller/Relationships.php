@@ -150,7 +150,7 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
         static::exists(
             $modelClass::relationshipExists($relationship),
             sprintf(
-                'Relationship "$relationship" not found',
+                'Relationship "%s" not found',
                 $relationship
             )
         );
@@ -176,14 +176,14 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
             $fields,
             $primaryDataParameters,
             (
-            isset($relationshipParameters[$relationship])
+                isset($relationshipParameters[$relationship])
                 ? $relationshipParameters[$relationship]
                 : []
             )
         );
 
         //Add links
-        $links = [
+        $links = (object) [
             'self'    =>
                 $modelClass::getSelfLink($id) . '/relationships/' . $relationship,
             'related' =>
@@ -204,7 +204,8 @@ abstract class Relationships extends \Phramework\JSONAPI\Controller\Base
         $collection = $relationshipModelClass::getById($ids, $fields);
 
         //Add links
-        $links = [
+        //todo??
+        $links = (object) [
             'self' => $modelClass::getSelfLink($id) . '/relationships/' . $relationship
         ];
 

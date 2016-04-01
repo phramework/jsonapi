@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\Exceptions\ServerException;
 use \Phramework\Models\Request;
 use \Phramework\Exceptions\RequestException;
 
@@ -51,23 +52,45 @@ abstract class DELETE extends \Phramework\JSONAPI\Controller\PATCH
         $headers,
         $id,
         $modelClass,
-        $primaryDataParameters = []
+        $primaryDataParameters = [],
+        $validationCallbacks = [],
+        $viewCallback = null
     ) {
+        if ($viewCallback !== null && !is_callable($viewCallback)) {
+            throw new ServerException('View callback is not callable!');
+        }
+
         //Fetch data, in order to check if resource exists (and/or is accessible)
-        $data = $modelClass::getById(
+        $resource = $modelClass::getById(
             $id,
             null, //fields
             ...$primaryDataParameters
         );
 
         //Check if resource exists
-        static::exists($data);
+        static::exists($resource);
+
+        //Call validation callbacks if set
+        foreach ($validationCallbacks as $callback) {
+            call_user_func(
+                $callback,
+                $id,
+                $resource
+            );
+        }
 
         $delete = $modelClass::delete($id, $primaryDataParameters);
 
         if (!$delete) {
-            throw new \Phramework\Exceptions\RequestException(
+            throw new RequestException(
                 'Unable to delete record'
+            );
+        }
+
+        if ($viewCallback !== null) {
+            return call_user_func(
+                $viewCallback,
+                $id
             );
         }
 

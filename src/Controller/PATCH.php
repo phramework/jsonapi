@@ -88,6 +88,10 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $validationCallbacks = [],
         $viewCallback = null
     ) {
+        if ($viewCallback !== null && !is_callable($viewCallback)) {
+            throw new ServerException('View callback is not callable!');
+        }
+        
         //Construct a validator
         $validator = new ObjectValidator(
             (object) [],
@@ -187,6 +191,16 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
             }
         }
 
+        //Fetch data, to check if resource exists
+        $currentResource = $modelClass::getById(
+            $id,
+            null, //fields todo maybe add []
+            ...$primaryDataParameters
+        );
+
+        //Check if resource exists (MUST exist!)
+        static::exists($currentResource);
+
         //Call validation callbacks if set
         foreach ($validationCallbacks as $callback) {
             call_user_func(
@@ -199,19 +213,9 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
             );
         }
 
-        //Fetch data, to check if resource exists
-        $currentResource = $modelClass::getById(
-            $id,
-            null, //fields todo maybe add []
-            ...$primaryDataParameters
-        );
-
-        //Check if resource exists (MUST exist!)
-        static::exists($currentResource);
-
         //Update the resource's attributes directly if any of then is requested to PATCH
         if (count((array) $attributes) > 0) {
-            $patch = $modelClass::patch($id, (array)$attributes);
+            $patch = $modelClass::patch($id, (array) $attributes); //todo remove array
             self::testUnknownError($patch, 'PATCH operation was not successful');
         }
 
@@ -230,10 +234,6 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         }
 
         if ($viewCallback !== null) {
-            if (!is_callable($viewCallback)) {
-                throw new ServerException('View callback is not callable!');
-            }
-
             return call_user_func(
                 $viewCallback,
                 $id
