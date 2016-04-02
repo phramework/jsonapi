@@ -13,7 +13,7 @@
     "php": ">=7",
     "phramework/phramework": "1.*",
     "ext-json": "*",
-    "phramework/util": "dev-master"
+    "phramework/util": "^0.0.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
@@ -22,6 +22,7 @@
     "satooshi/php-coveralls": "dev-master",
     "codacy/coverage": "^1.0"
   },
+  "minimum-stability": "dev",
   "prefer-stable": true,
   "autoload": {
     "psr-4": {

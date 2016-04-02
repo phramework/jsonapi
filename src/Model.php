@@ -52,6 +52,15 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
+     * When not null, will override getValidationModel, getMutable on PATCH requests
+     * @return ValidationModel|null
+     */
+    public static function getPatchValidationModel()
+    {
+        return null;
+    }
+
+    /**
      * Get validation model used for filters, if set for a property, this
      * will override the validation model defined in getValidationModel for this
      * property

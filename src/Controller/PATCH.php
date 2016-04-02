@@ -88,38 +88,6 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $validationCallbacks = [],
         $viewCallback = null
     ) {
-        if ($viewCallback !== null && !is_callable($viewCallback)) {
-            throw new ServerException('View callback is not callable!');
-        }
-        
-        //Construct a validator
-        $validator = new ObjectValidator(
-            (object) [],
-            [],
-            false
-        );
-
-        $attributeValidator = $modelClass::getValidationModel()->attributes;
-
-        if ($attributeValidator === null) {
-            //TODO ???
-        }
-
-        foreach ($modelClass::getMutable() as $mutable) {
-            if (!isset($attributeValidator->properties->{$mutable})) {
-                throw new \Exception(sprintf(
-                    'Validation model for attribute "%s" is not set!',
-                    $mutable
-                ));
-            }
-
-            //Push property to validator
-            $validator->addProperty(
-                $mutable,
-                $attributeValidator->properties->{$mutable}
-            );
-        }
-
         Request::requireParameters($parameters, ['data']);
         Request::requireParameters($parameters->data, ['id', 'type']);
 
@@ -138,6 +106,40 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
                 $parameters->data->id
             ));
         }
+
+        if (($patchValidationModel = $modelClass::getPatchValidationModel()) !== null) {
+            $validator = $patchValidationModel->attributes;
+        } else {
+
+            //Construct a validator
+            $validator = new ObjectValidator(
+                (object)[],
+                [],
+                false
+            );
+            
+            $attributeValidator = $modelClass::getValidationModel()->attributes;
+
+            if ($attributeValidator === null) {
+                //TODO ???
+            }
+
+            foreach ($modelClass::getMutable() as $mutable) {
+                if (!isset($attributeValidator->properties->{$mutable})) {
+                    throw new \Exception(sprintf(
+                        'Validation model for attribute "%s" is not set!',
+                        $mutable
+                    ));
+                }
+
+                //Push property to validator
+                $validator->addProperty(
+                    $mutable,
+                    $attributeValidator->properties->{$mutable}
+                );
+            }
+        }
+
 
         if (($requestData = self::getRequestData($parameters)) !== null
             && property_exists($requestData, 'attributes')) {
