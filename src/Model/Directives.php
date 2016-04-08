@@ -110,15 +110,17 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
         if ($sort !== null) {
             $sort ->validate(static::class);
 
-            $tableAttribute = (
+            $sortAttribute = $sort->attribute;
+
+            /*$tableAttribute = (
                 $sort->table === null
                 ? $sort->attribute
                 : $sort->table . '"."' .$sort->attribute
-            );
+            );*/
 
             $replace = "\n" . sprintf(
                 'ORDER BY "%s" %s',
-                $tableAttribute,
+                $sortAttribute,
                 ($sort->ascending ? 'ASC' : 'DESC')
             );
         }
@@ -211,7 +213,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @return string Query
      * @throws \Phramework\Exceptions\NotImplementedException
      * @throws \Exception
-     * @todo check if query work both in MySQL and postgreSQL
+     * @todo check if query work both in MySQL and PostgreSQL
      */
     protected static function handleFilter(
         $query,

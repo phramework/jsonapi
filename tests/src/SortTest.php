@@ -29,7 +29,6 @@ class SortTest extends \PHPUnit_Framework_TestCase
     public function getAvailableProperties()
     {
         return [
-            ['table', Article::getTable()],
             ['ascending', true],
             ['attribute', Article::getIdAttribute()]
         ];
@@ -41,7 +40,6 @@ class SortTest extends \PHPUnit_Framework_TestCase
     public function testConstruct()
     {
         $sort = new Sort(
-            Article::getTable(),
             Article::getIdAttribute()
         );
     }
@@ -78,7 +76,6 @@ class SortTest extends \PHPUnit_Framework_TestCase
             $sort
         );
 
-        $this->assertSame(Article::getTable(), $sort->table);
         $this->assertSame('id', $sort->attribute);
         $this->assertFalse($sort->ascending);
 
@@ -169,7 +166,6 @@ class SortTest extends \PHPUnit_Framework_TestCase
     public function testGet($property, $expected)
     {
         $sort = new Sort(
-            Article::getTable(),
             Article::getIdAttribute()
         );
 
@@ -183,7 +179,6 @@ class SortTest extends \PHPUnit_Framework_TestCase
     public function testGetFailure()
     {
         $sort = new Sort(
-            Article::getTable(),
             Article::getIdAttribute()
         );
 

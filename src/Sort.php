@@ -24,17 +24,11 @@ use Phramework\Exceptions\RequestException;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @todo allow multiple values for sort
- * @property-read string $table
  * @property-read bool   $ascending
  * @property-read string $attribute
  */
 class Sort
 {
-    /**
-     * @var null|string
-     */
-    protected $table;
-
     /**
      * @var bool
      */
@@ -53,16 +47,12 @@ class Sort
 
     /**
      * Sort constructor.
-     * @param string|null $table
      * @param string $attribute
-     * @param bool $ascending
+     * @param bool   $ascending
      */
     public function __construct(
-        $table,
-        $attribute,
-        $ascending = true
+        $attribute, $ascending = true
     ) {
-        $this->table = $table;
         $this->attribute = $attribute;
         $this->ascending = $ascending;
     }
@@ -143,8 +133,6 @@ class Sort
     public function __get($name)
     {
         switch ($name) {
-            case 'table':
-                return $this->table;
             case 'ascending':
                 return $this->ascending;
             case 'attribute':

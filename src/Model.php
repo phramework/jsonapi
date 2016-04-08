@@ -273,21 +273,20 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
     }
 
     /**
-     * Get sort
+     * Get sort directive
      * **MAY** be overwritten, default is sorting by id attribute ascending
      * @return Sort
      */
     public static function getSort()
     {
         return new Sort(
-            static::getTable(),
             static::getIdAttribute()
         );
     }
 
     /**
      * Get maximum page object's limit
-     * **MAY** be overwritten, default is with limit maximum of 25000
+     * **MAY** be overwritten, default is with limit maximum of `25000`
      * @return int
      */
     public static function getMaxPageLimit()

@@ -42,7 +42,6 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     public function testHandleSort()
     {
         $sort = new Sort(
-            Tag::getTable(),
             Tag::getIdAttribute()
         );
 
@@ -77,7 +76,6 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     public function testHandleSortNull()
     {
         $sort = new Sort(
-            null,
             Tag::getIdAttribute()
         );
 
@@ -249,7 +247,6 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
         );
 
         $sort = new Sort(
-            Article::getTable(),
             Article::getIdAttribute()
         );
 
@@ -275,8 +272,6 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertInternalType('string', $query);
-
-        //([$query]);
     }
 
     /**
