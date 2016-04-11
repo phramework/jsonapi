@@ -336,7 +336,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         ),
                         $operand,
                         (
-                        array_key_exists($operator, $transformation)
+                            array_key_exists($operator, $transformation)
                             ? $transformation[$operator]
                             : $operator
                         ),
@@ -358,7 +358,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         //static::$table,
                         $attribute,
                         (
-                        array_key_exists($operator, $transformation)
+                            array_key_exists($operator, $transformation)
                             ? $transformation[$operator]
                             : $operator
                         ),
@@ -378,7 +378,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         //static::$table,
                         $attribute,
                         (
-                        array_key_exists($operator, $transformation)
+                            array_key_exists($operator, $transformation)
                             ? $transformation[$operator]
                             : $operator
                         ),

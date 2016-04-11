@@ -123,7 +123,7 @@ class Fields
     }
 
     /**
-     * @param object $parameters Request parameters
+     * @param \stdClass $parameters Request parameters
      * @param string $primaryResourceModelClass Primary resource model class
      * @return Fields|null
      * @throws RequestException
@@ -142,8 +142,10 @@ class Fields
      * ```
      * @uses Model::getFields for each resource type to parse allowed fields
      */
-    public static function parseFromParameters($parameters, $primaryResourceModelClass)
-    {
+    public static function parseFromParameters(
+        \stdClass $parameters,
+        $primaryResourceModelClass
+    ) {
         if (!isset($parameters->fields)) {
             return null;
         }

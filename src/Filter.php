@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -295,7 +295,7 @@ class Filter
     }
 
     /**
-     * @param object $parameters Request parameters
+     * @param \stdClass $parameters Request parameters
      * @param string $modelClass
      * @return Filter|null
      * @todo allow strings and integers as id
@@ -307,7 +307,7 @@ class Filter
      *     (object) [
      *         'filter' => [
      *             'article'   => '1, 2', //primary filter (parsed from URL's ?filter[article]=1, 2)
-     *             'tag'       => '4, 5, 7', //relationship filter (parsed from URL's ?filter[tag]=4, 5, 7)
+     *             'tag'       => '4, 5,7', //relationship filter (parsed from URL's ?filter[tag]=4, 5,7)
      *             'creator'   => '1', //relationship  filter(parsed from URL's ?filter[creator]=1)
      *             'status'    => ['ENABLED', 'INACTIVE'], //multiple filters
      *             'title'     => [
@@ -336,8 +336,10 @@ class Filter
      * @throws IncorrectParametersException
      * @todo add support for operators of class in, parsing input using explode `,` (as array)
      */
-    public static function parseFromParameters($parameters, $modelClass)
-    {
+    public static function parseFromParameters(
+        \stdClass $parameters,
+        $modelClass
+    ) {
         if (!isset($parameters->filter)) {
             return null;
         }
@@ -417,6 +419,57 @@ class Filter
             $filterPrimary,
             $filterRelationships,
             $filterAttributes
+        );
+    }
+
+    /**
+     * Merge two filters
+     * @param Filter|null $first
+     * @param Filter|null $second
+     * @return Filter
+     * @example
+     * ```php
+     * //Force additional filters to $filter object
+     * $filter = Filter::merge(
+     *     $filter,
+     *     new Filter(
+     *         [],
+     *         null,
+     *         [
+     *             new FilterAttribute(
+     *                 'status',
+     *                 Operator::OPERATOR_EQUAL,
+     *                 true
+     *             )
+     *         ]
+     *     )
+     * );
+     * ```
+     */
+    public static function merge(Filter $first = null, Filter $second = null) {
+        //Initialize if null
+        if ($first === null) {
+            $first = new Filter();
+        }
+
+        //Initialize if null
+        if ($second === null) {
+            $second = new Filter();
+        }
+
+        return new Filter(
+            array_merge(
+                $first->primary,
+                $second->primary
+            ),
+            (object) array_merge(
+                (array) $first->relationships,
+                (array) $second->relationships
+            ),
+            array_merge(
+                $first->attributes,
+                $second->attributes
+            )
         );
     }
 
