@@ -34,7 +34,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ['links', null],
             ['attributes', null],
             ['relationships', null],
-            ['meta', null]
+            ['meta', null],
+            ['private-attributes', null]
         ];
     }
 

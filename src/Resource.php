@@ -81,7 +81,7 @@ class Resource extends \stdClass implements \JsonSerializable
      */
     public function __set($name, $value)
     {
-        if (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
+        if (in_array($name, ['links', 'attributes', 'relationships', 'meta', 'private-attributes'])) {
             if (!isset($this->{$name}) || $this->{$name} === null) {
                 $this->{$name} = new \stdClass();
             }
@@ -106,7 +106,7 @@ class Resource extends \stdClass implements \JsonSerializable
     {
         if (in_array($name, ['id', 'type'])) {
             return $this->{$name};
-        } elseif (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
+        } elseif (in_array($name, ['links', 'attributes', 'relationships', 'meta', 'private-attributes'])) {
             return (
                 isset($this->{$name})
                 ? $this->{$name}
@@ -235,6 +235,20 @@ class Resource extends \stdClass implements \JsonSerializable
             $resource->meta = $meta;
 
             unset($record->{Resource::META_MEMBER});
+        }
+
+        //Parse private attributes first
+        $privateAttributes = new \stdClass();
+
+        foreach ($modelClass::getPrivateAttributes() as $attribute) {
+            if (property_exists($record, $attribute)) {
+                $privateAttributes->{$attribute} = $record->{$attribute};
+                unset($record->{$attribute});
+            }
+        }
+
+        if (count((array) $privateAttributes)) {
+            $resource->attributes = $privateAttributes;
         }
 
         if ($flagAttributes) {
@@ -396,6 +410,10 @@ class Resource extends \stdClass implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        return get_object_vars($this);
+        $vars = get_object_vars($this);
+
+        unset($vars['private-attributes']);
+
+        return $vars;
     }
 }

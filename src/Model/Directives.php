@@ -517,4 +517,14 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
         return $query;
     }
+
+    /**
+     * Returns the an array of current resource's attribute names which are private
+     * **MAY** be overwritten
+     * @return string[]
+     */
+    public static function getPrivateAttributes()
+    {
+        return [];
+    }
 }
