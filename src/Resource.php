@@ -248,7 +248,7 @@ class Resource extends \stdClass implements \JsonSerializable
         }
 
         if (count((array) $privateAttributes)) {
-            $resource->attributes = $privateAttributes;
+            $resource->{'private-attributes'} = $privateAttributes;
         }
 
         if ($flagAttributes) {
