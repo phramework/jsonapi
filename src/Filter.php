@@ -33,7 +33,7 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @property-read FilterAttribute[]|FilterJSONAttribute[] $attributes
  * Attribute filters of type `FilterAttribute` and `FilterJSONAttribute`
  */
-class Filter
+class Filter implements IDirective
 {
     /**
      * @var string[]
@@ -143,7 +143,7 @@ class Filter
      * ```
      * @todo add relationship idAttribute validators
      */
-    public function validate($modelClass)
+    public function validate(InternalModel $modelClass)
     {
         $idAttribute           = $modelClass::getIdAttribute();
         $filterValidationModel = $modelClass::getFilterValidationModel();
@@ -336,9 +336,9 @@ class Filter
      * @throws IncorrectParametersException
      * @todo add support for operators of class in, parsing input using explode `,` (as array)
      */
-    public static function parseFromParameters(
+    public function parseFromRequest(
         \stdClass $parameters,
-        $modelClass
+        InternalModel $modelClass
     ) {
         if (!isset($parameters->filter)) {
             return null;

@@ -74,7 +74,7 @@ class Page implements \JsonSerializable, IDirective
      * );
      * ```
      */
-    public static function parseFromRequest(\stdClass $parameters, InternalModel $model)
+    public function parseFromRequest(\stdClass $parameters, InternalModel $model)
     {
         if (!isset($parameters->page)) {
             return null;

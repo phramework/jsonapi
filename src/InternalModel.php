@@ -1,7 +1,26 @@
 <?php
-
+/**
+ * Copyright 2015-2016 Xenofon Spafaridis
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 namespace Phramework\JSONAPI;
 
+/**
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+ * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @since 3.0.0
+ */
 class InternalModel
 {
     /**
@@ -25,6 +44,11 @@ class InternalModel
     protected $validationModel;
 
     /**
+     * @var string[]
+     */
+    protected $supportedDirectives = [];
+
+    /**
      * InternalModel constructor.
      * @param string $resourceType
      */
@@ -35,6 +59,10 @@ class InternalModel
         $this->defaultDirectives = new \stdClass();
     }
 
+    /**
+     * @param IDirective[] ...$directives
+     * @return Resource[]
+     */
     public function get(IDirective ...$directives) : array
     {
         $get = $this->get;
@@ -46,12 +74,79 @@ class InternalModel
         return $get(...$directives);
     }
 
-    public function getById(string $id, IDirective ...$directives) : Resource
+    /**
+     * @param string|string[] $id
+     * @param IDirective[] ...$directives
+     * @return Resource|\stdClass|null
+     * @todo rewrite cache
+     */
+    public function getById($id, IDirective ...$directives)
     {
-        //todo implement
+        $collectionObject = new \stdClass();
+
+        if (FALSE && !is_array($id) && ($cached = static::getCache($id)) !== null) {
+            //Return a single resource immediately if cached
+            return $cached;
+        } elseif (is_array($id)) {
+            $id = array_unique($id);
+
+            $originalId = $id;
+
+            foreach ($originalId as $resourceId) {
+                $collectionObject->{$resourceId} = null;
+                if (FALSE && ($cached = static::getCache($resourceId)) !== null) {
+                    $collectionObject->{$resourceId} = $cached;
+                    //remove $resourceId from id array, so we wont request the same item again,
+                    //but it will be returned in $collectionObject
+                    $id = array_diff($id, [$resourceId]);
+                }
+            }
+
+            //If all ids are already available from cache, return immediately
+            if (count($id) === 0) {
+                return $collectionObject;
+            }
+        }
+
+        //Prepare filter
+        $filter = new Filter(
+            is_array($id)
+            ? $id
+            : [$id]
+        ); //Force array for primary data
+
+        $collection = $this->get(
+            new Page(count($id)), //limit number of requested resources
+            ...$directives
+        );
+
+        if (!is_array($id)) {
+            if (empty($collection)) {
+                return null;
+            }
+
+            //Store resource
+            //FALSE && static::setCache($id, $collection[0]);
+
+            //Return a resource
+            return $collection[0];
+        }
+
+        //If ids are an array
+        foreach ($collection as $resource) {
+            $collectionObject->{$resource->id} = $resource;
+            //FALSE && static::setCache($resource->id, $resource);
+        }
+
+        unset($collection);
+
+        return $collectionObject;
     }
 
     /**
+     * Add default directive values
+     * Only one default value per directive class is allowed
+     * It will include any directive class that are missing to supported directive class
      * @param IDirective[] $directives
      * @return $this
      */
@@ -61,6 +156,10 @@ class InternalModel
             $class = get_class($directive);
 
             $this->defaultDirectives->{$class} = $directive;
+
+            if (!in_array($class, $this->supportedDirectives, true)) {
+                $this->supportedDirectives[] = $class;
+            }
         }
 
         return $this;
@@ -107,6 +206,7 @@ class InternalModel
     /**
      * @param callable $get
      * @return $this
+     * @todo validate callable using https://secure.php.net/manual/en/reflectionfunction.construct.php
      */
     public function setGet(callable $get)
     {
@@ -115,5 +215,44 @@ class InternalModel
         return $this;
     }
 
+    /**
+     * Returns an array with class names of supported directives
+     * @return string[]
+     */
+    public function getSupportedDirectives()
+    {
+        return $this->supportedDirectives;
+    }
 
+    /**
+     * @param string[] $directiveClassName
+     * @return $this
+     * @throws \InvalidArgumentException If a class name is not implementing IDirective interface
+     */
+    public function setSupportedDirectives(string ...$directiveClassName)
+    {
+        foreach ($directiveClassName as $className) {
+            if (!in_array(
+                IDirective::class,
+                class_implements($directiveClassName)
+            )) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Class "%s" is not implementing interface "%s"',
+                    $className,
+                    IDirective::class
+                ));
+            }
+        }
+        $this->supportedDirectives = $directiveClassName;
+
+        return $this;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getDefaultDirectives()
+    {
+        return $this->defaultDirectives;
+    }
 }

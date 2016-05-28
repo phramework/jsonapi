@@ -27,7 +27,7 @@ use Phramework\Exceptions\RequestException;
  * @property-read bool   $ascending
  * @property-read string $attribute
  */
-class Sort
+class Sort implements IDirective
 {
     /**
      * @var bool
@@ -61,7 +61,7 @@ class Sort
      * @param string $modelClass
      * @todo implement
      */
-    public function validate($modelClass)
+    public function validate(InternalModel $modelClass)
     {
     }
 
@@ -79,7 +79,7 @@ class Sort
      * ```
      * @throws RequestException
      */
-    public static function parseFromParameters($parameters, $modelClass)
+    public function parseFromRequest(\stdClass $parameters, InternalModel $modelClass)
     {
         $sortableAttributes = $modelClass::getSortable();
 
