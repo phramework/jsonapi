@@ -26,7 +26,10 @@ interface IDirective
     public function validate(InternalModel $model);
 
     /**
-     * @todo clarify request
+     * @todo clarify/define request object in phramework
      */
-    public function parseFromRequest(\stdClass $request, InternalModel $model);
+    public static function parseFromRequest(
+        \stdClass $request,
+        InternalModel $model
+    );
 }

@@ -41,7 +41,7 @@ class Page implements \JsonSerializable, IDirective
     protected $limit;
 
     /**
-     * @param int|null $limit
+     * @param int|null $limit Null is interpreted as "no limit"
      * @param int $offset
      */
     public function __construct($limit = null, $offset = 0)
@@ -74,7 +74,7 @@ class Page implements \JsonSerializable, IDirective
      * );
      * ```
      */
-    public function parseFromRequest(\stdClass $parameters, InternalModel $model)
+    public static function parseFromRequest(\stdClass $parameters, InternalModel $model)
     {
         if (!isset($parameters->page)) {
             return null;
@@ -123,6 +123,24 @@ class Page implements \JsonSerializable, IDirective
             $name
         ));
     }
+
+    /**
+     * @return int|null
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset()
+    {
+        return $this->offset;
+    }
+
+
 
     public function jsonSerialize()
     {

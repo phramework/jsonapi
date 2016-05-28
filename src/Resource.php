@@ -27,10 +27,10 @@ use Phramework\Util\Util;
  * if it's null, to reduce output of json to minimal required
  * @property-read string $id
  * @property-read string $type
- * @property string $links
- * @property string $attributes
- * @property string $relationships
- * @property string $data
+ * @property \stdClass $links
+ * @property \stdClass $attributes
+ * @property \stdClass $relationships
+ * @property \stdClass $data
  */
 class Resource extends \stdClass implements \JsonSerializable
 {
@@ -148,7 +148,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
     /**
      * @param array|object $record
-     * @param string       $modelClass
+     * @param string       $model
      * @param Fields|null  $fields
      * @param $flags
      * @return Resource|null
@@ -168,16 +168,16 @@ class Resource extends \stdClass implements \JsonSerializable
      */
     public static function parseFromRecord(
         $record,
-        $modelClass,
+        InternalModel $model,
         Fields $fields = null,
         $flags = Resource::PARSE_DEFAULT
     ) {
-        if (!is_subclass_of($modelClass, Model::class)) {
+        /*if (!is_subclass_of($model, Model::class)) {
             throw new \Exception(sprintf(
                 'modelClass MUST extend "%s"',
                 Model::class
             ));
-        }
+        }*/
 
         if (empty($record)) {
             return null;
@@ -194,7 +194,7 @@ class Resource extends \stdClass implements \JsonSerializable
             $record = (object) $record;
         }
 
-        $idAttribute = $modelClass::getIdAttribute();
+        $idAttribute = $model->getIdAttribute();
 
         if (!isset($record->{$idAttribute})) {
             throw new \Exception(sprintf(
@@ -208,7 +208,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
         //Initialize resource
         $resource = new $resourceClass(
-            $modelClass::getType(),
+            $model->getResourceType(),
             (string) $record->{$idAttribute}
         );
 
@@ -242,7 +242,7 @@ class Resource extends \stdClass implements \JsonSerializable
         }
 
         //Attach relationships if resource's relationships are set
-        if (/*$flagRelationships &&*/ ($relationships = $modelClass::getRelationships())) {
+        if (/*$flagRelationships &&*/ ($relationships = $model->getRelationships())) {
             $resourceRelationships = new \stdClass();
             //Parse relationships
             foreach ($relationships as $relationshipKey => $relationshipObject) {
@@ -250,23 +250,24 @@ class Resource extends \stdClass implements \JsonSerializable
                 $relationshipEntry = new \stdClass();
 
                 //Attach relationship links
-                if ($flagRelationshipLinks) {
+                //TODO RESTORE
+               /* if ($flagRelationshipLinks) {
                     $relationshipEntry->links = [
-                        'self' => $modelClass::getSelfLink(
+                        'self' => $model::getSelfLink(
                             $resource->id . '/relationships/' . $relationshipKey
                         ),
-                        'related' => $modelClass::getSelfLink(
+                        'related' => $model::getSelfLink(
                             $resource->id . '/' . $relationshipKey
                         )
                     ];
-                }
+                }*/
                 $relationshipFlagData     = ($relationshipObject->flags & Relationship::FLAG_DATA) != 0;
 
                 $relationshipModelClass   = $relationshipObject->modelClass;
                 $relationshipType         = $relationshipObject->type;
                 $recordDataAttribute      = $relationshipObject->recordDataAttribute;
 
-                $relationshipResourceType = $relationshipModelClass::getType();
+                $relationshipResourceType = $relationshipModelClass->getResourceType();
 
                 //Define callback to fetch data
                 /**
@@ -382,15 +383,15 @@ class Resource extends \stdClass implements \JsonSerializable
         }
 
         //Attach resource link
-        if ($flagLinks) {
+        //TODO RESTORE
+        /*if ($flagLinks) {
             $resource->links = (object) [
-                'self' => $modelClass::getSelfLink(
+                'self' => $model::getSelfLink(
                     $resource->id
                 )
             ];
-        }
+        }*/
 
-        //Return final resource object
         return $resource;
     }
 

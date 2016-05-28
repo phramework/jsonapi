@@ -26,6 +26,7 @@ use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\ResourceModel;
+use Phramework\JSONAPI\ResourceModelTrait;
 use Phramework\JSONAPI\Sort;
 use \Phramework\Validate\ArrayValidator;
 use \Phramework\Validate\ObjectValidator;
@@ -38,7 +39,9 @@ use \Phramework\Validate\UnsignedIntegerValidator;
  */
 class User extends ResourceModel
 {
-    protected static $model; //important
+
+    use ResourceModelTrait;
+    //protected static $model; //important
     
     /**
      * Define model
@@ -48,8 +51,8 @@ class User extends ResourceModel
         $model = \Phramework\JSONAPI\APP\Models\User::defineModel(); //based on User model
 
         $model = $model->addDefaultDirective(
-                new Page(20)
-                //new Filter() //no filter - empty filter
+                new Page(20),
+                new Filter() //no filter - empty filter, will overwrite previous filter definition
         );
 
         return $model;

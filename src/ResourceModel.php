@@ -18,14 +18,12 @@ namespace Phramework\JSONAPI;
 
 /**
  * Class ResourceModel
- * @method Resource[] get
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  */
 abstract class ResourceModel
 {
-
     /**
      * @type InternalModel
      */
@@ -36,6 +34,7 @@ abstract class ResourceModel
      */
     public static function getModel() : InternalModel
     {
+
         if (static::$model === null) {
             static::$model = static::defineModel();
         }
@@ -49,11 +48,41 @@ abstract class ResourceModel
     abstract protected static function defineModel() : InternalModel;
 
     /**
+     * @param IDirective[] ...$directives
+     * @return Resource[]
+     */
+    public static function get(IDirective ...$directives) : array
+    {
+        return static::getModel()->get(...func_get_args());
+    }
+
+    /**
+     * @param string       $id
+     * @param IDirective[] ...$directives
+     * @return Resource|null
+     */
+    public static function getById(
+        string $id,
+        IDirective ...$directives
+    ) {
+        return static::getModel()->getById(...func_get_args());
+    }
+
+    /**
+     * @return string
+     */
+    public static function getResourceType()
+    {
+        return static::getModel()->getResourceType();
+    }
+
+    /**
      * @param string $name
      * @param array  $arguments
      * @return mixed
+     * @deprecated
      */
-    public static function __callStatic(string $name, array $arguments)
+    /*public static function __callStatic(string $name, array $arguments)
     {
         if (in_array(
             $name,
@@ -73,5 +102,5 @@ abstract class ResourceModel
             [static::getModel(), $name],
             $arguments
         );
-    }
+    }*/
 }

@@ -29,6 +29,16 @@ class InternalModel
     protected $resourceType;
 
     /**
+     * @var string
+     */
+    protected $idAttribute = 'id';
+
+    /**
+     * @var \stdClass
+     */
+    protected $relationships;
+
+    /**
      * @var callable
      */
     protected $get;
@@ -57,6 +67,7 @@ class InternalModel
         $this->resourceType      = $resourceType;
 
         $this->defaultDirectives = new \stdClass();
+        $this->relationships     = new \stdClass();
     }
 
     /**
@@ -108,6 +119,15 @@ class InternalModel
             }
         }
 
+        $passedfilter = array_filter(
+            $directives,
+            function ($directive) {
+                return get_class($directive) == Filter::class;
+            }
+        );
+
+        $defaultFilter = $this->getDefaultDirectives()->{Filter::class} ?? null;
+
         //Prepare filter
         $filter = new Filter(
             is_array($id)
@@ -115,9 +135,40 @@ class InternalModel
             : [$id]
         ); //Force array for primary data
 
+        if (!empty($passedfilter)) {
+            //merge with passed
+            $filter = Filter::merge(
+                $passedfilter[0],
+                $filter
+            );
+        } elseif ($defaultFilter !== null) {
+            //merge with default
+            $filter = Filter::merge(
+                $defaultFilter,
+                $filter
+            );
+        }
+
+        //remove already set page and filter
+        $toPassDirectives = array_filter(
+            $directives,
+            function ($directive) {
+                return !in_array(
+                    get_class($directive),
+                    [
+                        Page::class,
+                        Filter::class
+                    ]
+                );
+            }
+        );
+
+        //pass new directives
+        $toPassDirectives[] = $filter;
+        $toPassDirectives[] = new Page(count($id));
+
         $collection = $this->get(
-            new Page(count($id)), //limit number of requested resources
-            ...$directives
+            ...$toPassDirectives
         );
 
         if (!is_array($id)) {
@@ -254,5 +305,42 @@ class InternalModel
     public function getDefaultDirectives()
     {
         return $this->defaultDirectives;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdAttribute()
+    {
+        return $this->idAttribute;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getRelationships()
+    {
+        return $this->relationships;
+    }
+
+
+    public function collection(array $records = [], Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
+    {
+        return Resource::parseFromRecords(
+            $records,
+            $this,
+            $fields,
+            $flags
+        );
+    }
+
+    public function resource($record, Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
+    {
+        return Resource::parseFromRecord(
+            $record,
+            $this,
+            $fields,
+            $flags
+        );
     }
 }

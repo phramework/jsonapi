@@ -79,7 +79,7 @@ class Sort implements IDirective
      * ```
      * @throws RequestException
      */
-    public function parseFromRequest(\stdClass $parameters, InternalModel $modelClass)
+    public static function parseFromRequest(\stdClass $parameters, InternalModel $modelClass)
     {
         $sortableAttributes = $modelClass::getSortable();
 
@@ -143,5 +143,21 @@ class Sort implements IDirective
             'Undefined property via __get(): %s',
             $name
         ));
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getAscending()
+    {
+        return $this->ascending;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAttribute()
+    {
+        return $this->attribute;
     }
 }

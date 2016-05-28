@@ -65,9 +65,10 @@ class Filter implements IDirective
     /**
      * Filter constructor.
      * @param string[] $primary
-     * @param object|null $relationships
+     * @param \stdClass|null $relationships
      * @param FilterAttribute[]|FilterJSONAttribute[] $filterAttributes
      * @throws \Exception
+     * @throws \InvalidArgumentException
      * @example
      * ```php
      * $filter = new Filter(
@@ -106,12 +107,14 @@ class Filter implements IDirective
         }
 
         if (!is_object($relationships)) {
-            throw new \Exception('Relationships filter MUST be an object');
+            throw new \InvalidArgumentException(
+                '$relationships filter must be an object'
+            );
         }
 
         foreach ($relationships as $relationshipKey => $relationshipValue) {
             if (!is_array($relationshipValue) &&  $relationshipValue !== Operator::OPERATOR_EMPTY) {
-                throw new \Exception(sprintf(
+                throw new \InvalidArgumentException(sprintf(
                     'Values for relationship filter "%s" MUST be an array or Operator::"%s"',
                     $relationshipKey,
                     Operator::OPERATOR_EMPTY
@@ -120,7 +123,9 @@ class Filter implements IDirective
         }
 
         if (!Util::isArrayOf($filterAttributes, FilterAttribute::class)) {
-            throw new \Exception('filterAttributes must be an array of FilterAttribute instances');
+            throw new \InvalidArgumentException(
+                'filterAttributes must be an array of FilterAttribute instances'
+            );
         }
 
         $this->primary = $primary;
@@ -335,8 +340,9 @@ class Filter implements IDirective
      * @throws \Exception
      * @throws IncorrectParametersException
      * @todo add support for operators of class in, parsing input using explode `,` (as array)
+     * @todo fix definition for version 3.x
      */
-    public function parseFromRequest(
+    public static function parseFromRequest(
         \stdClass $parameters,
         InternalModel $modelClass
     ) {
@@ -488,5 +494,29 @@ class Filter implements IDirective
             'Undefined property via __get(): %s',
             $name
         ));
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getPrimary()
+    {
+        return $this->primary;
+    }
+
+    /**
+     * @return object
+     */
+    public function getRelationships()
+    {
+        return $this->relationships;
+    }
+
+    /**
+     * @return FilterAttribute[]|FilterJSONAttribute[]
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
     }
 }

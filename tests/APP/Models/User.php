@@ -27,6 +27,7 @@ use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\ResourceModel;
+use Phramework\JSONAPI\ResourceModelTrait;
 use Phramework\JSONAPI\Sort;
 use Phramework\Models\Operator;
 use \Phramework\Validate\ArrayValidator;
@@ -40,7 +41,9 @@ use \Phramework\Validate\UnsignedIntegerValidator;
  */
 class User extends ResourceModel
 {
-    protected static $model; //important
+    //protected static $model; //important
+
+    use ResourceModelTrait;
 
     /**
      * Define model
@@ -50,11 +53,11 @@ class User extends ResourceModel
         $model = (new InternalModel('user'))
             ->setGet(
                 function (IDirective ...$directives) use (&$model) {
-                    var_dump($model->getDefaultDirectives());
+                    //var_dump($model->getDefaultDirectives());
                     return [];
                 }
             )->addDefaultDirective(
-                new Page(10)/*,
+                new Page(10),
                 new Sort('email'),
                 new Filter(
                     [],
@@ -66,7 +69,7 @@ class User extends ResourceModel
                             'ENABLED'
                         )
                     ]
-                )*/
+                )
             );
 
         return $model;
