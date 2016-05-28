@@ -16,13 +16,25 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\Model\Directives;
+
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
+ * @todo define prefix schema, table space for attributes
+ * @todo post, patch, delete methods
+ * @todo handleGet and related helper methods
+ * @todo database related, schema table
+ * @todo resource parsing
+ * @todo links related
+ * @todo endpoint related
+ * @todo relationship related and included data
  */
 class InternalModel
 {
+    use Directives;
+    
     /**
      * @var string
      */
@@ -44,40 +56,39 @@ class InternalModel
     protected $get;
 
     /**
-     * @var \stdClass
-     */
-    protected $defaultDirectives;
-
-    /**
      * @var ValidationModel
+     * @todo add all validation models
      */
     protected $validationModel;
 
     /**
-     * @var string[]
-     */
-    protected $supportedDirectives = [];
-
-    /**
      * InternalModel constructor.
+     * Will create a new internal model initialized with:
+     * - defaultDirectives Page directive limit with value of getMaxPageLimit()
      * @param string $resourceType
+     * @todo set default page limit common ?
      */
     public function __construct($resourceType)
     {
         $this->resourceType      = $resourceType;
 
-        $this->defaultDirectives = new \stdClass();
-        $this->relationships     = new \stdClass();
+        $this->defaultDirectives    = (object) [
+            Page::class => new Page($this->getMaxPageLimit())
+        ];
+        $this->relationships        = new \stdClass();
+        $this->filterableAttributes = new \stdClass();
     }
 
     /**
      * @param IDirective[] ...$directives
      * @return Resource[]
+     * @throws \LogicException When callable get property is not set
      */
     public function get(IDirective ...$directives) : array
     {
         $get = $this->get;
 
+        //If callable get property is not set
         if ($get === null) {
             throw new \LogicException('Method "get" is not implemented');
         }
@@ -89,7 +100,7 @@ class InternalModel
      * @param string|string[] $id
      * @param IDirective[] ...$directives
      * @return Resource|\stdClass|null
-     * @todo rewrite cache
+     * @todo rewrite cache from scratch
      */
     public function getById($id, IDirective ...$directives)
     {
@@ -195,28 +206,6 @@ class InternalModel
     }
 
     /**
-     * Add default directive values
-     * Only one default value per directive class is allowed
-     * It will include any directive class that are missing to supported directive class
-     * @param IDirective[] $directives
-     * @return $this
-     */
-    public function addDefaultDirective(IDirective ...$directives)
-    {
-        foreach ($directives as $directive) {
-            $class = get_class($directive);
-
-            $this->defaultDirectives->{$class} = $directive;
-
-            if (!in_array($class, $this->supportedDirectives, true)) {
-                $this->supportedDirectives[] = $class;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return ValidationModel
      */
     public function getValidationModel()
@@ -267,47 +256,6 @@ class InternalModel
     }
 
     /**
-     * Returns an array with class names of supported directives
-     * @return string[]
-     */
-    public function getSupportedDirectives()
-    {
-        return $this->supportedDirectives;
-    }
-
-    /**
-     * @param string[] $directiveClassName
-     * @return $this
-     * @throws \InvalidArgumentException If a class name is not implementing IDirective interface
-     */
-    public function setSupportedDirectives(string ...$directiveClassName)
-    {
-        foreach ($directiveClassName as $className) {
-            if (!in_array(
-                IDirective::class,
-                class_implements($directiveClassName)
-            )) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Class "%s" is not implementing interface "%s"',
-                    $className,
-                    IDirective::class
-                ));
-            }
-        }
-        $this->supportedDirectives = $directiveClassName;
-
-        return $this;
-    }
-
-    /**
-     * @return \stdClass
-     */
-    public function getDefaultDirectives()
-    {
-        return $this->defaultDirectives;
-    }
-
-    /**
      * @return string
      */
     public function getIdAttribute()
@@ -323,24 +271,30 @@ class InternalModel
         return $this->relationships;
     }
 
-
-    public function collection(array $records = [], Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
-    {
+    public function collection(
+        array $records = [],
+        array $directives = null,
+        $flags = Resource::PARSE_DEFAULT
+    ) {
         return Resource::parseFromRecords(
             $records,
             $this,
-            $fields,
+            null,//$fields,
             $flags
         );
     }
 
-    public function resource($record, Fields $fields = null, $flags = Resource::PARSE_DEFAULT)
-    {
+    public function resource(
+        $record,
+        array $directives = null,
+        $flags = Resource::PARSE_DEFAULT
+    ) {
         return Resource::parseFromRecord(
             $record,
             $this,
-            $fields,
+            null,//$fields,
             $flags
         );
     }
+
 }

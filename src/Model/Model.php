@@ -25,6 +25,7 @@ use \Phramework\JSONAPI\Relationship;
  * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @deprecated
  */
 abstract class Model
 {
