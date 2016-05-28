@@ -19,6 +19,8 @@ namespace Phramework\JSONAPI\APP\Models;
 use \Phramework\Database\Database;
 use Phramework\JSONAPI\Fields;
 use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\IDirective;
+use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
@@ -33,58 +35,18 @@ use \Phramework\Validate\UnsignedIntegerValidator;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class User extends \Phramework\JSONAPI\APP\Model
+class User extends ResourceModel
 {
-    protected static $type     = 'user';
-    protected static $endpoint = 'user';
-    protected static $table    = 'user';
-
-    public static $records = [
-        [
-            'id'       => '1',
-            'username' => 'nohponex',
-            'email'    => 'nohponex@gmail.com'
-        ],
-        [
-            'id'       => '1',
-            'username' => 'alkallio',
-            'email'    => 'alkallio@gmail.com'
-        ]
-    ];
-
-    /**
-     * @param Page|null $page       *[Optional]*
-     * @param Filter|null $filter   *[Optional]*
-     * @param Sort|null $sort       *[Optional]*
-     * @param Fields|null $fields   *[Optional]*
-     * @param mixed ...$additionalParameters *[Optional]*
-     * @throws NotImplementedException
-     * @return Resource[]
-     */
-    public static function get(
-        Page   $page = null,
-        Filter $filter = null,
-        Sort   $sort = null,
-        Fields $fields = null,
-        ...$additionalParameters
-    ) {
-        return self::collection(self::handleGetWithArrayOfRecords(
-            self::$records,
-            $page,
-            $filter,
-            $sort,
-            $fields,
-            ...$additionalParameters
-        ));
-    }
-
-    /**
-     * TYPE_TO_ONE callback
-     * @param $articleId
-     * @return string
-     */
-    public static function getRelationshipByArticle($articleId)
+    public static function defineModel()
     {
-        return '1';
+        static::$model = (new InternalModel('user'))
+            ->setGet(
+                function (IDirective ...$directives) {
+                    return [];
+                }
+            )->addDefaultDirective(
+                new Page(10),
+                new Sort('email')
+            );
     }
 }

@@ -28,7 +28,7 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @property-read int      $offset
  * @todo add validate method
  */
-class Page implements \JsonSerializable
+class Page implements \JsonSerializable, IDirective
 {
     /**
      * @var int
@@ -54,7 +54,7 @@ class Page implements \JsonSerializable
      * @param string $modelClass
      * @todo
      */
-    public function validate($modelClass)
+    public function validate(InternalModel $model)
     {
     }
 
@@ -74,7 +74,7 @@ class Page implements \JsonSerializable
      * );
      * ```
      */
-    public static function parseFromParameters($parameters, $modelClass)
+    public static function parseFromRequest(\stdClass $parameters, InternalModel $model)
     {
         if (!isset($parameters->page)) {
             return null;
