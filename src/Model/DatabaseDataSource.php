@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Model;
 
-use Phramework\Validate\ObjectValidator;
+use Phramework\JSONAPI\IDirective;
+use Phramework\JSONAPI\InternalModel;
 
 /**
- * @coversDefaultClass Phramework\JSONAPI\ValidationModel
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @since 3.0.0
  */
-class ValidationModelTest extends \PHPUnit_Framework_TestCase
+class DatabaseDataSource implements IDataSource
 {
-    /**
-     * @covers ::__construct
-     */
-    public function testConstruct()
-    {
-        new ValidationModel(
-            new ObjectValidator(),
-            null
-        );
+    public static function get(
+        array $directives
+    ) {
+        // TODO: Implement get() method.
+    }
 
-        new ValidationModel(
-            new ObjectValidator(),
-            new ObjectValidator()
+    public static function post(
+        InternalModel $model,
+        \stdClass $attributes,
+        $return = \Phramework\Database\Operations\Create::RETURN_ID
+    ) {
+        return \Phramework\Database\Operations\Create::create(
+            $attributes,
+            $model->settings->get('table' , null),
+            $model->settings->get('schema', null),
+            $return
         );
     }
 }

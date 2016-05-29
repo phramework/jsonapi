@@ -168,7 +168,7 @@ trait Directives
      *     'status' => Operator::CLASS_COMPARABLE,
      *     'title'  => Operator::CLASS_COMPARABLE | Operator::CLASS_LIKE,
      * ]);
-     * <code>
+     * </code>
      */
     public function setFilterableAttributes($filterableAttributes)
     {

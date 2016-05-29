@@ -67,7 +67,7 @@ class Sort implements IDirective
 
     /**
      * @param object $parameters Request parameters
-     * @param string $modelClass
+     * @param string $model
      * @return Sort
      * ```php
      * $sort = Sort::parseFromParameters(
@@ -79,11 +79,11 @@ class Sort implements IDirective
      * ```
      * @throws RequestException
      */
-    public static function parseFromRequest(\stdClass $parameters, InternalModel $modelClass)
+    public static function parseFromRequest(\stdClass $parameters, InternalModel $model)
     {
-        $sortableAttributes = $modelClass::getSortable();
+        $sortableAttributes = $model::getSortable();
 
-        $sort = $modelClass::getSort();
+        $sort = $model::getSort();
 
         //Don't accept arrays
 

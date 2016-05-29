@@ -301,7 +301,7 @@ class Filter implements IDirective
 
     /**
      * @param \stdClass $parameters Request parameters
-     * @param string $modelClass
+     * @param string    $model
      * @return Filter|null
      * @todo allow strings and integers as id
      * @todo Todo use filterValidation model for relationships
@@ -344,23 +344,23 @@ class Filter implements IDirective
      */
     public static function parseFromRequest(
         \stdClass $parameters,
-        InternalModel $modelClass
+        InternalModel $model
     ) {
         if (!isset($parameters->filter)) {
             return null;
         }
 
-        $filterValidationModel = $modelClass::getFilterValidationModel();
-        $idAttribute = $modelClass::getIdAttribute();
+        $filterValidationModel = $model->getFilterValidationModel();
+        $idAttribute           = $model->getIdAttribute();
 
         $filterPrimary       = [];
         $filterRelationships = new \stdClass();
         $filterAttributes    = [];
 
         foreach ($parameters->filter as $filterKey => $filterValue) {
-            if ($filterKey === $modelClass::getType()) { //Filter primary data
+            if ($filterKey === $model::getType()) { //Filter primary data
                 //Check filter value type
-                if (!is_string($filterValue) && !is_integer($filterValue)) {
+                if (!is_string($filterValue) && !is_int($filterValue)) {
                     throw new IncorrectParametersException(sprintf(
                         'String or integer value required for filter "%s"',
                         $filterKey
@@ -385,10 +385,10 @@ class Filter implements IDirective
                 );
 
                 $filterPrimary = $values;
-            } elseif ($modelClass::relationshipExists($filterKey)) { //Filter relationship data
+            } elseif ($model::relationshipExists($filterKey)) { //Filter relationship data
 
                 //Check filter value type
-                if (!is_string($filterValue) && !is_integer($filterValue)) {
+                if (!is_string($filterValue) && !is_int($filterValue)) {
                     throw new IncorrectParametersException(sprintf(
                         'String or integer value required for filter "%s"',
                         $filterKey
@@ -399,15 +399,10 @@ class Filter implements IDirective
                     $values = Operator::OPERATOR_EMPTY;
                 } else {
                     //Todo use filterValidation model
-                    //$function = 'intval';
 
                     //Split multiples and trim additional spaces and force string
                     $values = array_map(
                         'strval',
-                        //array_map(
-                        //    $function,
-                        //    array_map('trim', explode(',', trim($filterValue)))
-                        //)
                         array_map('trim', explode(',', trim($filterValue)))
                     );
                 }
@@ -430,9 +425,9 @@ class Filter implements IDirective
 
     /**
      * Merge two filters
-     * @param Filter|null $first
-     * @param Filter|null $second
-     * @return Filter
+     * @param Filter $first
+     * @param Filter $second
+     * @return Filter Merged filter
      * @example
      * ```php
      * //Force additional filters to $filter object
@@ -468,7 +463,7 @@ class Filter implements IDirective
                 $first->primary,
                 $second->primary
             ),
-            (object) array_merge(
+            (object) array_merge_recursive(
                 (array) $first->relationships,
                 (array) $second->relationships
             ),

@@ -25,11 +25,6 @@ namespace Phramework\JSONAPI;
 abstract class ResourceModel
 {
     /**
-     * @type InternalModel
-     */
-    //protected static $model = null;  //important to define $model in extended classes
-
-    /**
      * @return InternalModel
      */
     public static function getModel() : InternalModel
@@ -75,32 +70,4 @@ abstract class ResourceModel
     {
         return static::getModel()->getResourceType();
     }
-
-    /**
-     * @param string $name
-     * @param array  $arguments
-     * @return mixed
-     * @deprecated
-     */
-    /*public static function __callStatic(string $name, array $arguments)
-    {
-        if (in_array(
-            $name,
-            [
-                'get',
-                'getById',
-                'getResourceType',
-            ]
-        )) {
-            return call_user_func_array(
-                [static::getModel(), $name],
-                $arguments
-            );
-        }
-
-        return call_user_func_array(
-            [static::getModel(), $name],
-            $arguments
-        );
-    }*/
 }

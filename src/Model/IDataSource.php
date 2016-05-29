@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI\APP\Models;
+namespace Phramework\JSONAPI\Model;
 
-use Phramework\JSONAPI\APP\Models\Article;
-use Phramework\JSONAPI\APP\Models\Tag;
-use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\IDirective;
+use Phramework\JSONAPI\InternalModel;
 
 /**
- * @coversDefaultClass Phramework\JSONAPI\Model\Relationship
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @since 3.0.0
  */
-class RelationshipTest extends \PHPUnit_Framework_TestCase
-{
-    /**
-     * @covers ::getRelationshipData
-     */
-    public function testGetRelationshipData()
-    {
-        $articles = Article::get(new Page(1, 1))[0];
-
-        //print_r($articles);
-
-        $relationship = Tag::getRelationshipArticle(
-            '1',
-            null
-        );
-
-        //print_r($relationship);
-    }
+interface IDataSource
+{   //todo
+    public static function get(
+        array $directives
+    );
+    
+    public static function post(
+        InternalModel $model,
+        \stdClass $attributes,
+        $return = \Phramework\Database\Operations\Create::RETURN_ID
+    );
 }

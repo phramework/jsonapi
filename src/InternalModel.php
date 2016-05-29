@@ -16,7 +16,10 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\Model\DatabaseDataSource;
 use Phramework\JSONAPI\Model\Directives;
+use Phramework\JSONAPI\Model\Settings;
+use Phramework\Validate\ObjectValidator;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -56,17 +59,43 @@ class InternalModel
     protected $get;
 
     /**
-     * @var ValidationModel
-     * @todo add all validation models
+     * @var callable
      */
-    protected $validationModel;
+    protected $post;
+
+    /**
+     * @var callable
+     */
+//    protected $patch;
+
+    /**
+     * @var callable
+     */
+//    protected $delete;
+
+    //todo add additional request methods ?
+
+    /**
+     * @var \stdClass
+     */
+    protected $validationModels;
+
+    /**
+     * For settings like table, schema etc
+     * @var Settings
+     */
+    public $settings;
+
+    /**
+     * @var ObjectValidator
+     */
+    public $filterValidator;
 
     /**
      * InternalModel constructor.
      * Will create a new internal model initialized with:
      * - defaultDirectives Page directive limit with value of getMaxPageLimit()
      * @param string $resourceType
-     * @todo set default page limit common ?
      */
     public function __construct($resourceType)
     {
@@ -77,6 +106,27 @@ class InternalModel
         ];
         $this->relationships        = new \stdClass();
         $this->filterableAttributes = new \stdClass();
+        
+        $model = $this; //alias
+        
+        $this->post = function () use ($model) {
+            //todo use selected data source
+            //or add these default on setDataSource if $post is not set
+            return DatabaseDataSource::post(...array_merge(
+                [$model],
+                func_get_args()
+            ));
+        };
+
+        $this->validationModels = new \stdClass();
+
+        $this->settings = new Settings();
+        
+        $this->filterValidator = new ObjectValidator(
+            (object) [],
+            [],
+            false
+        );
     }
 
     /**
@@ -206,20 +256,46 @@ class InternalModel
     }
 
     /**
+     * If a validation model for request method is not found, "DEFAULT" will be used
+     * @param string          $requestMethod
      * @return ValidationModel
+     * @throws \DomainException If none validation model is set
      */
-    public function getValidationModel()
+    public function getValidationModel(string $requestMethod = 'DEFAULT')
     {
-        return $this->validationModel;
+        $key = 'DEFAULT';
+
+        if ($requestMethod !== null
+            && property_exists($this->validationModels, $requestMethod)
+        ) {
+            $key = $requestMethod;
+        }
+
+        if (!isset($this->validationModels->{$key})) {
+            throw new \DomainException(
+                'No validation model is set'
+            );
+        }
+
+        return $this->validationModels->{$key};
     }
 
     /**
      * @param ValidationModel $validationModel
+     * @param string          $requestMethod
      * @return $this
      */
-    public function setValidationModel($validationModel)
-    {
-        $this->validationModel = $validationModel;
+    public function setValidationModel(
+        $validationModel,
+        string $requestMethod = 'DEFAULT'
+    ) {
+        $key = 'DEFAULT';
+
+        if ($requestMethod !== null) {
+            $key = $requestMethod;
+        }
+
+        $this->validationModels->{$key} = $validationModel;
 
         return $this;
     }
@@ -297,4 +373,22 @@ class InternalModel
         );
     }
 
+    /**
+     * @return ObjectValidator
+     */
+    public function getFilterValidator() : ObjectValidator
+    {
+        return $this->filterValidator;
+    }
+
+    /**
+     * @param ObjectValidator $filterValidator
+     * @return $this
+     */
+    public function setFilterValidator(ObjectValidator $filterValidator)
+    {
+        $this->filterValidator = $filterValidator;
+
+        return $this;
+    }
 }

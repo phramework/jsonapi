@@ -16,24 +16,20 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
+use Phramework\Exceptions\Source\Parameter;
 use Phramework\Validate\UnsignedIntegerValidator;
 
 /**
- * Page helper methods
+ * Page directive, allows pagination
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-read int|null $limit
- * @property-read int      $offset
  * @todo add validate method
  */
 class Page implements \JsonSerializable, IDirective
 {
-    /**
-     * @var int
-     */
-    protected $offset;
 
     /**
      * @var int|null
@@ -41,41 +37,49 @@ class Page implements \JsonSerializable, IDirective
     protected $limit;
 
     /**
-     * @param int|null $limit Null is interpreted as "no limit"
+     * @var int
+     */
+    protected $offset;
+
+    /**
+     * @param int|null $limit null value is interpreted as "no limit"
      * @param int $offset
      */
-    public function __construct($limit = null, $offset = 0)
+    public function __construct(int $limit = null, int $offset = 0)
     {
         $this->limit  = $limit;
         $this->offset = $offset;
     }
 
     /**
-     * @param string $modelClass
-     * @todo
+     * @param InternalModel $model
+     * @throws IncorrectParameterException When limit exceeds model's maximum page limit
+     * @uses InternalModel::getMaxPageLimit
      */
     public function validate(InternalModel $model)
     {
+        if ($this->limit !== null) {
+            (new UnsignedIntegerValidator(
+                1,
+                $model->getMaxPageLimit()
+            ))
+                ->setSource(new Parameter('page[limit]'))
+                ->parse($this->limit);
+        }
     }
 
     /**
-     * @param object $parameters Request parameters
+     * @param \stdClass $parameters Request parameters
      * @return Page|null
-     * @throws IncorrectParametersException
-     * ```php
-     * $page = Page::parseFromParameters(
-     *     (object) [
-     *         'page' => [
-     *             'limit' => 1,
-     *             'offset' => 0
-     *         ]
-     *     ], //Request parameters object
-     *     Article::class
-     * );
-     * ```
+     * @throws IncorrectParameterException When limit or offset are incorrect
+     * @throws IncorrectParameterException When limit exceeds model's maximum page limit
+     * @todo use request instead of parameters
+     * @uses InternalModel::getMaxPageLimit
      */
-    public static function parseFromRequest(\stdClass $parameters, InternalModel $model)
-    {
+    public static function parseFromRequest(
+        \stdClass $parameters,
+        InternalModel $model
+    ) {
         if (!isset($parameters->page)) {
             return null;
         }
@@ -84,44 +88,27 @@ class Page implements \JsonSerializable, IDirective
 
         $offset = 0;
 
-        //Work with arrays
-        if (is_object($parameters->page)) {
-            $parameters->page = (array) $parameters->page;
+        //Work with objects
+        if (is_array($parameters->page)) {
+            $parameters->page = (object) $parameters->page;
         }
 
-        if (isset($parameters->page['limit'])) {
-            $limit =
-                (new UnsignedIntegerValidator(1))
-                    ->parse($parameters->page['limit']);
+        if (isset($parameters->page->limit)) {
+            $limit = (new UnsignedIntegerValidator(
+                1,
+                $model->getMaxPageLimit()
+            ))
+                ->setSource(new Parameter('page[limit]'))
+                ->parse($parameters->page->limit);
         }
 
-        if (isset($parameters->page['offset'])) {
-            $offset =
-                (new UnsignedIntegerValidator())
-                    ->parse($parameters->page['offset']);
+        if (isset($parameters->page->offset)) {
+            $offset = (new UnsignedIntegerValidator())
+                ->setSource(new Parameter('page[offset]'))
+                ->parse($parameters->page->offset);
         }
 
         return new Page($limit, $offset);
-    }
-
-    /**
-     * @param string $name
-     * @return mixed
-     * @throws \Exception
-     */
-    public function __get($name)
-    {
-        switch ($name) {
-            case 'offset':
-                return $this->offset;
-            case 'limit':
-                return $this->limit;
-        }
-
-        throw new \Exception(sprintf(
-            'Undefined property via __get(): %s',
-            $name
-        ));
     }
 
     /**
@@ -135,12 +122,10 @@ class Page implements \JsonSerializable, IDirective
     /**
      * @return int
      */
-    public function getOffset()
+    public function getOffset() : int
     {
         return $this->offset;
     }
-
-
 
     public function jsonSerialize()
     {
