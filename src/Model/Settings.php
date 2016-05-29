@@ -21,36 +21,47 @@ namespace Phramework\JSONAPI\Model;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class Settings
+trait Settings
 {
     /**
+     * NOTE needs to be initialized from classes that use it
      * @var \stdClass
      */
     protected $settings;
 
-    public function __construct()
-    {
-        $this->settings = new \stdClass();
-    }
-
-    public function add(string $key, $value) {
+    /**
+     * Set value of a setting
+     * @param string $key
+     * @param mixed  $value
+     * @return $this
+     */
+    public function addSetting(string $key, $value) {
         $this->settings->{$key} = $value;
+
+        return $this;
     }
 
-    public function get(string $key, $default = null) {
+    /**
+     * Get value of a setting,
+     * if it's not set value of the $default argument will be returned
+     * @param string $key
+     * @param null   $default
+     * @return mixed
+     */
+    public function getSetting(string $key, $default = null) {
         if (property_exists($this->settings, $key)) {
-            return $this->settings;
+            return $this->settings->{$key};
         }
 
         return $default;
-
-        /*throw new \Exception(sprintf(
-            'key "%s" not found',
-            $key
-        ));*/
     }
 
-    public function isset(string $key) : bool 
+    /**
+     * Check if a setting key is set
+     * @param string $key
+     * @return bool
+     */
+    public function issetSetting(string $key) : bool
     {
         return property_exists($this->settings, $key);
     }

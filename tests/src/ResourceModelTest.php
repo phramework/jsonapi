@@ -191,7 +191,8 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
                             $definedPassed = new \stdClass();
 
                             foreach ($directives as $directive) {
-                                $definedPassed->{get_class($directive)} = $directive;
+                                $definedPassed->{get_class($directive)} =
+                                    $directive;
                             }
 
                             /*$directiveAttributes = array_merge(

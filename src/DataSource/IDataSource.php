@@ -14,10 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI\Model;
-
-use Phramework\JSONAPI\IDirective;
-use Phramework\JSONAPI\InternalModel;
+namespace Phramework\JSONAPI\DataSource;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -25,14 +22,17 @@ use Phramework\JSONAPI\InternalModel;
  * @since 3.0.0
  */
 interface IDataSource
-{   //todo
-    public static function get(
+{
+    public function get(
         array $directives
     );
     
-    public static function post(
-        InternalModel $model,
+    public function post(
         \stdClass $attributes,
         $return = \Phramework\Database\Operations\Create::RETURN_ID
     );
+    
+    public function patch(string $id, \stdClass $attributes, $return = null);
+
+    public function delete(string $id, \stdClass $additionalAttributes = null);
 }
