@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Exceptions\IncorrectParameterException;
+use Phramework\Exceptions\Source\Parameter;
 use Phramework\Models\Operator;
 use Phramework\Validate\StringValidator;
 use Phramework\Exceptions\RequestException;
@@ -53,8 +55,8 @@ class FilterAttribute
      * @param mixed|null $operand
      */
     public function __construct(
-        $attribute,
-        $operator,
+        string $attribute,
+        string $operator,
         $operand = null
     ) {
         $this->attribute = $attribute;
@@ -92,6 +94,7 @@ class FilterAttribute
             //Hack check $filterPropertyKey if valid using regular expression
             //@todo
             (new StringValidator(0, null, self::JSON_ATTRIBUTE_PROPERTY_KEY_EXPRESSION))
+                ->setSource(new Parameter('filter[' . $filterKey . ']'))
                 ->parse($filterPropertyKey);
 
             $filterKey = $filterKeyParts[0];
@@ -106,10 +109,14 @@ class FilterAttribute
 
         foreach ($filterValue as $singleFilterValue) {
             if (is_array($singleFilterValue)) {
-                throw new RequestException(sprintf(
-                    'Array value given for filter attribute "%s"',
-                    $filterKey
-                ));
+                throw new IncorrectParameterException(
+                    'type',
+                    sprintf(
+                        'Array value given for filter attribute "%s"',
+                        $filterKey
+                    ),
+                    new Parameter('filter[' . $filterKey . ']')
+                );
             }
 
             //@todo is this required?
@@ -159,4 +166,29 @@ class FilterAttribute
             $name
         ));
     }
+
+    /**
+     * @return string
+     */
+    public function getAttribute()
+    {
+        return $this->attribute;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOperator()
+    {
+        return $this->operator;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getOperand()
+    {
+        return $this->operand;
+    }
+
 }

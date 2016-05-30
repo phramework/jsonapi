@@ -41,19 +41,19 @@ use \Phramework\Validate\UnsignedIntegerValidator;
  */
 class User extends ResourceModel
 {
-    //protected static $model; //important
+    //protected static $articleModel; //important
 
     use ResourceModelTrait;
 
     /**
-     * Define model
+     * Define articleModel
      */
     public static function defineModel() : InternalModel
     {
         $model = (new InternalModel('user'))
             ->setGet(
                 function (IDirective ...$directives) use (&$model) {
-                    //var_dump($model->getDefaultDirectives());
+                    //var_dump($articleModel->getDefaultDirectives());
                     return [];
                 }
             )->addDefaultDirective(

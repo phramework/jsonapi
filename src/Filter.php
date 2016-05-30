@@ -16,8 +16,10 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
+use Phramework\Exceptions\Source\Parameter;
 use Phramework\Models\Operator;
 use Phramework\Util\Util;
 use Phramework\Validate\StringValidator;
@@ -97,7 +99,7 @@ class Filter implements IDirective
      */
     public function __construct(
         array $primary = [],
-        $relationships = null,
+        \stdClass $relationships = null,
         array $filterAttributes = []
     ) {
         if ($relationships === null) {
@@ -178,7 +180,7 @@ class Filter implements IDirective
             foreach ($this->getRelationships() as $relationshipKey => $relationshipValue) {
                 if (!$model->issetRelationship($relationshipKey)) {
                     throw new RequestException(sprintf(
-                        'Not a valid relationship for filter relationship "%"',
+                        'Not a valid relationship for filter relationship "%s"',
                         $relationshipKey
                     ));
                 }
@@ -188,21 +190,22 @@ class Filter implements IDirective
                 }
 
                 $relationshipObject = $model->getRelationship($relationshipKey);
-                $relationshipObjectModelClass = $relationshipObject->getModel();
-                $relationshipValidationModel = $relationshipObjectModelClass::getValidationModel();
-                $relationshipFilterValidationModel = $relationshipObjectModelClass::getValidationModel();
+                $relationshipObjectModel = $relationshipObject->getModel();
+                
+                $relationshipValidationModel = $relationshipObjectModel->getValidationModel();
+                $relationshipFilterValidationModel = $relationshipObjectModel->getValidationModel();
 
                 if ($relationshipFilterValidationModel !== null
-                    && isset($relationshipFilterValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()})) {
+                    && isset($relationshipFilterValidationModel->properties->{$relationshipObjectModel->getIdAttribute()})) {
                     $relationshipValidator = [
-                        $relationshipFilterValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()},
+                        $relationshipFilterValidationModel->properties->{$relationshipObjectModel->getIdAttribute()},
                         'parse'
                     ];
                 } elseif ($relationshipValidationModel !== null
-                    && isset($relationshipValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()})
+                    && isset($relationshipValidationModel->properties->{$relationshipObjectModel->getIdAttribute()})
                 ) {
                     $relationshipValidator = [
-                        $relationshipValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()},
+                        $relationshipValidationModel->properties->{$relationshipObjectModel->getIdAttribute()},
                         'parse'
                     ];
                 } else {
@@ -362,10 +365,14 @@ class Filter implements IDirective
             if ($filterKey === $model->getResourceType()) { //Filter primary data
                 //Check filter value type
                 if (!is_string($filterValue) && !is_int($filterValue)) {
-                    throw new IncorrectParametersException(sprintf(
-                        'String or integer value required for filter "%s"',
-                        $filterKey
-                    ));
+                    throw new IncorrectParameterException(
+                        'type',
+                        sprintf(
+                            'String or integer value required for filter "%s"',
+                            $filterKey
+                        ),
+                        new Parameter('filter[' . $filterKey . ']')
+                    );
                 }
 
                 //Use filterValidator for idAttribute if set else use intval to parse filtered values
@@ -390,10 +397,14 @@ class Filter implements IDirective
 
                 //Check filter value type
                 if (!is_string($filterValue) && !is_int($filterValue)) {
-                    throw new IncorrectParametersException(sprintf(
-                        'String or integer value required for filter "%s"',
-                        $filterKey
-                    ));
+                    throw new IncorrectParameterException(
+                        'type',
+                        sprintf(
+                            'String or integer value required for filter "%s"',
+                            $filterKey
+                        ),
+                        new Parameter('filter[' . $filterKey . ']')
+                    );
                 }
 
                 if ($filterValue === Operator::OPERATOR_EMPTY) {

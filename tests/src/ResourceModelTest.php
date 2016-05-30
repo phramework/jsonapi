@@ -35,7 +35,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that a resource model that extends another does actually
+     * Test that a resource articleModel that extends another does actually
      * 1. share untouched directives
      * 2. overwrites reapplied directives
      * @covers ::defineModel
@@ -113,7 +113,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
 
     /**
      * This test is to make sure passed directives and default directives of
-     * a resource model and the extended model a consistent
+     * a resource articleModel and the extended articleModel a consistent
      * @covers ::get
      */
     public function testGet()
@@ -168,7 +168,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(
             0,
             $administrator->attributes->{Filter::class}->getAttributes(),
-            'Make sure that does not contains attributes filter, since the extended resource model has none'
+            'Make sure that does not contains attributes filter, since the extended resource articleModel has none'
         );
 
         $this->markTestIncomplete('Describe test');
@@ -198,7 +198,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
                             /*$directiveAttributes = array_merge(
                                 $directives,
                                 array_filter(
-                                    (array) $model->getDefaultDirectives(),
+                                    (array) $articleModel->getDefaultDirectives(),
                                     //remove already defined in passed
                                     function ($directive) use ($definedPassed) {
                                         return !in_array(
@@ -250,7 +250,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
             public static function defineModel() : InternalModel
             {
                 $user = ResourceModelTest::$user;
-                $model = $user::defineModel(); //based on User model
+                $model = $user::defineModel(); //based on User articleModel
 
                 $model = $model->addDefaultDirective(
                     new Page(20),

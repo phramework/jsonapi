@@ -41,14 +41,14 @@ class User extends ResourceModel
 {
 
     use ResourceModelTrait;
-    //protected static $model; //important
+    //protected static $articleModel; //important
     
     /**
-     * Define model
+     * Define articleModel
      */
     protected static function defineModel() : InternalModel
     {
-        $model = \Phramework\JSONAPI\APP\Models\User::defineModel(); //based on User model
+        $model = \Phramework\JSONAPI\APP\Models\User::defineModel(); //based on User articleModel
 
         $model = $model->addDefaultDirective(
                 new Page(20),

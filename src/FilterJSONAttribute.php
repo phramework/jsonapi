@@ -25,6 +25,7 @@ namespace Phramework\JSONAPI;
  * @property-read string      $operator
  * @property-read mixed|null  $operand
  * @property-read string      $key
+ * todo remove
  */
 class FilterJSONAttribute extends FilterAttribute
 {
@@ -41,9 +42,9 @@ class FilterJSONAttribute extends FilterAttribute
      * @param string $operand
      */
     public function __construct(
-        $attribute,
-        $key,
-        $operator,
+        string $attribute,
+        string $key,
+        string $operator,
         $operand
     ) {
         parent::__construct(
@@ -69,4 +70,13 @@ class FilterJSONAttribute extends FilterAttribute
 
         return parent::__get($name);
     }
+
+    /**
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
 }

@@ -42,7 +42,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
         $this->model = new InternalModel('user');
         
         $this->relationship = new Relationship(
-            $this->mode
+            $this->model
         );
     }
 
@@ -67,7 +67,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             $this->model,
             Relationship::TYPE_TO_ONE,
             'tag-id',
-            [$this->model, 'getRelationshipArticle']
+            (object) [function () {}] //GET is default
         );
     }
 
@@ -81,10 +81,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             Relationship::TYPE_TO_ONE,
             'tag-id',
             (object) [
-                Phramework::METHOD_GET => [
-                    $this->model,
-                    'getRelationshipArticle'
-                ]
+                Phramework::METHOD_GET => function () {}
             ]
         );
     }
@@ -99,7 +96,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             $this->model,
             Relationship::TYPE_TO_ONE,
             null,
-            ['inv'] //Not callable
+            (object) ['inv'] //Not callable
         );
     }
 

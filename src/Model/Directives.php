@@ -170,12 +170,47 @@ trait Directives
      * ]);
      * <code>
      */
-    public function setFilterableAttributes($filterableAttributes)
+    public function setFilterableAttributes(\stdClass $filterableAttributes)
     {
         $this->filterableAttributes = $filterableAttributes;
 
         return $this;
     }
+
+    /**
+     * @param string[] $fieldableAtributes
+     * @return $this
+     */
+    public function setFieldableAtributes(string ...$fieldableAtributes)
+    {
+        $this->fieldableAtributes = $fieldableAtributes;
+
+        return $this;
+    }
+
+    /**
+     * @param string[] $sortableAttributes
+     * @return $this
+     */
+    public function setSortableAttributes(string ...$sortableAttributes)
+    {
+        $this->sortableAttributes = $sortableAttributes;
+
+        return $this;
+    }
+
+    /**
+     * @param string[] $mutableAttributes
+     * @return $this
+     */
+    public function setMutableAttributes(string ...$mutableAttributes)
+    {
+        $this->mutableAttributes = $mutableAttributes;
+
+        return $this;
+    }
+
+
 
     /**
      * @return \stdClass
