@@ -174,7 +174,7 @@ class Resource extends \stdClass implements \JsonSerializable
     ) {
         /*if (!is_subclass_of($model, Model::class)) {
             throw new \Exception(sprintf(
-                'modelClass MUST extend "%s"',
+                'model MUST extend "%s"',
                 Model::class
             ));
         }*/

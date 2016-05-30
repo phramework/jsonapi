@@ -23,11 +23,6 @@ use Phramework\Phramework;
  * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-read string        $modelClass
- * @property-read int           $type
- * @property-read string|null   $recordDataAttribute
- * @property-read object        $callbacks
- * @property int           $flags
  */
 class Relationship
 {
@@ -38,6 +33,7 @@ class Relationship
     const FLAG_ATTRIBUTES = 1;
 
     const FLAG_DATA = 2;
+
     /**
      * Include relationship by default
      */
@@ -54,10 +50,9 @@ class Relationship
     const TYPE_TO_MANY = 2;
 
     /**
-     * Class path of relationship resource model
-     * @var string
+     * @var InternalModel
      */
-    protected $modelClass;
+    protected $model;
 
     /**
      * The type of relationship from the resource to relationship resource
@@ -73,7 +68,7 @@ class Relationship
 
     /**
      * Callable method can be used to fetch relationship data
-     * @var object
+     * @var \stdClass
      */
     protected $callbacks;
 
@@ -84,13 +79,13 @@ class Relationship
     protected $flags;
 
     /**
-     * @param string        $modelClass            Class path of relationship resource model
-     * @param int           $type                  *[Optional] Relationship type
-     * @param string|null   $recordDataAttribute   *[Optional] Attribute name in record containing relationship data
-     * @param callable|object|null $callbacks          *[Optional] Callable method can be used
+     * @param string               $model               Class path of relationship resource model
+     * @param int                  $type                *[Optional] Relationship type
+     * @param string|null          $recordDataAttribute *[Optional] Attribute name in record containing relationship data
+     * @param callable|object|null $callbacks           *[Optional] Callable method can be used
      * to fetch relationship data, see TODO
-     * @param int           $flags                 *[Optional] Relationship flags
-     * @throws \Exception When modelClass  doesn't extend Phramework\JSONAPI\Model
+     * @param int                  $flags               *[Optional] Relationship flags
+     * @throws \Exception When model  doesn't extend Phramework\JSONAPI\Model
      * @throws \Exception When is not null, callable or object of callables
      * @example
      * ```php
@@ -135,19 +130,12 @@ class Relationship
      * ```
      */
     public function __construct(
-        $modelClass,
-        $type = Relationship::TYPE_TO_ONE,
-        $recordDataAttribute = null,
-        $callbacks = null,
-        $flags = Relationship::FLAG_DEFAULT
+        InternalModel $model,
+        int $type = Relationship::TYPE_TO_ONE,
+        string $recordDataAttribute = null,
+        \stdClass $callbacks = null,
+        int $flags = Relationship::FLAG_DEFAULT
     ) {
-        if (!is_subclass_of($modelClass, Model::class)) {
-            throw new \Exception(sprintf(
-                'modelClass MUST extend "%s"',
-                Model::class
-            ));
-        }
-
         if ($callbacks !== null) {
             if (is_object($callbacks)) {
                 foreach ($callbacks as $method => $callback) {
@@ -178,44 +166,49 @@ class Relationship
             $this->callbacks = new \stdClass();
         }
 
-        $this->modelClass           = $modelClass;
+        $this->model                = $model;
         $this->type                 = $type;
         $this->recordDataAttribute  = $recordDataAttribute;
         $this->flags                = $flags;
     }
 
     /**
-     * @param string $name
-     * @return mixed
-     * @throws \Exception
+     * @return string
      */
-    public function __get($name)
+    public function getModel()
     {
-        if (in_array($name, ['modelClass', 'type', 'recordDataAttribute', 'callbacks', 'flags'])) {
-            return $this->{$name};
-        }
-
-        throw new \Exception(sprintf(
-            'Undefined property via __get(): %s',
-            $name
-        ));
+        return $this->model;
     }
 
     /**
-     * @param string $name
-     * @param $value
-     * @return $this
-     * @throws \Exception
+     * @return int
      */
-    public function __set($name, $value) {
-        if (in_array($name, ['flags'])) {
-            $this->{$name} = $value;
-            return $this;
-        }
+    public function getType() : int
+    {
+        return $this->type;
+    }
 
-        throw new \Exception(sprintf(
-            'Undefined property via __get(): %s',
-            $name
-        ));
+    /**
+     * @return string|null
+     */
+    public function getRecordDataAttribute()
+    {
+        return $this->recordDataAttribute;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getCallbacks() : \stdClass
+    {
+        return $this->callbacks;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFlags() : int
+    {
+        return $this->flags;
     }
 }

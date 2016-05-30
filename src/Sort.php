@@ -58,10 +58,10 @@ class Sort implements IDirective
     }
 
     /**
-     * @param string $modelClass
+     * @param string $model
      * @todo implement
      */
-    public function validate(InternalModel $modelClass)
+    public function validate(InternalModel $model)
     {
     }
 

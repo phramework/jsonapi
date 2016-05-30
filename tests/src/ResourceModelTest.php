@@ -179,7 +179,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
-        self::$user = new Class extends ResourceModel{
+        self::$user = new Class extends ResourceModel {
             use ResourceModelTrait;
 
             public static function defineModel() : InternalModel

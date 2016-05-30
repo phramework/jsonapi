@@ -45,7 +45,7 @@ class Filter implements IDirective
     protected $primary;
 
     /**
-     * @var object
+     * @var \stdClass
      * @example
      * ```php
      * (object) [
@@ -58,15 +58,15 @@ class Filter implements IDirective
     protected $relationships;
 
     /**
-     * @var FilterAttribute[]|FilterJSONAttribute[]
+     * @var (FilterAttributeFilterJSONAttribute)[]
      */
     protected $attributes;
 
     /**
      * Filter constructor.
      * @param string[] $primary
-     * @param \stdClass|null $relationships
-     * @param FilterAttribute[]|FilterJSONAttribute[] $filterAttributes
+     * @param \stdClass $relationships null wil be interpreted as empty object
+     * @param (FilterAttribute|FilterJSONAttribute)[] $filterAttributes
      * @throws \Exception
      * @throws \InvalidArgumentException
      * @example
@@ -135,7 +135,7 @@ class Filter implements IDirective
 
     /**
      * Validate against a resource model class
-     * @param string $modelClass Resource model class
+     * @param InternalModel $model
      * @throws RequestException
      * @throws \Exception
      * @throws IncorrectParametersException When filter for primary id attribute is incorrect
@@ -148,11 +148,11 @@ class Filter implements IDirective
      * ```
      * @todo add relationship idAttribute validators
      */
-    public function validate(InternalModel $modelClass)
+    public function validate(InternalModel $model)
     {
-        $idAttribute           = $modelClass::getIdAttribute();
-        $filterValidationModel = $modelClass::getFilterValidationModel();
-        $validationModel       = $modelClass::getValidationModel();
+        $idAttribute     = $model->getIdAttribute();
+        $filterValidator = $model->getFilterValidator();
+        $validationModel = $model->getValidationModel();
 
         /**
          * Validate primary
@@ -160,8 +160,8 @@ class Filter implements IDirective
 
         //Use filterValidator for idAttribute if set else use unsigned integer validator to parse filtered values
         $idAttributeValidator = (
-            !empty($filterValidationModel) && isset($filterValidationModel->properties->{$idAttribute})
-            ? [$filterValidationModel->properties->{$idAttribute}, 'parse']
+            !empty($filterValidator) && isset($filterValidator->properties->{$idAttribute})
+            ? [$filterValidator->properties->{$idAttribute}, 'parse']
             : [UnsignedIntegerValidator::class, 'parseStatic']
         );
 
@@ -175,8 +175,8 @@ class Filter implements IDirective
          */
 
         if ($this->relationships !== null) {
-            foreach ($this->relationships as $relationshipKey => $relationshipValue) {
-                if (!$modelClass::relationshipExists($relationshipKey)) {
+            foreach ($this->getRelationships() as $relationshipKey => $relationshipValue) {
+                if (!$model->issetRelationship($relationshipKey)) {
                     throw new RequestException(sprintf(
                         'Not a valid relationship for filter relationship "%"',
                         $relationshipKey
@@ -187,8 +187,8 @@ class Filter implements IDirective
                     continue;
                 }
 
-                $relationshipObject = $modelClass::getRelationship($relationshipKey);
-                $relationshipObjectModelClass = $relationshipObject->modelClass;
+                $relationshipObject = $model->getRelationship($relationshipKey);
+                $relationshipObjectModelClass = $relationshipObject->getModel();
                 $relationshipValidationModel = $relationshipObjectModelClass::getValidationModel();
                 $relationshipFilterValidationModel = $relationshipObjectModelClass::getValidationModel();
 
@@ -220,7 +220,7 @@ class Filter implements IDirective
          * Validate attributes
          */
 
-        $filterable = $modelClass::getFilterable();
+        $filterable = $model->getFilterableAttributes();
 
         foreach ($this->attributes as $filterAttribute) {
             $isJSONFilter = ($filterAttribute instanceof FilterJSONAttribute);
@@ -235,15 +235,16 @@ class Filter implements IDirective
             $attributeValidator = null;
 
             //Attempt to use filter validation model first
-            if ($filterValidationModel
-                //&& isset($filterValidationModel)
-                && isset($filterValidationModel->properties->{$filterAttribute->attribute})
+            if ($filterValidator
+                //&& isset($filterValidator)
+                && isset($filterValidator->properties->{$filterAttribute->attribute})
             ) {
                 $attributeValidator =
-                    $filterValidationModel->properties->{$filterAttribute->attribute};
+                    $filterValidator->properties->{$filterAttribute->attribute};
             } elseif ($validationModel
-                && isset($validationModel->attributes)
-                && isset($validationModel->attributes->properties->{$filterAttribute->attribute})
+                && isset(
+                    $validationModel->attributes,
+                    $validationModel->attributes->properties->{$filterAttribute->attribute})
             ) { //Then attempt to use attribute validation model first
                 $attributeValidator =
                     $validationModel->attributes->properties->{$filterAttribute->attribute};
@@ -279,12 +280,12 @@ class Filter implements IDirective
             if (!in_array($filterAttribute->operator, Operator::getNullableOperators())) {
                 if ($isJSONFilter) {
                     //If filter validator is set for dereference JSON object property
-                    if ($filterValidationModel
-                        && isset($filterValidationModel->properties->{$filterAttribute->attribute})
-                        && isset($filterValidationModel->properties->{$filterAttribute->attribute}
+                    if ($filterValidator
+                        && isset($filterValidator->properties->{$filterAttribute->attribute})
+                        && isset($filterValidator->properties->{$filterAttribute->attribute}
                                 ->properties->{$filterAttribute->key})
                     ) {
-                        $attributePropertyValidator = $filterValidationModel->properties
+                        $attributePropertyValidator = $filterValidator->properties
                             ->{$filterAttribute->attribute}->properties->{$filterAttribute->key};
 
                         $attributePropertyValidator->parse($filterAttribute->operand);
@@ -301,7 +302,7 @@ class Filter implements IDirective
 
     /**
      * @param \stdClass $parameters Request parameters
-     * @param string    $model
+     * @param InternalModel    $model
      * @return Filter|null
      * @todo allow strings and integers as id
      * @todo Todo use filterValidation model for relationships
@@ -350,15 +351,15 @@ class Filter implements IDirective
             return null;
         }
 
-        $filterValidationModel = $model->getFilterValidationModel();
-        $idAttribute           = $model->getIdAttribute();
+        $filterValidator = $model->getFilterValidator();
+        $idAttribute     = $model->getIdAttribute();
 
         $filterPrimary       = [];
         $filterRelationships = new \stdClass();
         $filterAttributes    = [];
 
         foreach ($parameters->filter as $filterKey => $filterValue) {
-            if ($filterKey === $model::getType()) { //Filter primary data
+            if ($filterKey === $model->getResourceType()) { //Filter primary data
                 //Check filter value type
                 if (!is_string($filterValue) && !is_int($filterValue)) {
                     throw new IncorrectParametersException(sprintf(
@@ -369,8 +370,8 @@ class Filter implements IDirective
 
                 //Use filterValidator for idAttribute if set else use intval to parse filtered values
                 //$function = (
-                //    !empty($filterValidationModel) && isset($filterValidationModel->properties->{$idAttribute})
-                //    ? [$filterValidationModel->properties->{$idAttribute}, 'parse']
+                //    !empty($filterValidator) && isset($filterValidator->properties->{$idAttribute})
+                //    ? [$filterValidator->properties->{$idAttribute}, 'parse']
                 //    : 'intval'
                 //);
 
@@ -385,7 +386,7 @@ class Filter implements IDirective
                 );
 
                 $filterPrimary = $values;
-            } elseif ($model::relationshipExists($filterKey)) { //Filter relationship data
+            } elseif ($model->issetRelationship($filterKey)) { //Filter relationship data
 
                 //Check filter value type
                 if (!is_string($filterValue) && !is_int($filterValue)) {
@@ -460,16 +461,16 @@ class Filter implements IDirective
 
         return new Filter(
             array_merge(
-                $first->primary,
-                $second->primary
+                $first->getPrimary(),
+                $second->getPrimary()
             ),
             (object) array_merge_recursive(
-                (array) $first->relationships,
-                (array) $second->relationships
+                (array) $first->getRelationships(),
+                (array) $second->getRelationships()
             ),
             array_merge(
-                $first->attributes,
-                $second->attributes
+                $first->getAttributes(),
+                $second->getAttributes()
             )
         );
     }
@@ -492,25 +493,25 @@ class Filter implements IDirective
     }
 
     /**
-     * @return \string[]
+     * @return string[]
      */
-    public function getPrimary()
+    public function getPrimary() : array
     {
         return $this->primary;
     }
 
     /**
-     * @return object
+     * @return \stdClass
      */
-    public function getRelationships()
+    public function getRelationships() : \stdClass
     {
         return $this->relationships;
     }
 
     /**
-     * @return FilterAttribute[]|FilterJSONAttribute[]
+     * @return (FilterAttribute|FilterJSONAttribute)[]
      */
-    public function getAttributes()
+    public function getAttributes() : array
     {
         return $this->attributes;
     }

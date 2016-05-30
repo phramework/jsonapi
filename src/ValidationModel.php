@@ -40,10 +40,26 @@ class ValidationModel
      * @param ObjectValidator|null  $relationships
      */
     public function __construct(
-        $attributes,
-        $relationships = null
+        ObjectValidator $attributes,
+        ObjectValidator $relationships = null
     ) {
         $this->attributes       = $attributes;
         $this->relationships    = $relationships;
+    }
+
+    /**
+     * @return ObjectValidator
+     */
+    public function getAttributes() : ObjectValidator
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * @return ObjectValidator|null
+     */
+    public function getRelationships()
+    {
+        return $this->relationships;
     }
 }

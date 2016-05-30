@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI\DataSource;
 
+use Phramework\Database\Database;
 use Phramework\Database\Operations\Create;
 use Phramework\Database\Operations\Delete;
 use Phramework\Database\Operations\Update;
@@ -72,13 +73,17 @@ class DatabaseDataSource implements IDataSource
               {{sort}}
               {{page}}';
 
-        $records = $this->handleGet(
+        $query = $this->handleGet(
             $query,
             false,
             $directives
         );
 
-        //todo call prepare records method from model
+        $records = Database::executeAndFetchAll(
+            $query
+        );
+
+        array_walk($records, $this->prepareRecords);
 
         return $this->model->collection($records, $directives);
     }

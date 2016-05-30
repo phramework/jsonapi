@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI;
 use Phramework\JSONAPI\DataSource\DatabaseDataSource;
 use Phramework\JSONAPI\Model\DataSource;
 use Phramework\JSONAPI\Model\Directives;
+use Phramework\JSONAPI\Model\Relationships;
 use Phramework\JSONAPI\Model\Settings;
 use Phramework\Validate\ObjectValidator;
 
@@ -40,6 +41,7 @@ class InternalModel
     use Directives;
     use Settings;
     use DataSource;
+    use Relationships;
     
     /**
      * @var string
@@ -50,11 +52,6 @@ class InternalModel
      * @var string
      */
     protected $idAttribute = 'id';
-
-    /**
-     * @var \stdClass
-     */
-    protected $relationships;
 
     /**
      * @var \stdClass
@@ -83,11 +80,11 @@ class InternalModel
         $this->filterableAttributes = new \stdClass();
 
         $this->settings = new \stdClass();
-
+        
         $model = $this; //alias
 
         $this->prepareRecords = function (array &$records) {
-                
+
         };
 
         $dataSource = $this->dataSource = new DatabaseDataSource(

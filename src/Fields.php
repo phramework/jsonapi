@@ -192,7 +192,7 @@ class Fields
 
             $allowedFields = $modelClass::getFields();
 
-            //Validate parsedFields (allowed in $modelClass)
+            //Validate parsedFields (allowed in $model)
             foreach ($parsedFields as $parsedField) {
                 if (!in_array($parsedField, $allowedFields)) {
                     throw new IncorrectParametersException(

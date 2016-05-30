@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,52 @@ namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
 use Phramework\Phramework;
 
-abstract class Relationship extends Get
+/**
+ * @since 3.0.0
+ * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+ * @author Xenofon Spafaridis <nohponex@gmail.com>
+ */
+trait Relationships
 {
     /**
-     * Get resource's relationships
-     * @return object Object with Relationship objects as values
+     * @var \stdClass
      */
-    public static function getRelationships()
+    protected $relationships;
+
+    /**
+     * Get resource's relationships
+     * @return \stdClass Object with Relationship objects as values
+     */
+    public function getRelationships() : \stdClass
     {
-        return new \stdClass();
+        return $this->relationships;
     }
 
-    public static function getRelationship($relationshipKey)
+    /**
+     * @param \stdClass $relationships
+     * @return $this
+     */
+    public function setRelationships(\stdClass $relationships)
     {
-        $relationships = static::getRelationships();
+        $this->relationships = $relationships;
+
+        return $this;
+    }
+
+    public function getRelationship(string $relationshipKey) : Relationship
+    {
+        $relationships = $this->getRelationships();
 
         if (!isset($relationships->{$relationshipKey})) {
-            throw new \Exception('Not a valid relationship key');
+            throw new \Exception(sprintf(
+                'Not a valid relationship key "%s"',
+                $relationshipKey
+            ));
         }
 
         return $relationships->{$relationshipKey};
@@ -49,11 +74,9 @@ abstract class Relationship extends Get
      * @param  string $relationshipKey Relationship's key (alias)
      * @return Boolean
      */
-    public static function relationshipExists($relationshipKey)
+    public function issetRelationship(string $relationshipKey) : bool
     {
-        $relationships = static::getRelationships();
-
-        return isset($relationships->{$relationshipKey});
+        return isset($this->getRelationships()->{$relationshipKey});
     }
 
     /**
@@ -73,7 +96,7 @@ abstract class Relationship extends Get
         $primaryDataParameters = [],
         $relationshipParameters = []
     ) {
-        if (!static::relationshipExists($relationshipKey)) {
+        if (!static::issetRelationship($relationshipKey)) {
             throw new \Phramework\Exceptions\ServerException(sprintf(
                 '"%s" is not a valid relationship key',
                 $relationshipKey
@@ -167,7 +190,7 @@ abstract class Relationship extends Get
 
         //check if relationship exists
         foreach ($include as $relationshipKey) {
-            if (!static::relationshipExists($relationshipKey)) {
+            if (!static::issetRelationship($relationshipKey)) {
                 throw new RequestException(sprintf(
                     'Relationship "%s" not found',
                     $relationshipKey
@@ -232,7 +255,7 @@ abstract class Relationship extends Get
         foreach ($include as $relationshipKey) {
             $relationship = static::getRelationship($relationshipKey);
 
-            $relationshipModelClass = $relationship->modelClass;
+            $relationshipModelClass = $relationship->model;
 
             $ids = array_unique($tempRelationshipIds->{$relationshipKey});
 
