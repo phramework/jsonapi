@@ -98,25 +98,35 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::__get
-     * @param string $property
-     * @param mixed  $expected
-     * @dataProvider getAvailableProperties
+     * @covers ::getAttribute
      */
-    public function testGet($property, $expected)
+    public function testGetAttribute()
     {
         $this->assertSame(
-            $this->filterAttribute->{$property},
-            $expected
+            'id',
+            $this->filterAttribute->getAttribute()
         );
     }
 
     /**
-     * @covers ::__get
-     * @expectedException \Exception
+     * @covers ::getOperator
      */
-    public function testGetFailure()
+    public function testGetOperator()
     {
-        $this->filterAttribute->{'not-found'};
+        $this->assertSame(
+            Operator::OPERATOR_EQUAL,
+            $this->filterAttribute->getOperator()
+        );
+    }
+
+    /**
+     * @covers ::getOperand
+     */
+    public function testGetOperand()
+    {
+        $this->assertSame(
+            '5',
+            $this->filterAttribute->getOperand()
+        );
     }
 }

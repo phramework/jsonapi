@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
@@ -56,12 +57,17 @@ trait Relationships
         return $this;
     }
 
+    /**
+     * @param string $relationshipKey
+     * @return Relationship
+     * @throws \DomainException If exception is not found
+     */
     public function getRelationship(string $relationshipKey) : Relationship
     {
         $relationships = $this->getRelationships();
 
         if (!isset($relationships->{$relationshipKey})) {
-            throw new \Exception(sprintf(
+            throw new \DomainException(sprintf(
                 'Not a valid relationship key "%s"',
                 $relationshipKey
             ));
@@ -88,26 +94,21 @@ trait Relationships
      * @throws \Phramework\Exceptions\ServerException If relationship doesn't exist
      * @throws \Phramework\Exceptions\ServerException If relationship's class method is
      * not defined
+     * @todo
      */
     public static function getRelationshipData(
+        InternalModel $model,
         $relationshipKey,
         $id,
         Fields $fields = null,
         $primaryDataParameters = [],
         $relationshipParameters = []
     ) {
-        if (!static::issetRelationship($relationshipKey)) {
-            throw new \Phramework\Exceptions\ServerException(sprintf(
-                '"%s" is not a valid relationship key',
-                $relationshipKey
-            ));
-        }
+        $relationship = $model->getRelationship($relationshipKey);
 
-        $relationship = static::getRelationship($relationshipKey);
-
-        switch ($relationship->type) {
+        switch ($relationship->getType()) {
             case \Phramework\JSONAPI\Relationship::TYPE_TO_ONE:
-                $resource = $callMethod = static::getById(
+                $resource = $callMethod = $model->getById(
                     $id,
                     $fields,
                     $primaryDataParameters
@@ -125,11 +126,11 @@ trait Relationships
                 );
             case \Phramework\JSONAPI\Relationship::TYPE_TO_MANY:
             default:
-                if (!isset($relationship->callbacks->{Phramework::METHOD_GET})) {
+                if (!isset($relationship->getCallbacks()->{Phramework::METHOD_GET})) {
                     return [];
                 }
 
-                $callMethod = $relationship->callbacks->{Phramework::METHOD_GET};
+                $callMethod = $relationship->getCallbacks()->{Phramework::METHOD_GET};
 
                 if (!is_callable($callMethod)) {
                     throw new \Phramework\Exceptions\ServerException(
@@ -140,9 +141,8 @@ trait Relationships
 
                 //also we could attempt to use getById like the above TO_ONE
                 //to use relationships data
-
-                return call_user_func(
-                    $callMethod,
+                //todo annotate signature
+                return $callMethod(
                     $id,
                     $fields,
                     ...$relationshipParameters
@@ -171,6 +171,7 @@ trait Relationships
      * ```
      */
     public static function getIncludedData(
+        InternalModel $model,
         $primaryData,
         $include = [],
         Fields $fields = null,
@@ -190,7 +191,7 @@ trait Relationships
 
         //check if relationship exists
         foreach ($include as $relationshipKey) {
-            if (!static::issetRelationship($relationshipKey)) {
+            if (!$model->issetRelationship($relationshipKey)) {
                 throw new RequestException(sprintf(
                     'Relationship "%s" not found',
                     $relationshipKey
@@ -253,9 +254,9 @@ trait Relationships
         $included = [];
 
         foreach ($include as $relationshipKey) {
-            $relationship = static::getRelationship($relationshipKey);
+            $relationship = $model->getRelationship($relationshipKey);
 
-            $relationshipModelClass = $relationship->model;
+            $relationshipModelClass = $relationship->getModel();
 
             $ids = array_unique($tempRelationshipIds->{$relationshipKey});
 
@@ -265,7 +266,7 @@ trait Relationships
                 : []
             );
 
-            $resources = $relationshipModelClass::getById(
+            $resources = $relationshipModelClass->getById(
                 $ids,
                 $fields,
                 ...$additionalArgument

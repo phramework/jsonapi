@@ -226,12 +226,16 @@ class Filter implements IDirective
         $filterable = $model->getFilterableAttributes();
 
         foreach ($this->attributes as $filterAttribute) {
+            $attribute = $filterAttribute->getAttribute();
+            $operator  = $filterAttribute->getOperator();
+            $operand   = $filterAttribute->getOperand();
+            
             $isJSONFilter = ($filterAttribute instanceof FilterJSONAttribute);
 
-            if (!property_exists($filterable, $filterAttribute->attribute)) {
+            if (!property_exists($filterable, $attribute)) {
                 throw new RequestException(sprintf(
                     'Filter attribute "%s" not allowed',
-                    $filterAttribute->attribute
+                    $attribute
                 ));
             }
 
@@ -240,64 +244,64 @@ class Filter implements IDirective
             //Attempt to use filter validation model first
             if ($filterValidator
                 //&& isset($filterValidator)
-                && isset($filterValidator->properties->{$filterAttribute->attribute})
+                && isset($filterValidator->properties->{$attribute})
             ) {
                 $attributeValidator =
-                    $filterValidator->properties->{$filterAttribute->attribute};
+                    $filterValidator->properties->{$attribute};
             } elseif ($validationModel
                 && isset(
                     $validationModel->attributes,
-                    $validationModel->attributes->properties->{$filterAttribute->attribute})
+                    $validationModel->attributes->properties->{$attribute})
             ) { //Then attempt to use attribute validation model first
                 $attributeValidator =
-                    $validationModel->attributes->properties->{$filterAttribute->attribute};
+                    $validationModel->attributes->properties->{$attribute};
             } else {
                 throw new \Exception(sprintf(
                     'Filter attribute "%s" has not a filter validator',
-                    $filterAttribute->attribute
+                    $attribute
                 ));
             }
 
-            $operatorClass = $filterable->{$filterAttribute->attribute};
+            $operatorClass = $filterable->{$attribute};
 
             if ($isJSONFilter && ($operatorClass & Operator::CLASS_JSONOBJECT) === 0) {
                 throw new RequestException(sprintf(
                     'Filter attribute "%s" is not accepting JSON object filtering',
-                    $filterAttribute->attribute
+                    $attribute
                 ));
             }
 
             //Check if operator is allowed
             if (!$isJSONFilter && !in_array(
-                $filterAttribute->operator,
+                $operator,
                 Operator::getByClassFlags($operatorClass)
             )) {
                 throw new RequestException(sprintf(
                     'Filter operator "%s" is not allowed for attribute "%s"',
-                    $filterAttribute->operator,
-                    $filterAttribute->attribute
+                    $operator,
+                    $attribute
                 ));
             }
 
             //Validate filterAttribute operand against filter validator or validator if set
-            if (!in_array($filterAttribute->operator, Operator::getNullableOperators())) {
+            if (!in_array($operator, Operator::getNullableOperators())) {
                 if ($isJSONFilter) {
                     //If filter validator is set for dereference JSON object property
                     if ($filterValidator
-                        && isset($filterValidator->properties->{$filterAttribute->attribute})
-                        && isset($filterValidator->properties->{$filterAttribute->attribute}
-                                ->properties->{$filterAttribute->key})
+                        && isset($filterValidator->properties->{$attribute})
+                        && isset($filterValidator->properties->{$attribute}
+                                ->properties->{$filterAttribute->getKey()})
                     ) {
                         $attributePropertyValidator = $filterValidator->properties
-                            ->{$filterAttribute->attribute}->properties->{$filterAttribute->key};
+                            ->{$attribute}->properties->{$filterAttribute->getKey()};
 
-                        $attributePropertyValidator->parse($filterAttribute->operand);
+                        $attributePropertyValidator->parse($operand);
                     }
                     //} else {
                     //    //**NOTE** Remain unparsed!
                     //}
                 } else {
-                    $attributeValidator->parse($filterAttribute->operand);
+                    $attributeValidator->parse($operand);
                 }
             }
         }

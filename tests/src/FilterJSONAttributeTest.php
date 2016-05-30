@@ -25,6 +25,9 @@ use Phramework\Models\Operator;
  */
 class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var FilterJSONAttribute
+     */
     protected $filterAttribute;
 
     public function setUp()
@@ -51,22 +54,13 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::__get
+     * @covers ::getKey
      */
-    public function testGet()
+    public function testGetKey()
     {
         $this->assertSame(
             'keywords',
-            $this->filterAttribute->key
+            $this->filterAttribute->getKey()
         );
-    }
-
-    /**
-     * @covers ::__get
-     * @expectedException \Exception
-     */
-    public function testGetFailure()
-    {
-        $this->filterAttribute->{'not-found'};
     }
 }

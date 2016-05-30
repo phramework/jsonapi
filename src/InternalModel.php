@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\DataSource\DatabaseDataSource;
+use Phramework\JSONAPI\DataSource\IDataSource;
 use Phramework\JSONAPI\Model\DataSource;
 use Phramework\JSONAPI\Model\Directives;
 use Phramework\JSONAPI\Model\Relationships;
@@ -67,9 +68,11 @@ class InternalModel
      * InternalModel constructor.
      * Will create a new internal model initialized with:
      * - defaultDirectives Page directive limit with value of getMaxPageLimit()
+     * - empty prepareRecords
      * @param string $resourceType
+     * @param IDataSource $dataSource null will interpreted as a new DatabaseDataSource
      */
-    public function __construct($resourceType)
+    public function __construct(string $resourceType, IDataSource $dataSource = null)
     {
         $this->resourceType      = $resourceType;
 
@@ -80,46 +83,31 @@ class InternalModel
         $this->filterableAttributes = new \stdClass();
 
         $this->settings = new \stdClass();
-        
-        $model = $this; //alias
 
+
+        //Set default prepareRecords method as an empty method
         $this->prepareRecords = function (array &$records) {
-
         };
 
-        $dataSource = $this->dataSource = new DatabaseDataSource(
-            $model
-        );
+        $this->dataSource = $dataSource;
 
-        $this->get = function () use ($dataSource) {
-            return $dataSource->get(
-                ...func_get_args()
+        if ($dataSource === null) {
+            //Set default data source
+            $this->dataSource = $dataSource = new DatabaseDataSource(
+                $this
             );
-        };
+        }
 
-        $this->post = function () use ($dataSource) {
-            return $dataSource->post(
-                ...func_get_args()
-            );
-        };
-
-        $this->patch = function () use ($dataSource) {
-            return $dataSource->patch(
-                ...func_get_args()
-            );
-        };
-
-        $this->put = function () use ($dataSource) {
-            return $dataSource->put(
-                ...func_get_args()
-            );
-        };
-
-        //experiment
+        //Setup default operations to use data source
+        $this->get    = [$dataSource, 'get'];
+        $this->post   = [$dataSource, 'post'];
+        $this->patch  = [$dataSource, 'patch'];
+        $this->put    = [$dataSource, 'put'];
         $this->delete = [$dataSource, 'delete'];
 
         $this->validationModels = new \stdClass();
 
+        //Set default empty filter validator
         $this->filterValidator = new ObjectValidator(
             (object) [],
             [],
@@ -133,8 +121,9 @@ class InternalModel
      * @return ValidationModel
      * @throws \DomainException If none validation model is set
      */
-    public function getValidationModel(string $requestMethod = 'DEFAULT')
-    {
+    public function getValidationModel(
+        string $requestMethod = 'DEFAULT'
+    ) : ValidationModel {
         $key = 'DEFAULT';
 
         if ($requestMethod !== null
@@ -158,7 +147,7 @@ class InternalModel
      * @return $this
      */
     public function setValidationModel(
-        $validationModel,
+        ValidationModel $validationModel,
         string $requestMethod = 'DEFAULT'
     ) {
         $key = 'DEFAULT';
@@ -194,17 +183,20 @@ class InternalModel
     /**
      * @return string
      */
-    public function getIdAttribute()
+    public function getIdAttribute() : string
     {
         return $this->idAttribute;
     }
 
     /**
-     * @return \stdClass
+     * @param string $idAttribute If non set, default is "id"
+     * @return $this
      */
-    public function getRelationships()
+    public function setIdAttribute(string $idAttribute)
     {
-        return $this->relationships;
+        $this->idAttribute = $idAttribute;
+
+        return $this;
     }
 
     public function collection(

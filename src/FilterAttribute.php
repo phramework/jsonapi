@@ -27,9 +27,6 @@ use Phramework\Exceptions\RequestException;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-read string      $attribute
- * @property-read string      $operator
- * @property-read mixed|null  $operand
  */
 class FilterAttribute
 {
@@ -143,28 +140,6 @@ class FilterAttribute
         }
 
         return $filterAttributes;
-    }
-
-    /**
-     * @param string $name
-     * @return mixed
-     * @throws \Exception
-     */
-    public function __get($name)
-    {
-        switch ($name) {
-            case 'operand':
-                return $this->operand;
-            case 'operator':
-                return $this->operator;
-            case 'attribute':
-                return $this->attribute;
-        }
-
-        throw new \Exception(sprintf(
-            'Undefined property via __get(): %s',
-            $name
-        ));
     }
 
     /**
