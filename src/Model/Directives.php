@@ -52,9 +52,13 @@ trait Directives
     /**
      * Attributes that are allow fields directive to be applied
      * @var string[]
-     * @todo improve grammar
      */
     protected $fieldableAtributes =  [];
+
+    /**
+     * @var string[]
+     */
+    protected $privateAttributes = [];
 
     /**
      * Get maximum value of Page directive's limit
@@ -101,7 +105,7 @@ trait Directives
     /**
      * @return \stdClass
      */
-    public function getDefaultDirectives()
+    public function getDefaultDirectives() : \stdClass
     {
         return $this->defaultDirectives;
     }
@@ -110,7 +114,7 @@ trait Directives
      * Returns an array with class names of supported directives
      * @return string[]
      */
-    public function getSupportedDirectives()
+    public function getSupportedDirectives()  : array
     {
         return $this->supportedDirectives;
     }
@@ -210,39 +214,54 @@ trait Directives
         return $this;
     }
 
-
-
     /**
      * @return \stdClass
      */
-    public function getFilterableAttributes()
+    public function getFilterableAttributes() : \stdClass
     {
         return $this->filterableAttributes;
     }
 
     /**
-     * @return \string[]
+     * @return string[]
      */
-    public function getSortableAttributes()
+    public function getSortableAttributes() : array
     {
         return $this->sortableAttributes;
     }
 
     /**
-     * @return \string[]
+     * @return string[]
      */
-    public function getMutableAttributes()
+    public function getMutableAttributes() : array
     {
         return $this->mutableAttributes;
     }
 
     /**
-     * @return \string[]
+     * @return string[]
      */
-    public function getFieldableAtributes()
+    public function getFieldableAtributes() : array
     {
         return $this->fieldableAtributes;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getPrivateAttributes() : array
+    {
+        return $this->privateAttributes;
+    }
 
+    /**
+     * @param string[] $privateAttributes
+     * @return $this
+     */
+    public function setPrivateAttributes(string ...$privateAttributes)
+    {
+        $this->privateAttributes = $privateAttributes;
+
+        return $this;
+    }
 }

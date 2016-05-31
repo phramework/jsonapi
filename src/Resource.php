@@ -31,6 +31,7 @@ use Phramework\Util\Util;
  * @property \stdClass $attributes
  * @property \stdClass $relationships
  * @property \stdClass $data
+ * @property \stdClass $private-attributes
  */
 class Resource extends \stdClass implements \JsonSerializable
 {
@@ -81,7 +82,13 @@ class Resource extends \stdClass implements \JsonSerializable
      */
     public function __set($name, $value)
     {
-        if (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
+        if (in_array($name, [
+            'links',
+            'attributes',
+            'relationships',
+            'meta',
+            'private-attributes'
+        ])) {
             if (!isset($this->{$name}) || $this->{$name} === null) {
                 $this->{$name} = new \stdClass();
             }
@@ -106,7 +113,13 @@ class Resource extends \stdClass implements \JsonSerializable
     {
         if (in_array($name, ['id', 'type'])) {
             return $this->{$name};
-        } elseif (in_array($name, ['links', 'attributes', 'relationships', 'meta'])) {
+        } elseif (in_array($name, [
+            'links',
+            'attributes',
+            'relationships',
+            'meta',
+            'private-attributes'
+        ])) {
             return (
                 isset($this->{$name})
                 ? $this->{$name}
@@ -183,9 +196,9 @@ class Resource extends \stdClass implements \JsonSerializable
             return null;
         }
 
-        $flagAttributes              = ($flags & Resource::PARSE_ATTRIBUTES) != 0;
-        $flagLinks                   = ($flags & Resource::PARSE_LINKS) != 0;
-        $flagRelationships           = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
+        $flagAttributes    = ($flags & Resource::PARSE_ATTRIBUTES) != 0;
+        $flagLinks         = ($flags & Resource::PARSE_LINKS) != 0;
+        $flagRelationships = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
         $flagRelationshipLinks       = ($flags & Resource::PARSE_RELATIONSHIP_LINKS) != 0;
         $flagRelationshipData        = ($flags & Resource::PARSE_RELATIONSHIP_DATA) != 0;
 
@@ -237,6 +250,18 @@ class Resource extends \stdClass implements \JsonSerializable
             unset($record->{Resource::META_MEMBER});
         }
 
+        //Parse private attributes first
+        $privateAttributes = new \stdClass();
+        foreach ($model->getPrivateAttributes() as $attribute) {
+            if (property_exists($record, $attribute)) {
+                $privateAttributes->{$attribute} = $record->{$attribute};
+                unset($record->{$attribute});
+            }
+        }
+        if (count((array) $privateAttributes)) {
+            $resource->{'private-attributes'} = $privateAttributes;
+        }
+
         if ($flagAttributes) {
             $resource->attributes = new \stdClass();
         }
@@ -269,7 +294,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
                 $relationshipResourceType = $relationshipModelClass->getResourceType();
 
-                //Define callback to fetch data
+                //todo Define callback to fetch data
                 /**
                  * @return string[]|RelationshipResource[]
                  */
@@ -397,6 +422,66 @@ class Resource extends \stdClass implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        return get_object_vars($this);
+        $vars = get_object_vars($this);
+        unset($vars['private-attributes']);
+        return $vars;
     }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getPrivateAttributes()
+    {
+        return $this->{'private-attributes'};
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getRelationships()
+    {
+        return $this->relationships;
+    }
+
+    /**
+     * @return \stdClass
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+
 }

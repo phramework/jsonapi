@@ -21,6 +21,7 @@ use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
+use Phramework\Util\Util;
 
 /**
  * Fields helper methods
@@ -49,14 +50,14 @@ class Fields implements IDirective
      * @example
      * ```php
      * new Fields((object)
-     *     Article::getType() => ['title']
+     *     'article' => ['title']
      * ]);
      * ```
      * @example
      * ```php
      * new Fields((object)
-     *     Article::getType() => ['title', 'updated'],
-     *     Tag::getType()     => ['title']
+     *     'article' => ['title', 'updated'],
+     *     'tag'     => ['title']
      * ]);
      * ```
      */
@@ -112,7 +113,7 @@ class Fields implements IDirective
 
     /**
      * @param InternalModel $model
-     * @todo Implement
+     * @throws \Exception
      */
     public function validate(InternalModel $model)
     {
@@ -129,11 +130,11 @@ class Fields implements IDirective
      * $fields = Fields::parseFromParameters(
      *     (object) [
      *         'fields' => [
-     *             Article::getType() => ['title', updated'],
-     *             Tag::getType()     => ['title']
+     *             'article' => ['title', updated'],
+     *             'tag'     => ['title']
      *         ]
      *     ], //Request parameters object
-     *     Article::class
+     *     Article::getModel()
      * );
      * ```
      * @uses Model::getFields for each resource type to parse allowed fields
@@ -148,27 +149,39 @@ class Fields implements IDirective
 
         $fields = new Fields();
 
-        //Convert to string[]
-        if (is_string($parameters->fields)) {
-            $parameters->fields = array_map(
-                'trim',
-                explode(',', $parameters->fields)
+        if (!is_object($parameters->fields)
+            && (
+                !is_array($parameters->fields)
+                || (is_array($parameters->fields)
+                   && !Util::isArrayAssoc($parameters->fields)
+                )
+            )
+        ) {
+            throw new IncorrectParameterException(
+                'type',
+                'Fields directive must specify resource type',
+                new Parameter('fields')
             );
         }
 
         foreach ($parameters->fields as $resourceType => $value) {
             if ($model->getResourceType() === $resourceType) {
                 //check if $resourceType allowed (primary)
-                $modelClass = $model;
+                $resourceModel = $model;
             } elseif ($model->issetRelationship($resourceType)) {
                 //check if $resourceType allowed (primary's relationships)
-                $modelClass = $model->getRelationship($resourceType)->getModel();
+                $resourceModel = $model->getRelationship($resourceType)
+                    ->getModel();
             } else {
                 //TODO incomplete since we will support 2nd level relationship data inclusion
-                throw new RequestException(sprintf(
-                    'Not allowed resource type "%s" for fields',
-                    $resourceType
-                ));
+                throw new IncorrectParameterException(
+                    'enum',
+                    sprintf(
+                        'Not allowed resource type "%s" for fields',
+                        $resourceType
+                    ),
+                    new Parameter('fields[' . $resourceType . ']')
+                );
             }
 
             if (!is_string($value)) {
@@ -187,7 +200,7 @@ class Fields implements IDirective
                 explode(',', trim($value))
             );
 
-            $allowedFields = $modelClass->getFieldableAtributes();
+            $allowedFields = $resourceModel->getFieldableAtributes();
 
             //Validate parsedFields (allowed in $model)
             foreach ($parsedFields as $parsedField) {

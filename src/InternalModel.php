@@ -29,12 +29,10 @@ use Phramework\Validate\ObjectValidator;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  * @todo define prefix schema, table space for attributes
- * @todo post, patch, delete methods
- * @todo handleGet and related helper methods
  * @todo database related, schema table
  * @todo resource parsing
  * @todo links related
- * @todo endpoint related
+ * @todo endpoint related - allow external modifications (?)
  * @todo relationship related and included data
  */
 class InternalModel

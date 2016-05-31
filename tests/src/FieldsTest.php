@@ -187,7 +187,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     {
         $parameters = (object) [
             'fields' => [
-                $this->model->getResourceType() => 'title, updated'
+                $this->model->getResourceType() => 'title, updated',
             ]
         ];
 
@@ -211,6 +211,43 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRequest
      * @expectedException \Phramework\Exceptions\IncorrectParameterException
      */
+    public function testParseFromRequestFailureTypeNotArrayOrObject()
+    {
+
+        $parameters = (object) [
+            'fields' =>
+                'creator-user_id'
+
+        ];
+
+        $fields = Fields::parseFromRequest(
+            $parameters,
+            $this->model
+        );
+    }
+
+    /**
+     * @covers ::parseFromRequest
+     * @expectedException \Phramework\Exceptions\IncorrectParameterException
+     */
+    public function testParseFromRequestFailureTypeNotAssociativeArray()
+    {
+        $parameters = (object) [
+            'fields' => [
+                'creator-user_id'
+            ]
+        ];
+
+        $fields = Fields::parseFromRequest(
+            $parameters,
+            $this->model
+        );
+    }
+    
+    /**
+     * @covers ::parseFromRequest
+     * @expectedException \Phramework\Exceptions\IncorrectParameterException
+     */
     public function testParseFromRequestFailureNotAllowed()
     {
         $parameters = (object) [
@@ -229,7 +266,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRequest
      * @expectedException \Phramework\Exceptions\IncorrectParameterException
      */
-    public function testParseFromRequestFailureNotStringValue()
+    public function testParseFromRequestFailureResourceValueNotStringValue()
     {
         $parameters = (object) [
             'fields' => [
@@ -245,7 +282,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::parseFromRequest
-     * @expectedException \Phramework\Exceptions\RequestException
+     * @expectedException \Phramework\Exceptions\IncorrectParameterException
      */
     public function testParseFromRequestFailureNotAllowedResourceType()
     {
@@ -259,5 +296,15 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
             $parameters,
             $this->model
         );
+    }
+
+    /**
+     * @covers ::validate
+     */
+    public function testValidate()
+    {
+        $this->fields->validate($this->model);
+
+        $this->markTestIncomplete('Must be implemented when method is done');
     }
 }
