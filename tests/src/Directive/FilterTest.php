@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Directive;
 
-use Phramework\JSONAPI\APP\Bootstrap;
-use Phramework\JSONAPI\APP\Models\Article;
-use Phramework\JSONAPI\APP\Models\Tag;
+use Directive\APP\Bootstrap;
+use Directive\APP\Models\Article;
+use Directive\APP\Models\Tag;
+use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\Relationship;
+use Phramework\JSONAPI\ValidationModel;
 use Phramework\Models\Operator;
 use Phramework\Phramework;
 use Phramework\Validate\BooleanValidator;
@@ -27,7 +30,7 @@ use Phramework\Validate\StringValidator;
 use Phramework\Validate\UnsignedIntegerValidator;
 
 /**
- * @coversDefaultClass Phramework\JSONAPI\Filter
+ * @coversDefaultClass Phramework\JSONAPI\Directive\Filter
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */

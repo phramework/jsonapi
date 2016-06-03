@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI\Model;
 
 
-use Phramework\JSONAPI\IDirective;
+use Phramework\JSONAPI\Directive\Directive;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -84,10 +84,10 @@ trait Directives
      * Add default directive values
      * Only one default value per directive class is allowed
      * It will include any directive class that are missing to supported directive class
-     * @param IDirective[] $directives
+     * @param Directive[] $directives
      * @return $this
      */
-    public function addDefaultDirective(IDirective ...$directives)
+    public function addDefaultDirective(Directive ...$directives)
     {
         foreach ($directives as $directive) {
             $class = get_class($directive);
@@ -111,15 +111,6 @@ trait Directives
     }
 
     /**
-     * Returns an array with class names of supported directives
-     * @return string[]
-     */
-    public function getSupportedDirectives()  : array
-    {
-        return $this->supportedDirectives;
-    }
-
-    /**
      * @param string[] $directiveClassName
      * @return $this
      * @throws \InvalidArgumentException If a class name is not implementing IDirective interface
@@ -128,13 +119,13 @@ trait Directives
     {
         foreach ($directiveClassName as $className) {
             if (!in_array(
-                IDirective::class,
+                Directive::class,
                 class_implements($directiveClassName)
             )) {
                 throw new \InvalidArgumentException(sprintf(
                     'Class "%s" is not implementing interface "%s"',
                     $className,
-                    IDirective::class
+                    Directive::class
                 ));
             }
         }
@@ -144,11 +135,12 @@ trait Directives
     }
 
     /**
-     * @return int
+     * Returns an array with class names of supported directives
+     * @return string[]
      */
-    public function getMaxPageLimit() : int
+    public function getSupportedDirectives()  : array
     {
-        return $this->maxPageLimit;
+        return $this->supportedDirectives;
     }
 
     /**
@@ -160,6 +152,14 @@ trait Directives
         $this->maxPageLimit = $maxPageLimit;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxPageLimit() : int
+    {
+        return $this->maxPageLimit;
     }
 
     /**
@@ -182,6 +182,14 @@ trait Directives
     }
 
     /**
+     * @return \stdClass
+     */
+    public function getFilterableAttributes() : \stdClass
+    {
+        return $this->filterableAttributes;
+    }
+
+    /**
      * @param string[] $fieldableAtributes
      * @return $this
      */
@@ -190,6 +198,14 @@ trait Directives
         $this->fieldableAtributes = $fieldableAtributes;
 
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getFieldableAtributes() : array
+    {
+        return $this->fieldableAtributes;
     }
 
     /**
@@ -204,6 +220,14 @@ trait Directives
     }
 
     /**
+     * @return string[]
+     */
+    public function getSortableAttributes() : array
+    {
+        return $this->sortableAttributes;
+    }
+
+    /**
      * @param string[] $mutableAttributes
      * @return $this
      */
@@ -215,43 +239,11 @@ trait Directives
     }
 
     /**
-     * @return \stdClass
-     */
-    public function getFilterableAttributes() : \stdClass
-    {
-        return $this->filterableAttributes;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getSortableAttributes() : array
-    {
-        return $this->sortableAttributes;
-    }
-
-    /**
      * @return string[]
      */
     public function getMutableAttributes() : array
     {
         return $this->mutableAttributes;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getFieldableAtributes() : array
-    {
-        return $this->fieldableAtributes;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getPrivateAttributes() : array
-    {
-        return $this->privateAttributes;
     }
 
     /**
@@ -263,5 +255,13 @@ trait Directives
         $this->privateAttributes = $privateAttributes;
 
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPrivateAttributes() : array
+    {
+        return $this->privateAttributes;
     }
 }

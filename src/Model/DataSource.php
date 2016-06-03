@@ -17,9 +17,9 @@
 namespace Phramework\JSONAPI\Model;
 
 use Phramework\JSONAPI\DataSource\IDataSource;
-use Phramework\JSONAPI\Filter;
-use Phramework\JSONAPI\IDirective;
-use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Directive\Filter;
+use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\Directive\Page;
 
 /**
  * @since 3.0.0
@@ -140,11 +140,11 @@ trait DataSource
     }
 
     /**
-     * @param IDirective[] ...$directives
+     * @param Directive[] ...$directives
      * @return Resource[]
      * @throws \LogicException When callable get property is not set
      */
-    public function get(IDirective ...$directives) : array
+    public function get(Directive ...$directives) : array
     {
         $get = $this->get;
 
@@ -251,11 +251,11 @@ trait DataSource
 
     /**
      * @param string|string[] $id
-     * @param IDirective[] ...$directives
+     * @param Directive[]     ...$directives
      * @return Resource|\stdClass|null
      * @todo rewrite cache from scratch
      */
-    public function getById($id, IDirective ...$directives)
+    public function getById($id, Directive ...$directives)
     {
         $collectionObject = new \stdClass();
 

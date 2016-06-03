@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\NotImplementedException;
 use Phramework\Exceptions\RequestException;
-use Phramework\JSONAPI\Fields;
-use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\Directive\Fields;
+use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\FilterAttribute;
 use Phramework\JSONAPI\FilterJSONAttribute;
-use Phramework\JSONAPI\Page;
-use Phramework\JSONAPI\Sort;
+use Phramework\JSONAPI\Directive\Page;
+use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\Relationship;
 use Phramework\Models\Operator;
 

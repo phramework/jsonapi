@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ namespace Phramework\JSONAPI\APP\Models;
 
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
-use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Directive\Page;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model\Relationships

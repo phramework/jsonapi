@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
 namespace Phramework\JSONAPI\APP\Models;
 
 use \Phramework\Database\Database;
-use Phramework\JSONAPI\Fields;
-use Phramework\JSONAPI\Filter;
+use Phramework\JSONAPI\Directive\Fields;
+use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\FilterAttribute;
-use Phramework\JSONAPI\IDirective;
+use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\InternalModel;
-use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\ResourceModelTrait;
-use Phramework\JSONAPI\Sort;
+use Phramework\JSONAPI\Directive\Sort;
 use Phramework\Models\Operator;
 use \Phramework\Validate\ArrayValidator;
 use \Phramework\Validate\ObjectValidator;
@@ -52,7 +52,7 @@ class User extends ResourceModel
     {
         $model = (new InternalModel('user'))
             ->setGet(
-                function (IDirective ...$directives) use (&$model) {
+                function (Directive ...$directives) use (&$model) {
                     //var_dump($articleModel->getDefaultDirectives());
                     return [];
                 }

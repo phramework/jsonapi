@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,36 +82,10 @@ class Relationship
      * @param string               $model               Class path of relationship resource model
      * @param int                  $type                *[Optional] Relationship type
      * @param string|null          $recordDataAttribute *[Optional] Attribute name in record containing relationship data
-     * @param callable|object|null $callbacks           *[Optional] Callable method can be used
+     * @param object|null $callbacks           *[Optional] Callable method can be used
      * to fetch relationship data, see TODO
      * @param int                  $flags               *[Optional] Relationship flags
-     * @throws \Exception When model  doesn't extend Phramework\JSONAPI\Model
      * @throws \Exception When is not null, callable or object of callables
-     * @example
-     * ```php
-     * getValidationModel() {
-     *     return (object) [
-     *         'author' => new Relationship(
-     *             Tag::class,
-     *             Relationship::TYPE_TO_ONE,
-     *             'author-user_id'
-     *         );
-     *     ];
-     * }
-     * ```
-     * @example
-     * ```php
-     * getValidationModel() {
-     *     return (object) [
-     *         'tag' => new Relationship(
-     *             Tag::class,
-     *             Relationship::TYPE_TO_MANY,
-     *             null,
-     *             [Tag::class, 'getRelationshipByArticle']
-     *         );
-     *     ];
-     * }
-     * ```
      * @example
      * ```php
      * getValidationModel() {
@@ -136,34 +110,27 @@ class Relationship
         \stdClass $callbacks = null,
         int $flags = Relationship::FLAG_DEFAULT
     ) {
-        if ($callbacks !== null) {
-            if (is_object($callbacks)) {
-                foreach ($callbacks as $method => $callback) {
-                    if (!in_array($method, Phramework::$methodWhitelist)) {
-                        throw new \Exception(sprintf(
-                            'Not allowed method "%s" for callbacks',
-                            $method
-                        ));
-                    }
 
-                    if (!is_callable($callback)) {
-                        throw new \Exception(sprintf(
-                            'callbacks for method "%s" MUST be callable',
-                            $method
-                        ));
-                    }
+        $this->callbacks = new \stdClass();
+
+        if ($callbacks !== null) {
+            foreach ($callbacks as $method => $callback) {
+                if (!is_string($method)) {
+                    throw new \LogicException(sprintf(
+                        'callback method "%s" must be string',
+                        $method
+                    ));
                 }
 
-                $this->callbacks = $callbacks;
-            } elseif (is_callable($callbacks)) {
-                $this->callbacks = (object) [
-                    Phramework::METHOD_GET => $callbacks
-                ];
-            } else {
-                throw new \Exception('callbacks MUST be callable');
+                if (!is_callable($callback)) {
+                    throw new \LogicException(sprintf(
+                        'callback for method "%s" must be a callable',
+                        $method
+                    ));
+                }
             }
-        } else {
-            $this->callbacks = new \stdClass();
+
+            $this->callbacks = $callbacks;
         }
 
         $this->model                = $model;

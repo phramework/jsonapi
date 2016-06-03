@@ -17,17 +17,17 @@
 namespace Phramework\JSONAPI\APP\Models\Administrator;
 
 use \Phramework\Database\Database;
-use Phramework\JSONAPI\Fields;
-use Phramework\JSONAPI\Filter;
-use Phramework\JSONAPI\IDirective;
+use Phramework\JSONAPI\Directive\Fields;
+use Phramework\JSONAPI\Directive\Filter;
+use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\InternalModel;
-use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\ResourceModelTrait;
-use Phramework\JSONAPI\Sort;
+use Phramework\JSONAPI\Directive\Sort;
 use \Phramework\Validate\ArrayValidator;
 use \Phramework\Validate\ObjectValidator;
 use \Phramework\Validate\StringValidator;

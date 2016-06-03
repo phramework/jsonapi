@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI\Controller;
 
 use Phramework\Models\Request;
-use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Directive\Fields;
 use Phramework\Exceptions\RequestException;
 
 /**

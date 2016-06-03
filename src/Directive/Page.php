@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\Source\Parameter;
+use Phramework\JSONAPI\InternalModel;
 use Phramework\Validate\UnsignedIntegerValidator;
 
 /**
@@ -27,9 +28,8 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class Page implements \JsonSerializable, IDirective
+class Page extends Directive implements \JsonSerializable
 {
-
     /**
      * @var int|null
      */
@@ -55,7 +55,7 @@ class Page implements \JsonSerializable, IDirective
      * @throws IncorrectParameterException When limit exceeds model's maximum page limit
      * @uses InternalModel::getMaxPageLimit
      */
-    public function validate(InternalModel $model)
+    public function validate(InternalModel $model) : bool
     {
         if ($this->limit !== null) {
             (new UnsignedIntegerValidator(
@@ -65,6 +65,8 @@ class Page implements \JsonSerializable, IDirective
                 ->setSource(new Parameter('page[limit]'))
                 ->parse($this->limit);
         }
+
+        return true;
     }
 
     /**

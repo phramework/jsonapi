@@ -18,7 +18,7 @@
 namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\RequestException;
-use Phramework\JSONAPI\Fields;
+use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;

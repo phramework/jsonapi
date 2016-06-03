@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Directive;
 
 use Exception;
 use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
+use Phramework\JSONAPI\InternalModel;
 use Phramework\Util\Util;
 
 /**
@@ -29,7 +30,7 @@ use Phramework\Util\Util;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class Fields implements IDirective
+class Fields extends Directive
 {
     /**
      * @var \stdClass
@@ -115,8 +116,10 @@ class Fields implements IDirective
      * @param InternalModel $model
      * @throws \Exception
      */
-    public function validate(InternalModel $model)
+    public function validate(InternalModel $model) : bool
     {
+        //todo
+        return true;
     }
 
     /**

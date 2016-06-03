@@ -2,6 +2,11 @@
 
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\Directive\Filter;
+use Phramework\JSONAPI\Directive\FilterAttribute;
+use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\Directive\Page;
+use Phramework\JSONAPI\Directive\Sort;
 use Phramework\Models\Operator;
 
 /**
@@ -186,7 +191,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
             {
                 $model = (new InternalModel('user'))
                     ->setGet(
-                        function (IDirective ...$directives) use (&$model) {
+                        function (Directive ...$directives) use (&$model) {
 
                             $definedPassed = new \stdClass();
 

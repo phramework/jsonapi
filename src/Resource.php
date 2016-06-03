@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  */
 namespace Phramework\JSONAPI;
 
+use Directive\Model\Directives;
 use Phramework\Phramework;
 use Phramework\Util\Util;
 
@@ -133,11 +134,19 @@ class Resource extends \stdClass implements \JsonSerializable
         ));
     }
 
+    /**
+     * @param (array|\stdClass)[] $records
+     * @param InternalModel       $model
+     * @param IDirective[]        $directives
+     * @param int                 $flags
+     * @return array
+     * @throws \Exception
+     */
     public static function parseFromRecords(
-        $records,
-        $modelClass,
-        Fields $fields = null,
-        $flags = Resource::PARSE_DEFAULT
+        array $records,
+        InternalModel $model,
+        array $directives = [],
+        int $flags = Resource::PARSE_DEFAULT
     ) {
         if (empty($records)) {
             return [];
@@ -148,7 +157,12 @@ class Resource extends \stdClass implements \JsonSerializable
 
         foreach ($records as $record) {
             //Parse resource from record
-            $resource = static::parseFromRecord($record, $modelClass, $fields, $flags);
+            $resource = static::parseFromRecord(
+                $record,
+                $model,
+                $directives,
+                $flags)
+            ;
 
             if (!empty($resource)) {
                 //Push to collection
@@ -160,10 +174,10 @@ class Resource extends \stdClass implements \JsonSerializable
     }
 
     /**
-     * @param array|object $record
-     * @param string       $model
-     * @param Fields|null  $fields
-     * @param $flags
+     * @param array|\stdClass $record
+     * @param InternalModel   $model
+     * @param IDirective[]    $directives
+     * @param int $flags
      * @return Resource|null
      * @throws \Exception
      * @example
@@ -182,8 +196,8 @@ class Resource extends \stdClass implements \JsonSerializable
     public static function parseFromRecord(
         $record,
         InternalModel $model,
-        Fields $fields = null,
-        $flags = Resource::PARSE_DEFAULT
+        array $directives = [],
+        int $flags = Resource::PARSE_DEFAULT
     ) {
         /*if (!is_subclass_of($model, Model::class)) {
             throw new \Exception(sprintf(
@@ -196,16 +210,17 @@ class Resource extends \stdClass implements \JsonSerializable
             return null;
         }
 
+        //Work with objects
+        if (!is_object($record) && is_array($record)) {
+            $record = (object) $record;
+        }
+
         $flagAttributes    = ($flags & Resource::PARSE_ATTRIBUTES) != 0;
         $flagLinks         = ($flags & Resource::PARSE_LINKS) != 0;
         $flagRelationships = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
         $flagRelationshipLinks       = ($flags & Resource::PARSE_RELATIONSHIP_LINKS) != 0;
         $flagRelationshipData        = ($flags & Resource::PARSE_RELATIONSHIP_DATA) != 0;
 
-        //Work with objects
-        if (!is_object($record) && is_array($record)) {
-            $record = (object) $record;
-        }
 
         $idAttribute = $model->getIdAttribute();
 
@@ -286,15 +301,16 @@ class Resource extends \stdClass implements \JsonSerializable
                         )
                     ];
                 }*/
-                $relationshipFlagData     = ($relationshipObject->flags & Relationship::FLAG_DATA) != 0;
 
-                $relationshipModelClass   = $relationshipObject->modelClass;
-                $relationshipType         = $relationshipObject->type;
-                $recordDataAttribute      = $relationshipObject->recordDataAttribute;
+                $relationshipFlagData = ($relationshipObject->flags & Relationship::FLAG_DATA) != 0;
 
-                $relationshipResourceType = $relationshipModelClass->getResourceType();
+                $relationshipModel   = $relationshipObject->modelClass;
+                $relationshipType    = $relationshipObject->type;
+                $recordDataAttribute = $relationshipObject->recordDataAttribute;
 
-                //todo Define callback to fetch data
+                $relationshipResourceType = $relationshipModel->getResourceType();
+
+                //todo Define callback signature to fetch data
                 /**
                  * @return string[]|RelationshipResource[]
                  */
@@ -302,13 +318,12 @@ class Resource extends \stdClass implements \JsonSerializable
                     $relationshipObject,
                     $resource,
                     $relationshipKey,
-                    $fields,
+                    $directives,
                     $flags
                 ) {
-                    return call_user_func(
-                        $relationshipObject->callbacks->{Phramework::METHOD_GET},
+                    return $relationshipObject->callbacks->{Phramework::METHOD_GET}(
                         $resource->id,
-                        $fields,
+                        $directives,
                         $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
                     );
                 };
@@ -430,7 +445,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @return string
      */
-    public function getId()
+    public function getId() : string
     {
         return $this->id;
     }
@@ -438,7 +453,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @return string
      */
-    public function getType()
+    public function getType() : string
     {
         return $this->type;
     }
@@ -446,7 +461,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @return \stdClass
      */
-    public function getLinks()
+    public function getLinks() : \stdClass
     {
         return $this->links;
     }
@@ -454,7 +469,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @return \stdClass
      */
-    public function getAttributes()
+    public function getAttributes() : \stdClass
     {
         return $this->attributes;
     }
@@ -462,7 +477,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @return \stdClass
      */
-    public function getPrivateAttributes()
+    public function getPrivateAttributes() : \stdClass
     {
         return $this->{'private-attributes'};
     }
@@ -470,7 +485,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @return \stdClass
      */
-    public function getRelationships()
+    public function getRelationships() : \stdClass
     {
         return $this->relationships;
     }
@@ -478,7 +493,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @return \stdClass
      */
-    public function getData()
+    public function getData() : \stdClass
     {
         return $this->data;
     }

@@ -18,10 +18,11 @@ namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\DataSource\DatabaseDataSource;
 use Phramework\JSONAPI\DataSource\IDataSource;
+use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Model\DataSource;
 use Phramework\JSONAPI\Model\Directives;
 use Phramework\JSONAPI\Model\Relationships;
-use Phramework\JSONAPI\Model\Settings;
+use Phramework\JSONAPI\Model\Variable;
 use Phramework\Validate\ObjectValidator;
 
 /**
@@ -38,7 +39,7 @@ use Phramework\Validate\ObjectValidator;
 class InternalModel
 {
     use Directives;
-    use Settings;
+    use Variable;
     use DataSource;
     use Relationships;
     
@@ -80,7 +81,7 @@ class InternalModel
         $this->relationships        = new \stdClass();
         $this->filterableAttributes = new \stdClass();
 
-        $this->settings = new \stdClass();
+        $this->variables = new \stdClass();
 
 
         //Set default prepareRecords method as an empty method
@@ -199,26 +200,26 @@ class InternalModel
 
     public function collection(
         array $records = [],
-        array $directives = null,
+        array $directives = [],
         $flags = Resource::PARSE_DEFAULT
     ) {
         return Resource::parseFromRecords(
             $records,
             $this,
-            null,//$fields,
+            $directives,
             $flags
         );
     }
 
     public function resource(
         $record,
-        array $directives = null,
+        array $directives = [],
         $flags = Resource::PARSE_DEFAULT
     ) {
         return Resource::parseFromRecord(
             $record,
             $this,
-            null,//$fields,
+            $directives,
             $flags
         );
     }

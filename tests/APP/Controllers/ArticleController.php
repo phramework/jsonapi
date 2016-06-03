@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,112 +17,20 @@
 namespace Phramework\JSONAPI\APP\Controllers;
 
 use \Phramework\Phramework;
-use \Phramework\JSONAPI\APP\Models\Article;
+use Phramework\JSONAPI\APP\Models\Article;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class ArticleController extends \Phramework\JSONAPI\Controller
+class ArticleController
 {
-    public static function GET($params, $method, $headers)
+    use GetById;
+    
+    public static function GET()
     {
-        return self::handleGET(
-            $params,
-            Article::class,
-            [],
-            [],
-            true
-        );
-    }
-
-    public static function GETById($params, $method, $headers, $id)
-    {
-        $id = \Phramework\Validate\UnsignedIntegerValidator::parseStatic($id);
-
-        return self::handleGETById(
-            $params,
-            $id,
-            Article::class,
-            [],
-            []
-        );
-    }
-
-    public static function POST($params, $method, $headers)
-    {
-        return self::handlePOST(
-            $params,
-            $method,
-            $headers,
-            Article::class,
-            [],
-            [],
-            [],
-            function ($ids) {
-                self::viewData(new \stdClass());
-            }
-        );
-    }
-
-    public static function PATCH($params, $method, $headers, $id)
-    {
-        $id = \Phramework\Validate\UnsignedIntegerValidator::parseStatic($id);
-
-        return self::handlePATCH(
-            $params,
-            $method,
-            $headers,
-            $id,
-            Article::class,
-            [],
-            [
-                function (
-                    $id,
-                    $requestAttributes,
-                    $requestRelationships,
-                    $attributes,
-                    $parsedRelationshipAttributes
-                ) {
-                }
-            ]
-        );
-    }
-
-    public static function DELETE($params, $method, $headers, $id)
-    {
-        $id = \Phramework\Validate\UnsignedIntegerValidator::parseStatic($id);
-
-        return self::handleDELETE(
-            $params,
-            $method,
-            $headers,
-            $id,
-            Article::class
-        );
-    }
-
-    /**
-     * Manage resource's relationships
-     * `/article/{id}/relationships/{relationship}` handler
-     * @param  array  $params  Request parameters
-     * @param  string $method  Request method
-     * @param  array $headers  Request headers
-     */
-    public static function byIdRelationships($params, $method, $headers, $id, $relationship)
-    {
-        $id = \Phramework\Validate\UnsignedIntegerValidator::parseStatic($id);
-
-        parent::handleByIdRelationships(
-            $params,
-            $method,
-            $headers,
-            $id,
-            $relationship,
-            Article::class,
-            [\Phramework\Phramework::METHOD_GET],
-            [],
-            []
-        );
+        self::handleGetById(
+                   
+        );    
     }
 }

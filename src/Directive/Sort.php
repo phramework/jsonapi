@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\RequestException;
+use Phramework\JSONAPI\InternalModel;
 
 /**
  * Sort helper methods
@@ -24,10 +25,8 @@ use Phramework\Exceptions\RequestException;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @todo allow multiple values for sort
- * @property-read bool   $ascending
- * @property-read string $attribute
  */
-class Sort implements IDirective
+class Sort extends Directive
 {
     /**
      * @var bool
@@ -38,12 +37,6 @@ class Sort implements IDirective
      * @var string
      */
     protected $attribute;
-
-    /**
-     * @var
-     * @deprecated
-     */
-    protected $default;
 
     /**
      * Sort constructor.
@@ -58,11 +51,13 @@ class Sort implements IDirective
     }
 
     /**
-     * @param string $model
+     * @param InternalModel $model
      * @todo implement
      */
-    public function validate(InternalModel $model)
+    public function validate(InternalModel $model) : bool
     {
+        //todo
+        return true;
     }
 
     /**
@@ -81,9 +76,7 @@ class Sort implements IDirective
      */
     public static function parseFromRequest(\stdClass $parameters, InternalModel $model)
     {
-        $sortableAttributes = $model::getSortable();
-
-        $sort = $model::getSort();
+        $sortableAttributes = $model->getSortableAttributes();
 
         //Don't accept arrays
 
@@ -109,11 +102,13 @@ class Sort implements IDirective
             );
 
             if (!!preg_match($validateExpression, $parameters->sort, $matches)) {
-                $sort->attribute = $matches['attribute'];
-                $sort->ascending = (
-                isset($matches['descending']) && $matches['descending']
-                    ? false
-                    : true
+                return new Sort(
+                    $matches['attribute'],
+                    (
+                        isset($matches['descending']) && $matches['descending']
+                        ? false
+                        : true
+                    )
                 );
             } else {
                 throw new RequestException(
@@ -122,27 +117,7 @@ class Sort implements IDirective
             }
         }
 
-        return $sort;
-    }
-
-    /**
-     * @param string $name
-     * @return mixed
-     * @throws \Exception
-     */
-    public function __get($name)
-    {
-        switch ($name) {
-            case 'ascending':
-                return $this->ascending;
-            case 'attribute':
-                return $this->attribute;
-        }
-
-        throw new \Exception(sprintf(
-            'Undefined property via __get(): %s',
-            $name
-        ));
+        return null;
     }
 
     /**

@@ -25,7 +25,7 @@ interface IDataSource
 {
     public function get(
         array $directives
-    );
+    ) : array;
     
     public function post(
         \stdClass $attributes,

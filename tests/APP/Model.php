@@ -8,10 +8,10 @@
 
 namespace Phramework\JSONAPI\APP;
 
-use Phramework\JSONAPI\Filter;
-use Phramework\JSONAPI\Sort;
-use Phramework\JSONAPI\Fields;
-use Phramework\JSONAPI\Page;
+use Phramework\JSONAPI\Directive\Filter;
+use Phramework\JSONAPI\Directive\Sort;
+use Phramework\JSONAPI\Directive\Fields;
+use Phramework\JSONAPI\Directive\Page;
 
 class Model extends \Phramework\JSONAPI\Model
 {

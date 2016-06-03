@@ -21,48 +21,48 @@ namespace Phramework\JSONAPI\Model;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-trait Settings
+trait Variable
 {
     /**
      * NOTE needs to be initialized from classes that use it
      * @var \stdClass
      */
-    protected $settings;
+    protected $variables;
 
     /**
-     * Set value of a setting
+     * Set value of a variable
      * @param string $key
      * @param mixed  $value
      * @return $this
      */
-    public function addSetting(string $key, $value) {
-        $this->settings->{$key} = $value;
+    public function addVariable(string $key, $value) {
+        $this->variables->{$key} = $value;
 
         return $this;
     }
 
     /**
-     * Get value of a setting,
+     * Get value of a variable,
      * if it's not set value of the $default argument will be returned
      * @param string $key
      * @param null   $default
      * @return mixed
      */
-    public function getSetting(string $key, $default = null) {
-        if (property_exists($this->settings, $key)) {
-            return $this->settings->{$key};
+    public function getVariable(string $key, $default = null) {
+        if (property_exists($this->variables, $key)) {
+            return $this->variables->{$key};
         }
 
         return $default;
     }
 
     /**
-     * Check if a setting key is set
+     * Check if a variable key is set
      * @param string $key
      * @return bool
      */
-    public function issetSetting(string $key) : bool
+    public function issetVariable(string $key) : bool
     {
-        return property_exists($this->settings, $key);
+        return property_exists($this->variables, $key);
     }
 }

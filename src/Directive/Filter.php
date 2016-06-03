@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI;
+namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
+use Phramework\JSONAPI\InternalModel;
 use Phramework\Models\Operator;
 use Phramework\Util\Util;
 use Phramework\Validate\StringValidator;
@@ -30,12 +31,8 @@ use Phramework\Validate\UnsignedIntegerValidator;
  * @since 1.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @property-read string[]          $primary
- * @property-read object            $relationships
- * @property-read FilterAttribute[]|FilterJSONAttribute[] $attributes
- * Attribute filters of type `FilterAttribute` and `FilterJSONAttribute`
  */
-class Filter implements IDirective
+class Filter extends Directive
 {
     /**
      * @var string[]
@@ -150,7 +147,7 @@ class Filter implements IDirective
      * ```
      * @todo add relationship idAttribute validators
      */
-    public function validate(InternalModel $model)
+    public function validate(InternalModel $model) : bool
     {
         $idAttribute     = $model->getIdAttribute();
         $filterValidator = $model->getFilterValidator();
@@ -305,6 +302,8 @@ class Filter implements IDirective
                 }
             }
         }
+
+        return true;
     }
 
     /**
@@ -491,26 +490,9 @@ class Filter implements IDirective
     }
 
     /**
-     * @param string $name
-     * @return mixed
-     * @throws \Exception
-     */
-    public function __get($name)
-    {
-        if (in_array($name, ['primary', 'relationships', 'attributes'])) {
-            return $this->{$name};
-        }
-
-        throw new \Exception(sprintf(
-            'Undefined property via __get(): %s',
-            $name
-        ));
-    }
-
-    /**
      * @return string[]
      */
-    public function getPrimary() : array
+    public function getPrimary()
     {
         return $this->primary;
     }

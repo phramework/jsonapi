@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2015 - 2016 Xenofon Spafaridis
+ * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  */
 namespace Phramework\JSONAPI;
 
-use Phramework\JSONAPI\APP\Models\Tag;
-use Phramework\JSONAPI\Relationship;
 use Phramework\Phramework;
 
 /**
@@ -61,28 +59,22 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct2()
-    {
-        new Relationship(
-            $this->model,
-            Relationship::TYPE_TO_ONE,
-            'tag-id',
-            (object) [function () {}] //GET is default
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     */
     public function testConstruct3()
     {
-        new Relationship(
+        $relationship = new Relationship(
             $this->model,
             Relationship::TYPE_TO_ONE,
             'tag-id',
             (object) [
                 Phramework::METHOD_GET => function () {}
             ]
+        );
+
+        $this->assertEquals(
+            (object) [
+                Phramework::METHOD_GET => function () {}
+            ],
+            $relationship->getCallbacks()
         );
     }
 
@@ -97,6 +89,20 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             Relationship::TYPE_TO_ONE,
             null,
             (object) ['inv'] //Not callable
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @expectedException \Exception
+     */
+    public function testConstructFailureCallbackMethodUnset()
+    {
+        new Relationship(
+            $this->model,
+            Relationship::TYPE_TO_ONE,
+            null,
+            (object) [function() {}] //Not callable
         );
     }
 

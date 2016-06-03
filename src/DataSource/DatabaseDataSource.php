@@ -21,15 +21,14 @@ use Phramework\Database\Operations\Create;
 use Phramework\Database\Operations\Delete;
 use Phramework\Database\Operations\Update;
 use Phramework\Exceptions\NotImplementedException;
-use Phramework\Exceptions\RequestException;
-use Phramework\JSONAPI\Fields;
-use Phramework\JSONAPI\Filter;
-use Phramework\JSONAPI\FilterAttribute;
-use Phramework\JSONAPI\IDirective;
+use Phramework\JSONAPI\Directive\Fields;
+use Phramework\JSONAPI\Directive\Filter;
+use Phramework\JSONAPI\Directive\FilterAttribute;
+use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\Directive\Sort;
+use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\InternalModel;
-use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Relationship;
-use Phramework\JSONAPI\Sort;
 use Phramework\Models\Operator;
 
 /**
@@ -54,12 +53,12 @@ class DatabaseDataSource implements IDataSource
     }
 
     /**
-     * @param IDirective[] $directives
+     * @param Directive[] $directives
      * @return array
      */
     public function get(
         array $directives
-    ) {
+    ) : array {
         $this->requireTableSetting();
 
         foreach ($directives as $directive) {
@@ -95,7 +94,7 @@ class DatabaseDataSource implements IDataSource
         return Create::create(
             $attributes,
             $this->requireTableSetting(),
-            $this->model->getSetting('schema', null),
+            $this->model->getVariable('schema', null),
             $return
         );
     }
@@ -108,7 +107,7 @@ class DatabaseDataSource implements IDataSource
             $id,
             (array) $attributes,
             $this->requireTableSetting(),
-            $this->model->getSetting('schema', null)
+            $this->model->getVariable('schema', null)
         );
     }
 
@@ -124,7 +123,7 @@ class DatabaseDataSource implements IDataSource
                 : []
             ),
             $this->requireTableSetting(),
-            $this->model->getSetting('schema', null)
+            $this->model->getVariable('schema', null)
         );
     }
 
@@ -133,7 +132,7 @@ class DatabaseDataSource implements IDataSource
      * @return string
      */
     private function requireTableSetting() : string {
-        $table = $this->model->getSetting('table');
+        $table = $this->model->getVariable('table');
 
         if ($table === null) {
             throw new \LogicException(sprintf(
@@ -153,7 +152,7 @@ class DatabaseDataSource implements IDataSource
         $model = $this->model;
 
         //Replace table is setting is set
-        if (($table = $model->getSetting('table', null)) !== null) {
+        if (($table = $model->getVariable('table', null)) !== null) {
             $query = str_replace(
                 '{{table}}',
                 $table,
@@ -325,7 +324,7 @@ class DatabaseDataSource implements IDataSource
         if ($filter !== null) {
             $filter->validate($model = $this->model);
 
-            if (count($filter->primary)) {
+            if (count($filter->getPrimary())) {
                 $additionalQuery[] = sprintf(
                     '%s "%s" IN (%s)', //'%s "%s"."%s" IN (%s)',
                     ($hasWhere ? 'AND' : 'WHERE'),
@@ -344,7 +343,7 @@ class DatabaseDataSource implements IDataSource
 
             //Apply filters for relationships
             foreach ($filter->relationships as $relationshipKey => $relationshipFilterValue) {
-                if (!static::relationshipExists($relationshipKey)) {
+                if (!$this->model->issetRelationship($relationshipKey)) {
                     throw new \Exception(sprintf(
                         'Relationship "%s" not found',
                         $relationshipKey
@@ -379,14 +378,14 @@ class DatabaseDataSource implements IDataSource
             }
 
             //Apply filters for attributes (Not JSON Attributes)
-            foreach ($filter->attributes as $filterValue) {
+            foreach ($filter->getAttributes() as $filterValue) {
                 if (get_class($filterValue) != FilterAttribute::class) {
                     continue;
                 }
 
-                $attribute = $filterValue->attribute;
-                $operator = $filterValue->operator;
-                $operand = $filterValue->operand;
+                $attribute = $filterValue->getAttribute();
+                $operator  = $filterValue->getOperator();
+                $operand   = $filterValue->getOperand();
 
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalQuery[] = sprintf(
@@ -493,15 +492,15 @@ class DatabaseDataSource implements IDataSource
             }
 
             //Apply filters only for JSON attributes
-            foreach ($filter->attributes as $filterValue) {
+            foreach ($filter->getAttributes() as $filterValue) {
                 if (!($filterValue instanceof FilterJSONAttribute)) {
                     continue;
                 }
 
-                $attribute = $filterValue->attribute;
+                $attribute = $filterValue->getAttribute();
                 $key = $filterValue->key;
-                $operator = $filterValue->operator;
-                $operand = $filterValue->operand;
+                $operator = $filterValue->getOperator();
+                $operand = $filterValue->getOperand();
 
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalQuery[] = sprintf(
@@ -558,7 +557,7 @@ class DatabaseDataSource implements IDataSource
 
             $attributes =  array_merge(
                 $fields->get($type),
-                [static::getIdAttribute()] //[static::getTable() . '.' . static::getIdAttribute()]
+                [$this->model->getIdAttribute()] //[static::getTable() . '.' . static::getIdAttribute()]
             );
         } else {
             $attributes = $fields->get($type);
@@ -567,7 +566,7 @@ class DatabaseDataSource implements IDataSource
                 //Get field attributes for this type and force id attribute
                 $attributes = array_merge(
                     $fields->get($type),
-                    [static::getIdAttribute()]
+                    [$this->model->getIdAttribute()]
                 );
             }
         }
