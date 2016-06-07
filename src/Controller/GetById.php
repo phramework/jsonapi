@@ -23,6 +23,7 @@ use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\InternalModel;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -34,14 +35,14 @@ trait GetById
     use Controller;
 
     /**
-     * @param \stdClass                         $request
-     * @param string                            $id
-     * @param InternalModel                     $model
+     * @param ServerRequestInterface $request
+     * @param string                 $id
+     * @param InternalModel          $model
      * @param  Directive[] $directives
      * @throws \Phramework\Exceptions\NotFoundException
      */
     public static function handleGetById(
-        \stdClass $request,
+        ServerRequestInterface $request,
         string $id,
         InternalModel $model,
         array $directives

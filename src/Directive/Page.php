@@ -21,6 +21,7 @@ use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\Source\Parameter;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\Validate\UnsignedIntegerValidator;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Page directive, allows pagination
@@ -70,43 +71,44 @@ class Page extends Directive implements \JsonSerializable
     }
 
     /**
-     * @param \stdClass $parameters Request parameters
-     * @return Page|null
-     * @throws IncorrectParameterException When limit or offset are incorrect
-     * @throws IncorrectParameterException When limit exceeds model's maximum page limit
+     * @param ServerRequestInterface $request
+     * @param InternalModel          $model
+     * @return null|Page
+     * @throws \Exception|null|\Phramework\Validate\Result\Exception
      * @todo use request instead of parameters
      * @uses InternalModel::getMaxPageLimit
      */
     public static function parseFromRequest(
-        \stdClass $parameters,
+        ServerRequestInterface $request,
         InternalModel $model
     ) {
-        if (!isset($parameters->page)) {
+        $param = $request->getQueryParams()['page'] ?? null;
+
+        if (empty($param)) {
             return null;
         }
 
         $limit  = null;
-
         $offset = 0;
 
         //Work with objects
-        if (is_array($parameters->page)) {
-            $parameters->page = (object) $parameters->page;
-        }
+        /*if (is_array($request->page)) {
+            $request->page = (object) $request->page;
+        }*/
 
-        if (isset($parameters->page->limit)) {
+        if (isset($param['limit'])) {
             $limit = (new UnsignedIntegerValidator(
                 1,
                 $model->getMaxPageLimit()
             ))
                 ->setSource(new Parameter('page[limit]'))
-                ->parse($parameters->page->limit);
+                ->parse($param['limit']);
         }
 
-        if (isset($parameters->page->offset)) {
+        if (isset($param['offset'])) {
             $offset = (new UnsignedIntegerValidator())
                 ->setSource(new Parameter('page[offset]'))
-                ->parse($parameters->page->offset);
+                ->parse($param['offset']);
         }
 
         return new Page($limit, $offset);

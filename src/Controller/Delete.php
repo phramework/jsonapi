@@ -27,13 +27,13 @@ use Psr\Http\Message\ServerRequestInterface;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  */
-trait Patch
+trait Delete
 {
     use Controller;
     use RequestBodyQueue;
 
     //prototype
-    public static function handlePatch(
+    public static function handleDelete(
         ServerRequestInterface $request,
         InternalModel $model,
         string $id,
@@ -50,7 +50,7 @@ trait Patch
 
         //prefer PATCH validation model
         $validationModel = $model->getValidationModel(
-            'PATCH'
+            'DELETE'
         );
 
         //check if exists

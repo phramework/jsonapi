@@ -21,6 +21,7 @@ use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\InternalModel;
+use Zend\Diactoros\ServerRequest;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Directive\Fields
@@ -39,6 +40,11 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      */
     protected $model;
 
+    /**
+     * @var ServerRequest
+     */
+    protected $request;
+
     public function setUp()
     {
         $this->fields = new Fields();
@@ -48,6 +54,17 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
                 'title',
                 'updated'
             );
+
+        $this->request = new ServerRequest(
+            [],
+            [],
+            null,
+            null,
+            'php://input',
+            [],
+            [],
+            []
+        );
     }
 
     /**
@@ -174,7 +191,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     public function testParseFromRequestEmpty()
     {
         $fields = Fields::parseFromRequest(
-            (object) [],
+            $this->request->withQueryParams([]),
             $this->model
         );
 
@@ -186,14 +203,12 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequest()
     {
-        $parameters = (object) [
-            'fields' => [
-                $this->model->getResourceType() => 'title, updated',
-            ]
-        ];
-
         $fields = Fields::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'fields' => [
+                    $this->model->getResourceType() => 'title, updated',
+                ]
+            ]),
             $this->model
         );
 
@@ -214,15 +229,11 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureTypeNotArrayOrObject()
     {
-
-        $parameters = (object) [
-            'fields' =>
-                'creator-user_id'
-
-        ];
-
         $fields = Fields::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'fields' =>
+                    'creator-user_id'
+            ]),
             $this->model
         );
     }
@@ -233,14 +244,12 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureTypeNotAssociativeArray()
     {
-        $parameters = (object) [
-            'fields' => [
-                'creator-user_id'
-            ]
-        ];
-
         $fields = Fields::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'fields' => [
+                    'creator-user_id'
+                ]
+            ]),
             $this->model
         );
     }
@@ -251,14 +260,12 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureNotAllowed()
     {
-        $parameters = (object) [
-            'fields' => [
-                $this->model->getResourceType() => 'creator-user_id'
-            ]
-        ];
-
         $fields = Fields::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'fields' => [
+                    $this->model->getResourceType() => 'creator-user_id'
+                ]
+            ]),
             $this->model
         );
     }
@@ -269,14 +276,12 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureResourceValueNotStringValue()
     {
-        $parameters = (object) [
-            'fields' => [
-                $this->model->getResourceType() => ['title, updated']
-            ]
-        ];
-
         Fields::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'fields' => [
+                    $this->model->getResourceType() => ['title, updated']
+                ]
+            ]),
             $this->model
         );
     }
@@ -287,14 +292,12 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureNotAllowedResourceType()
     {
-        $parameters = (object) [
-            'fields' => [
-                'offset' => 'title'
-            ]
-        ];
-
         Fields::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'fields' => [
+                    'offset' => 'title'
+                ]
+            ]),
             $this->model
         );
     }

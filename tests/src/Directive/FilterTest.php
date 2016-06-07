@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Directive;
 use Directive\APP\Bootstrap;
 use Directive\APP\Models\Article;
 use Directive\APP\Models\Tag;
+use Phramework\Exceptions\Exception;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\ValidationModel;
@@ -28,6 +29,7 @@ use Phramework\Validate\BooleanValidator;
 use Phramework\Validate\ObjectValidator;
 use Phramework\Validate\StringValidator;
 use Phramework\Validate\UnsignedIntegerValidator;
+use Zend\Diactoros\ServerRequest;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Directive\Filter
@@ -40,7 +42,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      * @var InternalModel
      */
     protected $articleModel;
-    
+
+    /**
+     * @var ServerRequest
+     */
+    protected $request;
+
     public function setUp()
     {
         $this->articleModel = (new InternalModel('article'))
@@ -89,12 +96,23 @@ class FilterTest extends \PHPUnit_Framework_TestCase
                     Relationship::TYPE_TO_MANY,
                     null,
                     (object) [
-                        Phramework::METHOD_GET   => function () {},
-                        Phramework::METHOD_POST  => function () {},
-                        Phramework::METHOD_PATCH => function () {}
+                        'GET'   => function () {},
+                        'POST'  => function () {},
+                        'PATCH' => function () {}
                     ]
                 )
             ]);
+
+        $this->request = new ServerRequest(
+            [],
+            [],
+            null,
+            null,
+            'php://input',
+            [],
+            [],
+            []
+        );
     }
 
     /**
@@ -155,14 +173,13 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestPrimaryUsingIntval()
     {
-        $parameters = (object) [
-            'filter' => (object) [
-                $this->articleModel->getResourceType() => 4
-            ]
-        ];
 
         $filter = Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    $this->articleModel->getResourceType() => 4
+                ]
+            ]),
             $this->articleModel
         );
 
@@ -176,14 +193,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestRelationshipEmpty()
     {
-        $parameters = (object) [
-            'filter' => (object) [
-                'tag' => Operator::OPERATOR_EMPTY
-            ]
-        ];
-
         $filter = Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'tag' => Operator::OPERATOR_EMPTY
+                ]
+            ]),
             $this->articleModel
         );
 
@@ -201,7 +216,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
     public function testParseFromRequestEmpty()
     {
         $filter = Filter::parseFromRequest(
-            (object) [],
+            $this->request->withQueryParams([]),
             $this->articleModel
         );
 
@@ -213,23 +228,21 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequest()
     {
-        $parameters = (object) [
-            'filter' => [
-                'article'   => '1, 2',
-                'tag'       => '4, 5, 7',
-                'creator'   => '1',
-                'status'    => [true, false],
-                'title'     => [
-                    Operator::OPERATOR_LIKE . 'blog',
-                    Operator::OPERATOR_NOT_LIKE . 'welcome'
-                ],
-                'updated'   => Operator::OPERATOR_NOT_ISNULL,
-                'meta.keywords' => 'blog'
-            ]
-         ];
-
         $filter = Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'article'   => '1, 2',
+                    'tag'       => '4, 5, 7',
+                    'creator'   => '1',
+                    'status'    => [true, false],
+                    'title'     => [
+                        Operator::OPERATOR_LIKE . 'blog',
+                        Operator::OPERATOR_NOT_LIKE . 'welcome'
+                    ],
+                    'updated'   => Operator::OPERATOR_NOT_ISNULL,
+                    'meta.keywords' => 'blog'
+                ]
+            ]),
             $this->articleModel
         );
 
@@ -312,14 +325,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailurePrimaryNotString()
     {
-        $parameters = (object) [
-            'filter' => [
-                'article'   => [1, 2]
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'article'   => [1, 2]
+                ]
+            ]),
             $this->articleModel
         );
     }
@@ -331,14 +342,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailurePrimaryToParse()
     {
-        $parameters = (object) [
-            'filter' => [
-                $this->articleModel->getResourceType() => 10000
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    $this->articleModel->getResourceType() => 10000
+                ]
+            ]),
             $this->articleModel
         )->validate($this->articleModel);
     }
@@ -349,14 +358,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureRelationshipNotString()
     {
-        $parameters = (object) [
-            'filter' => [
-                'tag'   => [1, 2]
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'tag'   => [1, 2]
+                ]
+            ]),
             $this->articleModel
         )->validate($this->articleModel);
     }
@@ -367,32 +374,28 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureNotAllowedAttribute()
     {
-        $parameters = (object) [
-            'filter' => [
-                'not-found'   => 1
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'not-found'   => 1
+                ]
+            ]),
             $this->articleModel
         )->validate($this->articleModel);
     }
 
     /**
      * @covers ::validate
-     * @expectedException Exception
+     * @expectedException \Exception
      */
     public function testParseFromRequestFailureAttributeWithoutValidator()
     {
-        $parameters = (object) [
-            'filter' => [
-                'no-validator'   => 1
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'no-validator'   => 1
+                ]
+            ]),
             $this->articleModel
         )->validate($this->articleModel);
     }
@@ -403,14 +406,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureAttributeIsArray()
     {
-        $parameters = (object) [
-            'filter' => [
-                'updated'   => [[Operator::OPERATOR_ISNULL]]
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'updated'   => [[Operator::OPERATOR_ISNULL]]
+                ]
+            ]),
             $this->articleModel
         );
     }
@@ -421,14 +422,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureAttributeToParse()
     {
-        $parameters = (object) [
-            'filter' => [
-                'updated'   => 'qwerty'
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'updated'   => 'qwerty'
+                ]
+            ]),
             $this->articleModel
         )->validate($this->articleModel);
     }
@@ -439,14 +438,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureAttributeNotAllowedOperator()
     {
-        $parameters = (object) [
-            'filter' => [
-                'status'   => Operator::OPERATOR_GREATER_EQUAL . '1'
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'status'   => Operator::OPERATOR_GREATER_EQUAL . '1'
+                ]
+            ]),
             $this->articleModel
         )->validate($this->articleModel);
     }
@@ -457,14 +454,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureAttributeNotAcceptingJSONOperator()
     {
-        $parameters = (object) [
-            'filter' => [
-                'status.ok'   => true
-            ]
-        ];
-
         Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'status.ok'   => true
+                ]
+            ]),
             $this->articleModel
         )->validate($this->articleModel);
     }
@@ -475,14 +470,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureAttributeUsingJSONPropertyValidator()
     {
-        $parameters = (object) [
-            'filter' => [
-                'meta.timestamp'   => 'xsadas'
-            ]
-        ];
-
         $filter = Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'meta.timestamp'   => 'xsadas'
+                ]
+            ]),
             $this->articleModel
         );
 
@@ -495,14 +488,12 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureAttributeJSONSecondLevel()
     {
-        $parameters = (object) [
-            'filter' => [
-                'meta.timestamp.time'   => 123456789
-            ]
-        ];
-
         $filter = Filter::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'filter' => [
+                    'meta.timestamp.time'   => 123456789
+                ]
+            ]),
             $this->articleModel
         );
 

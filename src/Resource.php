@@ -321,7 +321,7 @@ class Resource extends \stdClass implements \JsonSerializable
                     $directives,
                     $flags
                 ) {
-                    return $relationshipObject->callbacks->{Phramework::METHOD_GET}(
+                    return $relationshipObject->callbacks->{'GET'}(
                         $resource->id,
                         $directives,
                         $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
@@ -335,7 +335,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
                         if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
                             $relationshipEntryResource = $record->{$recordDataAttribute};
-                        } elseif (isset($relationshipObject->callbacks->{Phramework::METHOD_GET})) { //available from callback
+                        } elseif (isset($relationshipObject->callbacks->{'GET'})) { //available from callback
                             $relationshipEntryResource = $dataCallback();
                         }
 
@@ -367,7 +367,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
                         if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
                             $relationshipEntryResources = $record->{$recordDataAttribute};
-                        } elseif (isset($relationshipObject->callbacks->{Phramework::METHOD_GET})) { //available from callback
+                        } elseif (isset($relationshipObject->callbacks->{'GET'})) { //available from callback
                             $relationshipEntryResources = $dataCallback();
                         }
 

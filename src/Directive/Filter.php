@@ -25,6 +25,7 @@ use Phramework\Models\Operator;
 use Phramework\Util\Util;
 use Phramework\Validate\StringValidator;
 use Phramework\Validate\UnsignedIntegerValidator;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Filter helper methods
@@ -307,53 +308,24 @@ class Filter extends Directive
     }
 
     /**
-     * @param \stdClass $parameters Request parameters
-     * @param InternalModel    $model
-     * @return Filter|null
+     * @param ServerRequestInterface $request Request parameters
+     * @param InternalModel                    $model
+     * @return null|Filter
+     * @throws IncorrectParameterException
+     * @throws RequestException
      * @todo allow strings and integers as id
      * @todo Todo use filterValidation model for relationships
      * @todo allowed operator for JSON properties
-     * @example
-     * ```php
-     * $filter = Filter::parseFromParameters(
-     *     (object) [
-     *         'filter' => [
-     *             'article'   => '1, 2', //primary filter (parsed from URL's ?filter[article]=1, 2)
-     *             'tag'       => '4, 5,7', //relationship filter (parsed from URL's ?filter[tag]=4, 5,7)
-     *             'creator'   => '1', //relationship  filter(parsed from URL's ?filter[creator]=1)
-     *             'status'    => ['ENABLED', 'INACTIVE'], //multiple filters
-     *             'title'     => [
-     *                 Operator::OPERATOR_LIKE . 'blog',
-     *                 Operator::OPERATOR_NOT_LIKE . 'welcome'
-     *             ], //multiple filters on title (parsed from URL's ?filter[title][]=~~blog&filter[title][]=!~~welcome)
-     *             'updated'   => Operator::OPERATOR_NOT_ISNULL,
-     *             'meta.keywords' => 'blog' //JSON attribute filter
-     *         ]
-     *     ], //Request parameters object
-     *     Article::class
-     * );
-     * ```
-     * @example
-     * ```php
-     * $filter = Filter::parseFromParameters(
-     *     (object) [
-     *         'filter' => [
-     *             'tag'       => Operator::OPERATOR_EMPTY
-     *         ]
-     *     ],
-     *     Article::class
-     * );
-     * @throws RequestException
-     * @throws \Exception
-     * @throws IncorrectParametersException
      * @todo add support for operators of class in, parsing input using explode `,` (as array)
      * @todo fix definition for version 3.x
      */
     public static function parseFromRequest(
-        \stdClass $parameters,
+        ServerRequestInterface $request,
         InternalModel $model
     ) {
-        if (!isset($parameters->filter)) {
+        $param = $request->getQueryParams()['filter'] ?? null;
+
+        if (empty($param)) {
             return null;
         }
 
@@ -364,7 +336,7 @@ class Filter extends Directive
         $filterRelationships = new \stdClass();
         $filterAttributes    = [];
 
-        foreach ($parameters->filter as $filterKey => $filterValue) {
+        foreach ($param as $filterKey => $filterValue) {
             if ($filterKey === $model->getResourceType()) { //Filter primary data
                 //Check filter value type
                 if (!is_string($filterValue) && !is_int($filterValue)) {
@@ -462,7 +434,10 @@ class Filter extends Directive
      * );
      * ```
      */
-    public static function merge(Filter $first = null, Filter $second = null) {
+    public static function merge(
+        Filter $first = null,
+        Filter $second = null
+    ) {
         //Initialize if null
         if ($first === null) {
             $first = new Filter();

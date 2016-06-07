@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI\Directive;
 
 use Phramework\JSONAPI\InternalModel;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -69,18 +70,20 @@ class IncludeResources extends Directive
      * todo use include by default class defined in mode's relationships
      */
     public static function parseFromRequest(
-        \stdClass $request,
+        ServerRequestInterface $request,
         InternalModel $model
     ) {
 
-        if (!isset($request->include) || empty($request->include)) {
+        $param = $request->getQueryParams()['include'] ?? null;
+
+        if (empty($param)) {
             return null;
         }
 
         $include = [];
 
         //split parameter using , (for multiple values)
-        foreach (explode(',', $request->include) as $i) {
+        foreach (explode(',', $param) as $i) {
             $include[] = trim($i);
         }
 

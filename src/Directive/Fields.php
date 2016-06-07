@@ -23,6 +23,7 @@ use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\Util\Util;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Fields helper methods
@@ -123,40 +124,29 @@ class Fields extends Directive
     }
 
     /**
-     * @param \stdClass     $parameters Request parameters
-     * @param InternalModel $model      Primary model class
-     * @return Fields|null
-     * @throws RequestException
-     * @throws IncorrectParametersException
-     * @example
-     * ```php
-     * $fields = Fields::parseFromParameters(
-     *     (object) [
-     *         'fields' => [
-     *             'article' => ['title', updated'],
-     *             'tag'     => ['title']
-     *         ]
-     *     ], //Request parameters object
-     *     Article::getModel()
-     * );
-     * ```
+     * @param ServerRequestInterface $request Request parameters
+     * @param InternalModel                    $model   Primary model class
+     * @return Sort|null
+     * @throws IncorrectParameterException
      * @uses Model::getFields for each resource type to parse allowed fields
      */
     public static function parseFromRequest(
-        \stdClass $parameters,
+        ServerRequestInterface $request,
         InternalModel $model
     ) {
-        if (!isset($parameters->fields)) {
+        $param = $request->getQueryParams()['fields'] ?? null;
+
+        if (empty($param)) {
             return null;
         }
 
         $fields = new Fields();
 
-        if (!is_object($parameters->fields)
+        if (!is_object($param)
             && (
-                !is_array($parameters->fields)
-                || (is_array($parameters->fields)
-                   && !Util::isArrayAssoc($parameters->fields)
+                !is_array($param)
+                || (is_array($param)
+                   && !Util::isArrayAssoc($param)
                 )
             )
         ) {
@@ -167,7 +157,7 @@ class Fields extends Directive
             );
         }
 
-        foreach ($parameters->fields as $resourceType => $value) {
+        foreach ($param as $resourceType => $value) {
             if ($model->getResourceType() === $resourceType) {
                 //check if $resourceType allowed (primary)
                 $resourceModel = $model;

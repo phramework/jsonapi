@@ -126,15 +126,19 @@ trait Relationships
                 );
             case \Phramework\JSONAPI\Relationship::TYPE_TO_MANY:
             default:
-                if (!isset($relationship->getCallbacks()->{Phramework::METHOD_GET})) {
+                if (!isset($relationship->getCallbacks()->{'GET'})) {
                     return [];
                 }
 
-                $callMethod = $relationship->getCallbacks()->{Phramework::METHOD_GET};
+                $callMethod = $relationship->getCallbacks()->{'GET'};
 
                 if (!is_callable($callMethod)) {
                     throw new \Phramework\Exceptions\ServerException(
-                        $callMethod[0] . '::' . $callMethod[1]
+                        (//todo
+                            is_array($callMethod[0] . '::' . $callMethod[1])
+                            ? $callMethod[0] . '::' . $callMethod[1]
+                            : 'Callable'
+                        )
                         . ' is not implemented'
                     );
                 }

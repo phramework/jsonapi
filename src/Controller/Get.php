@@ -23,6 +23,7 @@ use Phramework\JSONAPI\Directive\IncludeResources;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\InternalModel;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -34,7 +35,7 @@ trait Get
     use Controller;
 
     public static function handleGet(
-        \stdClass $request,
+        ServerRequestInterface $request,
         InternalModel $model,
         array $directives
     ) {

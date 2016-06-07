@@ -36,11 +36,11 @@ class Bootstrap
         $settings = include __DIR__ . '/../../settings.php';
 
         $URIStrategy = new \Phramework\URIStrategy\URITemplate([
-            ['article/', NS . 'ArticleController', 'GET', Phramework::METHOD_GET],
-            ['article/', NS . 'ArticleController', 'POST', Phramework::METHOD_POST],
-            ['article/{id}', NS . 'ArticleController', 'GETById', Phramework::METHOD_GET],
-            ['article/{id}', NS . 'ArticleController', 'PATCH', Phramework::METHOD_PATCH],
-            ['article/{id}', NS . 'ArticleController', 'DELETE', Phramework::METHOD_DELETE],
+            ['article/', NS . 'ArticleController', 'GET', 'GET'],
+            ['article/', NS . 'ArticleController', 'POST', 'POST'],
+            ['article/{id}', NS . 'ArticleController', 'GETById', 'GET'],
+            ['article/{id}', NS . 'ArticleController', 'PATCH', 'PATCH'],
+            ['article/{id}', NS . 'ArticleController', 'DELETE', 'DELETE'],
             [
                 'article/{id}/relationships/{relationship}',
                 NS . 'ArticleController',

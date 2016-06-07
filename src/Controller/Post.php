@@ -20,6 +20,7 @@ use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\Phramework;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -33,7 +34,7 @@ trait Post
 
     //prototype
     public static function handlePost(
-        \stdClass $request,
+        ServerRequestInterface $request,
         InternalModel $model,
         array $validationCallbacks = [],
         callable $viewCallback = null,
@@ -48,7 +49,7 @@ trait Post
 
         //prefer POST validation model
         $validationModel = $model->getValidationModel(
-            Phramework::METHOD_POST
+            'POST'
         );
 
         //on each call validation callback

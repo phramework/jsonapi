@@ -66,13 +66,13 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             Relationship::TYPE_TO_ONE,
             'tag-id',
             (object) [
-                Phramework::METHOD_GET => function () {}
+                'GET' => function () {}
             ]
         );
 
         $this->assertEquals(
             (object) [
-                Phramework::METHOD_GET => function () {}
+                'GET' => function () {}
             ],
             $relationship->getCallbacks()
         );
@@ -136,7 +136,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             Relationship::TYPE_TO_ONE,
             null,
             (object) [
-                Phramework::METHOD_GET => [
+                'GET' => [
                     $this->model,
                     'getRelationshipByArticleNotCallable'
                 ]

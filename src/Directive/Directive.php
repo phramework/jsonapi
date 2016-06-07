@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI\Directive;
 
 use Phramework\JSONAPI\InternalModel;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -29,12 +30,12 @@ abstract class Directive
 
     /**
      * @todo define request object in phramework
-     * @param \stdClass     $request
-     * @param InternalModel $model
-     * @return Directive|null
+     * @param ServerRequestInterface $request
+     * @param InternalModel                    $model
+     * @return null|Directive
      */
     abstract public static function parseFromRequest(
-        \stdClass $request,
+        ServerRequestInterface $request,
         InternalModel $model
     );
 

@@ -20,6 +20,8 @@ use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\Validate\EnumValidator;
 use Phramework\Validate\ObjectValidator;
+use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Uri;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Directive\Page
@@ -28,16 +30,33 @@ use Phramework\Validate\ObjectValidator;
  */
 class PageTest extends \PHPUnit_Framework_TestCase
 {
-        /**
+    /**
+     * @var ServerRequest
+     */
+    protected $request;
+
+    public function setUp()
+    {
+        $this->request = new ServerRequest(
+            [],
+            [],
+            null,
+            null,
+            'php://input',
+            [],
+            [],
+            []
+        );
+    }
+
+    /**
      * @covers ::__construct
      */
     public function testConstruct()
     {
         $page = new Page();
-
-
+        
         $page = new Page(1, 10);
-
 
         $page = new Page(null, 10);
     }
@@ -48,7 +67,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     public function testParseFromRequestEmpty()
     {
         $page = Page::parseFromRequest(
-            (object) [],
+            $this->request->withQueryParams([]),
             new InternalModel('user')
         );
 
@@ -60,15 +79,13 @@ class PageTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequest()
     {
-        $parameters = (object) [
-            'page' => [
-                'limit' => '1',
-                'offset' => '10'
-            ]
-        ];
-
         $page = Page::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'page' => [
+                    'limit' => '1',
+                    'offset' => '10'
+                ]
+            ]),
             new InternalModel('user')
         );
 
@@ -87,14 +104,12 @@ class PageTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureToParseLimit()
     {
-        $parameters = (object) [
-            'page' => (object) [
-                'limit' => 'x10'
-            ]
-        ];
-
         Page::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'page' => [
+                    'limit' => 'x10'
+                ]
+            ]),
             new InternalModel('user')
         );
     }
@@ -105,14 +120,12 @@ class PageTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestFailureToParseOffset()
     {
-        $parameters = (object) [
-            'page' => (object) [
-                'offset' => 'xx10'
-            ]
-        ];
-
         Page::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'page' => [
+                    'offset' => 'x10'
+                ]
+            ]),
             new InternalModel('user')
         );
     }
@@ -123,14 +136,12 @@ class PageTest extends \PHPUnit_Framework_TestCase
      */
     public function testParseFromRequestExceedMaximum()
     {
-        $parameters = (object) [
-            'page' => (object) [
-                'limit' => '100'
-            ]
-        ];
-
         Page::parseFromRequest(
-            $parameters,
+            $this->request->withQueryParams([
+                'page' => [
+                    'limit' => '100'
+                ]
+            ]),
             (new InternalModel('user'))
                 ->setMaxPageLimit(10)
         );

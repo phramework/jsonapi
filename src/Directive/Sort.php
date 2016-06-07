@@ -18,6 +18,7 @@ namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\InternalModel;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Sort helper methods
@@ -61,31 +62,31 @@ class Sort extends Directive
     }
 
     /**
-     * @param object $parameters Request parameters
-     * @param string $model
-     * @return Sort
-     * ```php
-     * $sort = Sort::parseFromParameters(
-     *     (object) [
-     *         'sort' => '-updated'
-     *     ], //Request parameters object
-     *     Article::class
-     * );
-     * ```
+     * @param ServerRequestInterface $request Request parameters
+     * @param InternalModel|string          $model
+     * @return Sort|null
      * @throws RequestException
      */
-    public static function parseFromRequest(\stdClass $parameters, InternalModel $model)
-    {
-        $sortableAttributes = $model->getSortableAttributes();
+    public static function parseFromRequest(
+        ServerRequestInterface $request,
+        InternalModel $model
+    ) {
+        $param = $request->getQueryParams()['sort'] ?? null;
+
+        if (empty($param)) {
+            return null;
+        }
 
         //Don't accept arrays
 
-        if (isset($parameters->sort)) {
-            if (!is_string($parameters->sort)) {
+        if (isset($param)) {
+            if (!is_string($param)) {
                 throw new RequestException(
                     'String expected for sort'
                 );
             }
+
+            $sortableAttributes = $model->getSortableAttributes();
 
             if (empty($sortableAttributes)) {
                 throw new RequestException('Not sortable attributes for this resource model');
@@ -101,7 +102,7 @@ class Sort extends Directive
                 ))
             );
 
-            if (!!preg_match($validateExpression, $parameters->sort, $matches)) {
+            if (!!preg_match($validateExpression, $param, $matches)) {
                 return new Sort(
                     $matches['attribute'],
                     (

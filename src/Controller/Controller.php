@@ -20,6 +20,7 @@ use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -46,7 +47,7 @@ trait Controller
     }
 
     protected static function includeRelationshipResources(
-        \stdClass $request,
+        ServerRequestInterface $request,
         InternalModel $model,
         array $resources,
         Directive ...$directives
@@ -129,7 +130,7 @@ trait Controller
 
         return true;
     }
-    
+
     /**
      * @param string[]    $classes
      * @param Directive[] $directives
@@ -155,7 +156,7 @@ trait Controller
     /**
      * @param string[]      $classes
      * @param InternalModel $model
-     * @param \stdClass     $request
+     * @param ServerRequestInterface $request
      * @param Directive[]   $directives
      * @param bool          $ignoreIfExists
      * @param bool          $overwrite
@@ -164,7 +165,7 @@ trait Controller
     public static function parseDirectives(
         array $classes,
         InternalModel $model,
-        \stdClass $request,
+        ServerRequestInterface $request,
         array $directives,
         bool $ignoreIfExists = true,
         bool $overwrite = false
@@ -193,9 +194,9 @@ trait Controller
                     $overwrite
                     && (
                     $key = array_search(
-                            $directiveClass,
-                            $existClasses,
-                            true
+                        $directiveClass,
+                        $existClasses,
+                        true
                     )  !== false)
                 ) {
                     $directives[$key] = $parsed;

@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI\Directive;
 
 use Phramework\JSONAPI\InternalModel;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -64,7 +65,7 @@ class AdditionalParameter extends Directive
     }
 
     public static function parseFromRequest(
-        \stdClass $request,
+        ServerRequestInterface $request,
         InternalModel $model
     ) {
         return null;
