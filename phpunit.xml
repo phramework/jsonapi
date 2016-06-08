@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="true"
-         bootstrap="./tests/APP/Bootstrap.php"
+         bootstrap="./vendor/autoload.php"
          verbose="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"

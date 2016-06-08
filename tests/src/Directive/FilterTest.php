@@ -16,15 +16,11 @@
  */
 namespace Phramework\JSONAPI\Directive;
 
-use Directive\APP\Bootstrap;
-use Directive\APP\Models\Article;
-use Directive\APP\Models\Tag;
 use Phramework\Exceptions\Exception;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\ValidationModel;
-use Phramework\Models\Operator;
-use Phramework\Phramework;
+use Phramework\Operator\Operator;
 use Phramework\Validate\BooleanValidator;
 use Phramework\Validate\ObjectValidator;
 use Phramework\Validate\StringValidator;

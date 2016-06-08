@@ -16,7 +16,7 @@
  */
 namespace Phramework\JSONAPI\Directive;
 
-use Phramework\Models\Operator;
+use Phramework\Operator\Operator;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Directive\FilterJSONAttribute

@@ -16,7 +16,6 @@
  */
 namespace Phramework\JSONAPI;
 
-use Phramework\Phramework;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Relationship

@@ -13,9 +13,12 @@
   ],
   "require": {
     "php": ">=7",
-    "phramework/phramework": "dev-dev-2.x",
+    "phramework/validate": "^1.0.0-RC3",
+    "phramework/database": "^1.0",
+    "phramework/util": "^0.0",
     "ext-json": "*",
-    "psr/http-message": "^1.0"
+    "psr/http-message": "^1.0",
+    "phramework/operator": "dev-master"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "*",

@@ -25,7 +25,7 @@ use Phramework\JSONAPI\FilterJSONAttribute;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\Relationship;
-use Phramework\Models\Operator;
+use Phramework\Operator\Operator;
 
 /**
  * Implementation of directives

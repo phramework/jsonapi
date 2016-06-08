@@ -7,7 +7,7 @@ use Phramework\JSONAPI\Directive\FilterAttribute;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Directive\Sort;
-use Phramework\Models\Operator;
+use Phramework\Operator\Operator;
 
 /**
  * Class ResourceModelTest

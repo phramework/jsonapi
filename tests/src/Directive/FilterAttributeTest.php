@@ -17,8 +17,7 @@
 namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\RequestException;
-use Phramework\JSONAPI\APP\Models\Article;
-use Phramework\Models\Operator;
+use Phramework\Operator\Operator;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Directive\FilterAttribute

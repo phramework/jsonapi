@@ -21,7 +21,7 @@ use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
 use Phramework\JSONAPI\InternalModel;
-use Phramework\Models\Operator;
+use Phramework\Operator\Operator;
 use Phramework\Util\Util;
 use Phramework\Validate\StringValidator;
 use Phramework\Validate\UnsignedIntegerValidator;

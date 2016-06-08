@@ -17,7 +17,6 @@
 namespace Phramework\JSONAPI;
 
 use Directive\Model\Directives;
-use Phramework\Phramework;
 use Phramework\Util\Util;
 
 /**

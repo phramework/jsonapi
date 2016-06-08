@@ -18,7 +18,7 @@ namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\Source\Parameter;
-use Phramework\Models\Operator;
+use Phramework\Operator\Operator;
 use Phramework\Validate\StringValidator;
 use Phramework\Exceptions\RequestException;
 

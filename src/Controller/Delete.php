@@ -19,7 +19,6 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\InternalModel;
-use Phramework\Phramework;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**

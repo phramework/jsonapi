@@ -29,7 +29,7 @@ use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\Relationship;
-use Phramework\Models\Operator;
+use Phramework\Operator\Operator;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0

@@ -23,7 +23,6 @@ use Phramework\JSONAPI\InternalModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
-use Phramework\Phramework;
 
 /**
  * @since 3.0.0

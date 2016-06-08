@@ -101,6 +101,7 @@ trait Controller
      * @param \stdClass $meta
      * @param (Resource|RelationshipResource)[]     $included
      * @return bool
+     * @todo write
      */
     public static function viewData(
         $data,
@@ -124,7 +125,6 @@ trait Controller
             $viewParameters->meta = $meta;
         }
 
-        \Phramework\Phramework::view($viewParameters);
 
         unset($viewParameters);
 
