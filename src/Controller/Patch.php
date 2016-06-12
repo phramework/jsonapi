@@ -18,7 +18,7 @@ namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
 use Phramework\JSONAPI\Directive\Directive;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -34,7 +34,7 @@ trait Patch
     //prototype
     public static function handlePatch(
         ServerRequestInterface $request,
-        InternalModel $model,
+        ResourceModel $model,
         string $id,
         array $validationCallbacks = [],
         callable $viewCallback = null,

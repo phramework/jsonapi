@@ -21,7 +21,7 @@ use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\Util\Util;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -114,10 +114,10 @@ class Fields extends Directive
     }
 
     /**
-     * @param InternalModel $model
+     * @param ResourceModel $model
      * @throws \Exception
      */
-    public function validate(InternalModel $model) : bool
+    public function validate(ResourceModel $model) : bool
     {
         //todo
         return true;
@@ -125,14 +125,14 @@ class Fields extends Directive
 
     /**
      * @param ServerRequestInterface $request Request parameters
-     * @param InternalModel                    $model   Primary model class
+     * @param ResourceModel          $model   Primary model class
      * @return Sort|null
      * @throws IncorrectParameterException
      * @uses Model::getFields for each resource type to parse allowed fields
      */
     public static function parseFromRequest(
         ServerRequestInterface $request,
-        InternalModel $model
+        ResourceModel $model
     ) {
         $param = $request->getQueryParams()['fields'] ?? null;
 

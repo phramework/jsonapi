@@ -21,7 +21,7 @@ namespace Phramework\JSONAPI\Model;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-trait Variable
+trait VariableTrait
 {
     /**
      * NOTE needs to be initialized from classes that use it
@@ -45,10 +45,10 @@ trait Variable
      * Get value of a variable,
      * if it's not set value of the $default argument will be returned
      * @param string $key
-     * @param null   $default
+     * @param mixed  $default
      * @return mixed
      */
-    public function getVariable(string $key, $default = null) {
+    public function getVariable(string $key, mixed $default = null) {
         if (property_exists($this->variables, $key)) {
             return $this->variables->{$key};
         }

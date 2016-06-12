@@ -22,7 +22,7 @@ use Phramework\JSONAPI\Directive\IncludeResources;
 use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\Directive\Directive;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -37,14 +37,14 @@ trait GetById
     /**
      * @param ServerRequestInterface $request
      * @param string                 $id
-     * @param InternalModel          $model
-     * @param  Directive[] $directives
+     * @param ResourceModel          $model
+     * @param  Directive[]           $directives
      * @throws \Phramework\Exceptions\NotFoundException
      */
     public static function handleGetById(
         ServerRequestInterface $request,
         string $id,
-        InternalModel $model,
+        ResourceModel $model,
         array $directives
     ) {
         //todo filter id if model filter is set

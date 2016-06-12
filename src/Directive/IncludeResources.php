@@ -16,7 +16,7 @@
  */
 namespace Phramework\JSONAPI\Directive;
 
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -59,7 +59,7 @@ class IncludeResources extends Directive
         return $this;
     }
 
-    public function validate(InternalModel $model) : bool
+    public function validate(ResourceModel $model) : bool
     {
         // TODO: Implement validate() method.
         return true;
@@ -71,7 +71,7 @@ class IncludeResources extends Directive
      */
     public static function parseFromRequest(
         ServerRequestInterface $request,
-        InternalModel $model
+        ResourceModel $model
     ) {
 
         $param = $request->getQueryParams()['include'] ?? null;

@@ -35,7 +35,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
     {
         $this->filterAttribute = new FilterAttribute(
             'id',
-            Operator::OPERATOR_EQUAL,
+            Operator::EQUAL,
             '5'
         );
     }
@@ -44,7 +44,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['attribute', 'id'],
-            ['operator', Operator::OPERATOR_EQUAL],
+            ['operator', Operator::EQUAL],
             ['operand', '5']
         ];
     }
@@ -56,7 +56,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
     {
         new FilterAttribute(
             'id',
-            Operator::OPERATOR_EQUAL,
+            Operator::EQUAL,
             '5'
         );
     }
@@ -113,7 +113,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
     public function testGetOperator()
     {
         $this->assertSame(
-            Operator::OPERATOR_EQUAL,
+            Operator::EQUAL,
             $this->filterAttribute->getOperator()
         );
     }

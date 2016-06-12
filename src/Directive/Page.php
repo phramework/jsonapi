@@ -19,7 +19,7 @@ namespace Phramework\JSONAPI\Directive;
 use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\Source\Parameter;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\Validate\UnsignedIntegerValidator;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -52,11 +52,11 @@ class Page extends Directive implements \JsonSerializable
     }
 
     /**
-     * @param InternalModel $model
+     * @param ResourceModel $model
      * @throws IncorrectParameterException When limit exceeds model's maximum page limit
      * @uses InternalModel::getMaxPageLimit
      */
-    public function validate(InternalModel $model) : bool
+    public function validate(ResourceModel $model) : bool
     {
         if ($this->limit !== null) {
             (new UnsignedIntegerValidator(
@@ -72,7 +72,7 @@ class Page extends Directive implements \JsonSerializable
 
     /**
      * @param ServerRequestInterface $request
-     * @param InternalModel          $model
+     * @param ResourceModel          $model
      * @return null|Page
      * @throws \Exception|null|\Phramework\Validate\Result\Exception
      * @todo use request instead of parameters
@@ -80,7 +80,7 @@ class Page extends Directive implements \JsonSerializable
      */
     public static function parseFromRequest(
         ServerRequestInterface $request,
-        InternalModel $model
+        ResourceModel $model
     ) {
         $param = $request->getQueryParams()['page'] ?? null;
 

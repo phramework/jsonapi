@@ -25,7 +25,7 @@ use Phramework\JSONAPI\Directive\Directive;
  * @since 3.0.0
  * @todo sort method and properties to be more readable
  */
-trait Directives
+trait DirectivesTrait
 {
     /**
      * @var \stdClass

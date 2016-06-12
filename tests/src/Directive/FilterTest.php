@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\Exception;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\ValidationModel;
 use Phramework\Operator\Operator;
@@ -35,7 +35,7 @@ use Zend\Diactoros\ServerRequest;
 class FilterTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var InternalModel
+     * @var ResourceModel
      */
     protected $articleModel;
 
@@ -46,7 +46,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->articleModel = (new InternalModel('article'))
+        $this->articleModel = (new ResourceModel('article'))
             ->setValidationModel(new ValidationModel(
                 new ObjectValidator()
             ))->setFilterValidator(new ObjectValidator((object) [
@@ -75,7 +75,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
                     | Operator::CLASS_NULLABLE,
             ])->setRelationships((object) [
                 'creator' => new Relationship(
-                    (new InternalModel('user'))
+                    (new ResourceModel('user'))
                     ->setValidationModel(new ValidationModel(
                         new ObjectValidator(
                         )
@@ -84,7 +84,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
                     'creator-user_id'
                 ),
                 'tag' => new Relationship(
-                    (new InternalModel('tag'))
+                    (new ResourceModel('tag'))
                     ->setValidationModel(new ValidationModel(
                         new ObjectValidator(
                         )
@@ -192,7 +192,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $filter = Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'tag' => Operator::OPERATOR_EMPTY
+                    'tag' => Operator::EMPTY
                 ]
             ]),
             $this->articleModel
@@ -201,7 +201,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Filter::class, $filter);
 
         $this->assertEquals(
-            Operator::OPERATOR_EMPTY,
+            Operator::EMPTY,
             $filter->getRelationships()->tag
         );
     }
@@ -232,10 +232,10 @@ class FilterTest extends \PHPUnit_Framework_TestCase
                     'creator'   => '1',
                     'status'    => [true, false],
                     'title'     => [
-                        Operator::OPERATOR_LIKE . 'blog',
-                        Operator::OPERATOR_NOT_LIKE . 'welcome'
+                        Operator::LIKE . 'blog',
+                        Operator::NOT_LIKE . 'welcome'
                     ],
-                    'updated'   => Operator::OPERATOR_NOT_ISNULL,
+                    'updated'   => Operator::NOT_ISNULL,
                     'meta.keywords' => 'blog'
                 ]
             ]),
@@ -289,14 +289,14 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         $shouldContain1 = new FilterAttribute(
             'title',
-            Operator::OPERATOR_LIKE,
+            Operator::LIKE,
             'blog'
         );
 
         $shouldContain2 = new FilterJSONAttribute(
             'meta',
             'keywords',
-            Operator::OPERATOR_EQUAL,
+            Operator::EQUAL,
             'blog'
         );
 
@@ -405,7 +405,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'updated'   => [[Operator::OPERATOR_ISNULL]]
+                    'updated'   => [[Operator::ISNULL]]
                 ]
             ]),
             $this->articleModel
@@ -437,7 +437,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'status'   => Operator::OPERATOR_GREATER_EQUAL . '1'
+                    'status'   => Operator::GREATER_EQUAL . '1'
                 ]
             ]),
             $this->articleModel

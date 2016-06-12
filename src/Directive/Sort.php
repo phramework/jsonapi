@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI\Directive;
 
 use Phramework\Exceptions\RequestException;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -52,10 +52,10 @@ class Sort extends Directive
     }
 
     /**
-     * @param InternalModel $model
+     * @param ResourceModel $model
      * @todo implement
      */
-    public function validate(InternalModel $model) : bool
+    public function validate(ResourceModel $model) : bool
     {
         //todo
         return true;
@@ -63,13 +63,13 @@ class Sort extends Directive
 
     /**
      * @param ServerRequestInterface $request Request parameters
-     * @param InternalModel|string          $model
+     * @param ResourceModel|string   $model
      * @return Sort|null
      * @throws RequestException
      */
     public static function parseFromRequest(
         ServerRequestInterface $request,
-        InternalModel $model
+        ResourceModel $model
     ) {
         $param = $request->getQueryParams()['sort'] ?? null;
 

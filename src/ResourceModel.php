@@ -16,58 +16,230 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\DataSource\DatabaseDataSource;
+use Phramework\JSONAPI\DataSource\IDataSource;
+use Phramework\JSONAPI\Directive\Page;
+use Phramework\JSONAPI\Model\DataSourceTrait;
+use Phramework\JSONAPI\Model\DirectivesTrait;
+use Phramework\JSONAPI\Model\Relationships;
+use Phramework\JSONAPI\Model\VariableTrait;
+use Phramework\Validate\ObjectValidator;
+
 /**
- * Class ResourceModel
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
+ * @todo define prefix schema, table space for attributes
+ * @todo database related, schema table
+ * @todo resource parsing
+ * @todo links related
+ * @todo endpoint related - allow external modifications (?)
+ * @todo relationship related and included data
  */
-abstract class ResourceModel
+class ResourceModel
 {
+    use DirectivesTrait;
+    use VariableTrait;
+    use DataSourceTrait;
+    use Relationships;
+    
     /**
-     * @return InternalModel
+     * @var string
      */
-    public static function getModel() : InternalModel
-    {
+    protected $resourceType;
 
-        if (static::$model === null) {
-            static::$model = static::defineModel();
+    /**
+     * @var string
+     */
+    protected $idAttribute = 'id';
+
+    /**
+     * @var \stdClass
+     */
+    protected $validationModels;
+
+    /**
+     * @var ObjectValidator
+     */
+    public $filterValidator;
+    
+    /**
+     * InternalModel constructor.
+     * Will create a new internal model initialized with:
+     * - defaultDirectives Page directive limit with value of getMaxPageLimit()
+     * - empty prepareRecords
+     * @param string $resourceType
+     * @param IDataSource $dataSource null will interpreted as a new DatabaseDataSource
+     */
+    public function __construct(string $resourceType, IDataSource $dataSource = null)
+    {
+        $this->resourceType      = $resourceType;
+
+        $this->defaultDirectives    = (object) [
+            Page::class => new Page($this->getMaxPageLimit())
+        ];
+        $this->relationships        = new \stdClass();
+        $this->filterableAttributes = new \stdClass();
+
+        $this->variables = new \stdClass();
+
+
+        //Set default prepareRecords method as an empty method
+        $this->prepareRecords = function (array &$records) {
+        };
+
+        $this->dataSource = $dataSource;
+
+        if ($dataSource === null) {
+            //Set default data source
+            $this->dataSource = $dataSource = new DatabaseDataSource(
+                $this
+            );
         }
 
-        return static::$model;
+        //Setup default operations to use data source
+        $this->get    = [$dataSource, 'get'];
+        $this->post   = [$dataSource, 'post'];
+        $this->patch  = [$dataSource, 'patch'];
+        $this->put    = [$dataSource, 'put'];
+        $this->delete = [$dataSource, 'delete'];
+
+        $this->validationModels = new \stdClass();
+
+        //Set default empty filter validator
+        $this->filterValidator = new ObjectValidator(
+            (object) [],
+            [],
+            false
+        );
     }
 
     /**
-     * MUST BE IMPLEMENTED
+     * If a validation model for request method is not found, "DEFAULT" will be used
+     * @param string          $requestMethod
+     * @return ValidationModel
+     * @throws \DomainException If none validation model is set
      */
-    abstract protected static function defineModel() : InternalModel;
+    public function getValidationModel(
+        string $requestMethod = 'DEFAULT'
+    ) : ValidationModel {
+        $key = 'DEFAULT';
 
-    /**
-     * @param IDirective[] ...$directives
-     * @return Resource[]
-     */
-    public static function get(IDirective ...$directives) : array
-    {
-        return static::getModel()->get(...func_get_args());
+        if ($requestMethod !== null
+            && property_exists($this->validationModels, $requestMethod)
+        ) {
+            $key = $requestMethod;
+        }
+
+        if (!isset($this->validationModels->{$key})) {
+            throw new \DomainException(
+                'No validation model is set'
+            );
+        }
+
+        return $this->validationModels->{$key};
     }
 
     /**
-     * @param string       $id
-     * @param IDirective[] ...$directives
-     * @return Resource|null
+     * @param ValidationModel $validationModel
+     * @param string          $requestMethod
+     * @return $this
      */
-    public static function getById(
-        string $id,
-        IDirective ...$directives
+    public function setValidationModel(
+        ValidationModel $validationModel,
+        string $requestMethod = 'DEFAULT'
     ) {
-        return static::getModel()->getById(...func_get_args());
+        $key = 'DEFAULT';
+
+        if ($requestMethod !== null) {
+            $key = $requestMethod;
+        }
+
+        $this->validationModels->{$key} = $validationModel;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public static function getResourceType()
+    public function getResourceType()
     {
-        return static::getModel()->getResourceType();
+        return $this->resourceType;
+    }
+
+    /**
+     * @param string $resourceType
+     * @return $this
+     */
+    public function setResourceType($resourceType)
+    {
+        $this->resourceType = $resourceType;
+
+        return $this;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getIdAttribute() : string
+    {
+        return $this->idAttribute;
+    }
+
+    /**
+     * @param string $idAttribute If non set, default is "id"
+     * @return $this
+     */
+    public function setIdAttribute(string $idAttribute)
+    {
+        $this->idAttribute = $idAttribute;
+
+        return $this;
+    }
+
+    public function collection(
+        array $records = [],
+        array $directives = [],
+        $flags = Resource::PARSE_DEFAULT
+    ) {
+        return Resource::parseFromRecords(
+            $records,
+            $this,
+            $directives,
+            $flags
+        );
+    }
+
+    public function resource(
+        $record,
+        array $directives = [],
+        $flags = Resource::PARSE_DEFAULT
+    ) {
+        return Resource::parseFromRecord(
+            $record,
+            $this,
+            $directives,
+            $flags
+        );
+    }
+
+    /**
+     * @return ObjectValidator
+     */
+    public function getFilterValidator() : ObjectValidator
+    {
+        return $this->filterValidator;
+    }
+
+    /**
+     * @param ObjectValidator $filterValidator
+     * @return $this
+     */
+    public function setFilterValidator(ObjectValidator $filterValidator)
+    {
+        $this->filterValidator = $filterValidator;
+
+        return $this;
     }
 }

@@ -14,45 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Phramework\JSONAPI\Controller;
+namespace Phramework\JSONAPI\APP\Models;
 
-use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
+use APP\DataSource\MemoryDataSource;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
-use Psr\Http\Message\ServerRequestInterface;
+use Phramework\JSONAPI\Model;
+use Phramework\JSONAPI\ModelTrait;
 
 /**
+ * @since 3.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
- * @since 3.0.0
  */
-trait Post
+class User extends Model
 {
-    use Controller;
-    use RequestBodyQueue;
+    use ModelTrait;
 
-    //prototype
-    public static function handlePost(
-        ServerRequestInterface $request,
-        ResourceModel $model,
-        array $validationCallbacks = [],
-        callable $viewCallback = null,
-        int $bulkLimit = null,
-        array $directives
-    ) {
-        //gather data as a queue
+    /**
+     * @inheritDoc
+     */
+    protected static function defineModel() : ResourceModel
+    {
+        $model = (new ResourceModel('user', new MemoryDataSource()));
 
-        //check bulk limit
-
-        //on each validate
-
-        //prefer POST validation model
-        $validationModel = $model->getValidationModel(
-            'POST'
-        );
-
-        //on each call validation callback
-
-        //204 or view callback
+        return $model;
     }
 }

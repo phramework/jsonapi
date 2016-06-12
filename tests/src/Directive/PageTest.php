@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI\Directive;
 
 use Phramework\JSONAPI\APP\Models\Article;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\Validate\EnumValidator;
 use Phramework\Validate\ObjectValidator;
 use Zend\Diactoros\ServerRequest;
@@ -68,7 +68,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     {
         $page = Page::parseFromRequest(
             $this->request->withQueryParams([]),
-            new InternalModel('user')
+            new ResourceModel('user')
         );
 
         $this->assertNull($page);
@@ -86,7 +86,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
                     'offset' => '10'
                 ]
             ]),
-            new InternalModel('user')
+            new ResourceModel('user')
         );
 
         $this->assertInstanceOf(
@@ -110,7 +110,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
                     'limit' => 'x10'
                 ]
             ]),
-            new InternalModel('user')
+            new ResourceModel('user')
         );
     }
 
@@ -126,7 +126,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
                     'offset' => 'x10'
                 ]
             ]),
-            new InternalModel('user')
+            new ResourceModel('user')
         );
     }
 
@@ -142,7 +142,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
                     'limit' => '100'
                 ]
             ]),
-            (new InternalModel('user'))
+            (new ResourceModel('user'))
                 ->setMaxPageLimit(10)
         );
     }
@@ -195,7 +195,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
         $page = new Page(100, 10);
 
         $page->validate(
-            (new InternalModel('user'))
+            (new ResourceModel('user'))
                 ->setMaxPageLimit(10)
         );
     }

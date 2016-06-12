@@ -16,7 +16,6 @@
  */
 namespace Phramework\JSONAPI;
 
-
 /**
  * JSONAPI relationship class
  * @since 0.0.0
@@ -49,7 +48,7 @@ class Relationship
     const TYPE_TO_MANY = 2;
 
     /**
-     * @var InternalModel
+     * @var ResourceModel
      */
     protected $model;
 
@@ -103,7 +102,7 @@ class Relationship
      * ```
      */
     public function __construct(
-        InternalModel $model,
+        ResourceModel $model,
         int $type = Relationship::TYPE_TO_ONE,
         string $recordDataAttribute = null,
         \stdClass $callbacks = null,

@@ -16,11 +16,10 @@
  */
 namespace Phramework\JSONAPI;
 
-
 /**
- * @coversDefaultClass \Phramework\JSONAPI\Relationship
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @coversDefaultClass \Phramework\JSONAPI\Relationship
  */
 class RelationshipTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,7 +35,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->model = new InternalModel('user');
+        $this->model = new ResourceModel('user');
         
         $this->relationship = new Relationship(
             $this->model

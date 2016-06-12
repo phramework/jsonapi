@@ -16,7 +16,7 @@
  */
 namespace Phramework\JSONAPI\Directive;
 
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -70,10 +70,10 @@ class AdditionalRelationshipsParameter extends Directive
     }
 
     /**
-     * @param InternalModel $model
+     * @param ResourceModel $model
      * @return bool
      */
-    public function validate(InternalModel $model) : bool
+    public function validate(ResourceModel $model) : bool
     {
         return true;
     }
@@ -83,7 +83,7 @@ class AdditionalRelationshipsParameter extends Directive
      */
     public static function parseFromRequest(
         ServerRequestInterface $request,
-        InternalModel $model
+        ResourceModel $model
     ) {
         return null;
     }

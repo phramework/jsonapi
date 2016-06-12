@@ -22,7 +22,7 @@ use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\Directive\IncludeResources;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Directive\Sort;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -36,7 +36,7 @@ trait Get
 
     public static function handleGet(
         ServerRequestInterface $request,
-        InternalModel $model,
+        ResourceModel $model,
         array $directives
     ) {
         //Parse request related directives from request

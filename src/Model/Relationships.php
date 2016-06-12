@@ -19,7 +19,7 @@ namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\Directive\Fields;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
@@ -96,7 +96,7 @@ trait Relationships
      * @todo
      */
     public static function getRelationshipData(
-        InternalModel $model,
+        ResourceModel $model,
         $relationshipKey,
         $id,
         Fields $fields = null,
@@ -174,7 +174,7 @@ trait Relationships
      * ```
      */
     public static function getIncludedData(
-        InternalModel $model,
+        ResourceModel $model,
         $primaryData,
         $include = [],
         Fields $fields = null,

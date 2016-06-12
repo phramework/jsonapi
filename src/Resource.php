@@ -135,15 +135,15 @@ class Resource extends \stdClass implements \JsonSerializable
 
     /**
      * @param (array|\stdClass)[] $records
-     * @param InternalModel       $model
-     * @param IDirective[]        $directives
-     * @param int                 $flags
+     * @param ResourceModel $model
+     * @param IDirective[]  $directives
+     * @param int           $flags
      * @return array
      * @throws \Exception
      */
     public static function parseFromRecords(
         array $records,
-        InternalModel $model,
+        ResourceModel $model,
         array $directives = [],
         int $flags = Resource::PARSE_DEFAULT
     ) {
@@ -174,9 +174,9 @@ class Resource extends \stdClass implements \JsonSerializable
 
     /**
      * @param array|\stdClass $record
-     * @param InternalModel   $model
+     * @param ResourceModel   $model
      * @param IDirective[]    $directives
-     * @param int $flags
+     * @param int             $flags
      * @return Resource|null
      * @throws \Exception
      * @example
@@ -194,7 +194,7 @@ class Resource extends \stdClass implements \JsonSerializable
      */
     public static function parseFromRecord(
         $record,
-        InternalModel $model,
+        ResourceModel $model,
         array $directives = [],
         int $flags = Resource::PARSE_DEFAULT
     ) {

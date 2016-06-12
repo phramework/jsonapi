@@ -35,7 +35,7 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
         $this->filterAttribute = new FilterJSONAttribute(
             'meta',
             'keywords',
-            Operator::OPERATOR_LIKE,
+            Operator::LIKE,
             'blog'
         );
     }
@@ -48,7 +48,7 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
         new FilterJSONAttribute(
             'meta',
             'keywords',
-            Operator::OPERATOR_LIKE,
+            Operator::LIKE,
             'blog'
         );
     }

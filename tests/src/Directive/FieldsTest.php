@@ -20,7 +20,7 @@ use Exception;
 use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Zend\Diactoros\ServerRequest;
 
 /**
@@ -36,7 +36,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     protected $fields;
 
     /**
-     * @var InternalModel
+     * @var ResourceModel
      */
     protected $model;
 
@@ -49,7 +49,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     {
         $this->fields = new Fields();
 
-        $this->model  = (new InternalModel('user'))
+        $this->model  = (new ResourceModel('user'))
             ->setFieldableAtributes(
                 'title',
                 'updated'

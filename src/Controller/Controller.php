@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\Directive\Directive;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,14 +30,14 @@ use Psr\Http\Message\ServerRequestInterface;
 trait Controller
 {
     /**
-     * @param string                                    $id
-     * @param InternalModel                             $model
-     * @param Directive[] ...$directives
+     * @param string        $id
+     * @param ResourceModel $model
+     * @param Directive[]   ...$directives
      * @return Resource|null
      */
     protected static function getById(
         string $id,
-        InternalModel $model,
+        ResourceModel $model,
         Directive ...$directives
     ) {
         return $model->getById(
@@ -48,7 +48,7 @@ trait Controller
 
     protected static function includeRelationshipResources(
         ServerRequestInterface $request,
-        InternalModel $model,
+        ResourceModel $model,
         array $resources,
         Directive ...$directives
     ) {
@@ -154,17 +154,17 @@ trait Controller
     }
 
     /**
-     * @param string[]      $classes
-     * @param InternalModel $model
+     * @param string[]               $classes
+     * @param ResourceModel          $model
      * @param ServerRequestInterface $request
-     * @param Directive[]   $directives
-     * @param bool          $ignoreIfExists
-     * @param bool          $overwrite
+     * @param Directive[]            $directives
+     * @param bool                   $ignoreIfExists
+     * @param bool                   $overwrite
      * @return Directive[]
      */
     public static function parseDirectives(
         array $classes,
-        InternalModel $model,
+        ResourceModel $model,
         ServerRequestInterface $request,
         array $directives,
         bool $ignoreIfExists = true,

@@ -27,7 +27,7 @@ use Phramework\JSONAPI\Directive\FilterAttribute;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\Directive\Page;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\Relationship;
 use Phramework\Operator\Operator;
 
@@ -39,15 +39,15 @@ use Phramework\Operator\Operator;
 class DatabaseDataSource implements IDataSource
 {
     /**
-     * @var InternalModel
+     * @var ResourceModel
      */
     protected $model;
 
     /**
      * DatabaseDataSource constructor.
-     * @param InternalModel $model
+     * @param ResourceModel $model
      */
-    public function __construct(InternalModel $model)
+    public function __construct(ResourceModel $model)
     {
         $this->model = $model;
     }
@@ -339,10 +339,10 @@ class DatabaseDataSource implements IDataSource
             /**
              * object
              */
-            $relationships = static::getRelationships();
+            $relationships = $model->getRelationships();
 
             //Apply filters for relationships
-            foreach ($filter->relationships as $relationshipKey => $relationshipFilterValue) {
+            foreach ($filter->getRelationships() as $relationshipKey => $relationshipFilterValue) {
                 if (!$this->model->issetRelationship($relationshipKey)) {
                     throw new \Exception(sprintf(
                         'Relationship "%s" not found',
@@ -353,7 +353,7 @@ class DatabaseDataSource implements IDataSource
                 $relationship = $relationships->{$relationshipKey};
 
                 if ($relationship->type === Relationship::TYPE_TO_ONE) {
-                    if ($relationshipFilterValue === Operator::OPERATOR_EMPTY) {
+                    if ($relationshipFilterValue === Operator::EMPTY) {
                         $additionalQuery[] = sprintf(
                             '%s "%s" IS NULL', //'%s "%s"."%s" IS NULL',
                             ($hasWhere ? 'AND' : 'WHERE'),
@@ -400,7 +400,7 @@ class DatabaseDataSource implements IDataSource
                 } elseif (in_array($operator, Operator::getNullableOperators())) {
                     //Define a transformation matrix, operator to SQL operator
                     $transformation = [
-                        Operator::OPERATOR_NOT_ISNULL => 'IS NOT NULL'
+                        Operator::NOT_ISNULL => 'IS NOT NULL'
                     ];
 
                     $additionalQuery[] = sprintf(
@@ -418,15 +418,15 @@ class DatabaseDataSource implements IDataSource
                 } elseif (in_array($operator, Operator::getInArrayOperators())) {
                     //Define a transformation matrix, operator to SQL operator
                     $transformation = [
-                        Operator::OPERATOR_IN_ARRAY => '= ANY',
-                        Operator::OPERATOR_NOT_IN_ARRAY => '= ANY' // External not
+                        Operator::IN_ARRAY => '= ANY',
+                        Operator::NOT_IN_ARRAY => '= ANY' // External not
                     ];
 
                     $additionalQuery[] = sprintf(//$operand ANY (array)
                         '%s %s (\'%s\' %s("%s")) ', //'%s %s (\'%s\' %s("%s"."%s")) ',
                         ($hasWhere ? 'AND' : 'WHERE'),
                         (
-                        in_array($operator, [Operator::OPERATOR_NOT_IN_ARRAY])
+                        in_array($operator, [Operator::NOT_IN_ARRAY])
                             ? 'NOT'
                             : ''
                         ),
@@ -443,8 +443,8 @@ class DatabaseDataSource implements IDataSource
                 } elseif (in_array($operator, Operator::getLikeOperators())) {
                     //Define a transformation matrix, operator to SQL operator
                     $transformation = [
-                        Operator::OPERATOR_LIKE => 'LIKE',
-                        Operator::OPERATOR_NOT_LIKE => 'NOT LIKE'
+                        Operator::LIKE => 'LIKE',
+                        Operator::NOT_LIKE => 'NOT LIKE'
                     ];
 
                     //LIKE '%text%', force lower - case insensitive
@@ -465,7 +465,7 @@ class DatabaseDataSource implements IDataSource
                     //@todo add operator class in
                     //Define a transformation matrix, operator to SQL operator
                     $transformation = [
-                        Operator::OPERATOR_NOT_IN => 'NOT IN'
+                        Operator::NOT_IN => 'NOT IN'
                     ];
 
                     $additionalQuery[] = sprintf(

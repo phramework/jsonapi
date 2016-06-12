@@ -20,7 +20,7 @@ use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Phramework\Operator\Operator;
 use Phramework\Util\Util;
 use Phramework\Validate\StringValidator;
@@ -79,7 +79,7 @@ class Filter extends Directive
      *         'tag'     => ['blog']
      *     ],
      *     [
-     *         new FilterAttribute('title', Operator::OPERATOR_LIKE, 'blog')
+     *         new FilterAttribute('title', Operator::LIKE, 'blog')
      *     ]
      * );
      * ```
@@ -89,8 +89,8 @@ class Filter extends Directive
      *     [1, 2],
      *     null,
      *     [
-     *         new FilterAttribute('title', Operator::OPERATOR_LIKE, 'blog'),
-     *         new FilterJSONAttribute('meta', 'keyword', Operator::OPERATOR_EQUAL, 'blog')
+     *         new FilterAttribute('title', Operator::LIKE, 'blog'),
+     *         new FilterJSONAttribute('meta', 'keyword', Operator::EQUAL, 'blog')
      *     ]
      * );
      * ```
@@ -113,11 +113,11 @@ class Filter extends Directive
         }
 
         foreach ($relationships as $relationshipKey => $relationshipValue) {
-            if (!is_array($relationshipValue) &&  $relationshipValue !== Operator::OPERATOR_EMPTY) {
+            if (!is_array($relationshipValue) &&  $relationshipValue !== Operator::EMPTY) {
                 throw new \InvalidArgumentException(sprintf(
                     'Values for relationship filter "%s" MUST be an array or Operator::"%s"',
                     $relationshipKey,
-                    Operator::OPERATOR_EMPTY
+                    Operator::EMPTY
                 ));
             }
         }
@@ -135,7 +135,7 @@ class Filter extends Directive
 
     /**
      * Validate against a resource model class
-     * @param InternalModel $model
+     * @param ResourceModel $model
      * @throws RequestException
      * @throws \Exception
      * @throws IncorrectParametersException When filter for primary id attribute is incorrect
@@ -148,7 +148,7 @@ class Filter extends Directive
      * ```
      * @todo add relationship idAttribute validators
      */
-    public function validate(InternalModel $model) : bool
+    public function validate(ResourceModel $model) : bool
     {
         $idAttribute     = $model->getIdAttribute();
         $filterValidator = $model->getFilterValidator();
@@ -183,7 +183,7 @@ class Filter extends Directive
                     ));
                 }
 
-                if ($relationshipValue === Operator::OPERATOR_EMPTY) {
+                if ($relationshipValue === Operator::EMPTY) {
                     continue;
                 }
 
@@ -309,7 +309,7 @@ class Filter extends Directive
 
     /**
      * @param ServerRequestInterface $request Request parameters
-     * @param InternalModel                    $model
+     * @param ResourceModel          $model
      * @return null|Filter
      * @throws IncorrectParameterException
      * @throws RequestException
@@ -321,7 +321,7 @@ class Filter extends Directive
      */
     public static function parseFromRequest(
         ServerRequestInterface $request,
-        InternalModel $model
+        ResourceModel $model
     ) {
         $param = $request->getQueryParams()['filter'] ?? null;
 
@@ -382,8 +382,8 @@ class Filter extends Directive
                     );
                 }
 
-                if ($filterValue === Operator::OPERATOR_EMPTY) {
-                    $values = Operator::OPERATOR_EMPTY;
+                if ($filterValue === Operator::EMPTY) {
+                    $values = Operator::EMPTY;
                 } else {
                     //Todo use filterValidation model
 
@@ -426,7 +426,7 @@ class Filter extends Directive
      *         [
      *             new FilterAttribute(
      *                 'status',
-     *                 Operator::OPERATOR_EQUAL,
+     *                 Operator::EQUAL,
      *                 true
      *             )
      *         ]

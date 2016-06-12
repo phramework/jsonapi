@@ -16,7 +16,7 @@
  */
 namespace Phramework\JSONAPI\Directive;
 
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -26,17 +26,17 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 abstract class Directive
 {
-    abstract public function validate(InternalModel $model) : bool;
+    abstract public function validate(ResourceModel $model) : bool;
 
     /**
      * @todo define request object in phramework
      * @param ServerRequestInterface $request
-     * @param InternalModel                    $model
+     * @param ResourceModel          $model
      * @return null|Directive
      */
     abstract public static function parseFromRequest(
         ServerRequestInterface $request,
-        InternalModel $model
+        ResourceModel $model
     );
 
     /**
@@ -79,7 +79,7 @@ abstract class Directive
 
     public static function parseByClasses(
         array $classes,
-        InternalModel $model,
+        ResourceModel $model,
         \stdClass $request,
         array &$directives,
         bool $ignoreIfExists = true,

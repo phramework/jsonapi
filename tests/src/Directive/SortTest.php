@@ -18,7 +18,7 @@ namespace Phramework\JSONAPI\Directive;
 
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
-use Phramework\JSONAPI\InternalModel;
+use Phramework\JSONAPI\ResourceModel;
 use Zend\Diactoros\ServerRequest;
 
 /**
@@ -34,13 +34,13 @@ class SortTest extends \PHPUnit_Framework_TestCase
     protected $request;
 
     /**
-     * @var InternalModel
+     * @var ResourceModel
      */
     protected $model;
 
     public function setUp()
     {
-        $this->model  = (new InternalModel('user'))
+        $this->model  = (new ResourceModel('user'))
             ->setSortableAttributes(
                 'id',
                 'title',
