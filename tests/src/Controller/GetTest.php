@@ -27,17 +27,15 @@ use Zend\Diactoros\ServerRequest;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class GetByIdTest extends \PHPUnit_Framework_TestCase
+class GetTest extends \PHPUnit_Framework_TestCase
 {
-    use GetById;
+    use Get;
 
-    public function testHandleGetById()
+    public function testHandleGet()
     {
-        $response = static::handleGetById(
+        $response = static::handleGet(
             new ServerRequest(),
-            User::getModel(),
-            [],
-            '1'
+            User::getModel()
         );
 
         $this->assertInstanceOf(
@@ -45,8 +43,15 @@ class GetByIdTest extends \PHPUnit_Framework_TestCase
             $response
         );
 
-        var_dump($response->getHeaders());
-        var_dump($response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('OK', $response->getReasonPhrase());
+
+        $this->assertSame(
+            'application/vnd.api+json',
+            $response->getHeader('Content-Type')
+        );
+
+        printf("Message:\n%s\n", $response->getBody());
 
         $this->markTestIncomplete();
     }

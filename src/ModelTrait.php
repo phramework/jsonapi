@@ -7,7 +7,7 @@ namespace Phramework\JSONAPI;
 trait ModelTrait
 {
     /**
-     * @var ResouceModel
+     * @var ResourceModel
      */
     protected static $model = null;  //important to define $model in extended classes
 

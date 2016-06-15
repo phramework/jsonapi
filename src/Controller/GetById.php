@@ -23,6 +23,7 @@ use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -40,13 +41,14 @@ trait GetById
      * @param ResourceModel          $model
      * @param  Directive[]           $directives
      * @throws \Phramework\Exceptions\NotFoundException
+     * @return ResponseInterface
      */
     public static function handleGetById(
         ServerRequestInterface $request,
-        string $id,
         ResourceModel $model,
-        array $directives
-    ) {
+        array $directives = [],
+        string $id
+    ) : ResponseInterface {
         //todo filter id if model filter is set
 
         //Parse request related directives from request
@@ -68,7 +70,7 @@ trait GetById
 
         static::assertExists($resource);
 
-        static::viewData(
+        return static::viewData(
             $resource,
             (object) [
                //todo 

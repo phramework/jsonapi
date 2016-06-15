@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -40,7 +41,7 @@ trait Patch
         callable $viewCallback = null,
         int $bulkLimit = null,
         array $directives
-    ) {
+    ) : ResponseInterface {
         //gather data as a queue
 
         //check bulk limit

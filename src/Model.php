@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\Directive\Directive;
+
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
@@ -37,27 +39,27 @@ abstract class Model
     }
 
     /**
-     * MUST BE IMPLEMENTED
+     * MUST be implemented
      */
     abstract protected static function defineModel() : ResourceModel;
 
     /**
-     * @param IDirective[] ...$directives
+     * @param Directive[] ...$directives
      * @return Resource[]
      */
-    public static function get(IDirective ...$directives) : array
+    public static function get(Directive ...$directives) : array
     {
         return static::getModel()->get(...func_get_args());
     }
 
     /**
      * @param string       $id
-     * @param IDirective[] ...$directives
+     * @param Directive[] ...$directives
      * @return Resource|null
      */
     public static function getById(
         string $id,
-        IDirective ...$directives
+        Directive ...$directives
     ) {
         return static::getModel()->getById(...func_get_args());
     }

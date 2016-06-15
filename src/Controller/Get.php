@@ -23,6 +23,7 @@ use Phramework\JSONAPI\Directive\IncludeResources;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\ResourceModel;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -37,8 +38,8 @@ trait Get
     public static function handleGet(
         ServerRequestInterface $request,
         ResourceModel $model,
-        array $directives
-    ) {
+        array $directives = []
+    ) : ResponseInterface {
         //Parse request related directives from request
         $directives = static::parseDirectives(
             [
@@ -57,7 +58,7 @@ trait Get
             ...$directives
         );
 
-        static::viewData(
+        return static::viewData(
             $collection,
             (object) [
                 //todo

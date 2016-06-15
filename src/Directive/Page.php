@@ -42,7 +42,7 @@ class Page extends Directive implements \JsonSerializable
     protected $offset;
 
     /**
-     * @param int|null $limit null value is interpreted as "no limit"
+     * @param int $limit null value is interpreted as "no limit"
      * @param int $offset
      */
     public function __construct(int $limit = null, int $offset = 0)
@@ -54,7 +54,6 @@ class Page extends Directive implements \JsonSerializable
     /**
      * @param ResourceModel $model
      * @throws IncorrectParameterException When limit exceeds model's maximum page limit
-     * @uses InternalModel::getMaxPageLimit
      */
     public function validate(ResourceModel $model) : bool
     {
@@ -74,7 +73,7 @@ class Page extends Directive implements \JsonSerializable
      * @param ServerRequestInterface $request
      * @param ResourceModel          $model
      * @return null|Page
-     * @throws \Exception|null|\Phramework\Validate\Result\Exception
+     * @throws \Exception|null
      * @todo use request instead of parameters
      * @uses InternalModel::getMaxPageLimit
      */

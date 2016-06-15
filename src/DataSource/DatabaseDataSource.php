@@ -57,7 +57,7 @@ class DatabaseDataSource implements IDataSource
      * @return array
      */
     public function get(
-        array $directives
+        Directive ...$directives
     ) : array {
         $this->requireTableSetting();
 
@@ -216,7 +216,7 @@ class DatabaseDataSource implements IDataSource
         if ($sort !== null) {
             $sort ->validate($this->model);
 
-            $sortAttribute = $sort->attribute;
+            $sortAttribute = $sort->getAttribute();
 
             /*$tableAttribute = (
                 $sort->table === null
@@ -227,7 +227,7 @@ class DatabaseDataSource implements IDataSource
             $replace = "\n" . sprintf(
                     'ORDER BY "%s" %s',
                     $sortAttribute,
-                    ($sort->ascending ? 'ASC' : 'DESC')
+                    ($sort->getAttribute() ? 'ASC' : 'DESC')
                 );
         }
 
@@ -330,7 +330,7 @@ class DatabaseDataSource implements IDataSource
                     ($hasWhere ? 'AND' : 'WHERE'),
                     //static::$table,
                     static::$idAttribute,
-                    self::handleFilterParseIn($filter->primary)
+                    self::handleFilterParseIn($filter->getPrimary())
                 );
 
                 $hasWhere = true;

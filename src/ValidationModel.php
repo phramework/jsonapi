@@ -36,8 +36,8 @@ class ValidationModel
     public $relationships;
 
     /**
-     * @param ObjectValidator       $attributes
-     * @param ObjectValidator|null  $relationships
+     * @param ObjectValidator  $attributes
+     * @param ObjectValidator  $relationships
      */
     public function __construct(
         ObjectValidator $attributes,

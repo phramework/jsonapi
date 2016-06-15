@@ -77,19 +77,19 @@ class Relationship
     protected $flags;
 
     /**
-     * @param string               $model               Class path of relationship resource model
-     * @param int                  $type                *[Optional] Relationship type
-     * @param string|null          $recordDataAttribute *[Optional] Attribute name in record containing relationship data
-     * @param object|null $callbacks           *[Optional] Callable method can be used
+     * @param ResourceModel $model               Class path of relationship resource model
+     * @param int           $type                *[Optional] Relationship type
+     * @param string        $recordDataAttribute *[Optional] Attribute name in record containing relationship data
+     * @param \stdClass     $callbacks           *[Optional] Callable method can be used
      * to fetch relationship data, see TODO
      * @param int                  $flags               *[Optional] Relationship flags
-     * @throws \Exception When is not null, callable or object of callables
+     * @throws \Exception When is not null, callable or object of callbacks
      * @example
      * ```php
      * getValidationModel() {
      *     return (object) [
      *         'tag' => new Relationship(
-     *             Tag::class,
+     *             $model,
      *             Relationship::TYPE_TO_MANY,
      *             null,
      *             (object) [

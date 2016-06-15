@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-use APP\DataSource\MemoryDataSource;
+use Phramework\JSONAPI\APP\DataSource\MemoryDataSource;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -26,5 +26,13 @@ MemoryDataSource::insert(
     (object) [
         'username' => 'nohponex',
         'email'    => 'nohponex@gmail.com'
+    ]
+);
+
+MemoryDataSource::insert(
+    'user',
+    (object) [
+        'username' => 'nohponex2',
+        'email'    => 'nohponex+2@gmail.com'
     ]
 );

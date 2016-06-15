@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI;
 
 use Directive\Model\Directives;
+use Phramework\JSONAPI\Directive\Directive;
 use Phramework\Util\Util;
 
 /**
@@ -37,8 +38,10 @@ class Resource extends \stdClass implements \JsonSerializable
 {
     const META_MEMBER = 'attributes-meta';
 
-    const PARSE_DEFAULT            = Resource::PARSE_ATTRIBUTES   | Resource::PARSE_LINKS
-                                   | Resource::PARSE_RELATIONSHIP | Resource::PARSE_RELATIONSHIP_LINKS; //15
+    const PARSE_DEFAULT            = Resource::PARSE_ATTRIBUTES
+        | Resource::PARSE_LINKS
+        | Resource::PARSE_RELATIONSHIP
+        | Resource::PARSE_RELATIONSHIP_LINKS;
 
     const PARSE_ATTRIBUTES              = 1;
     const PARSE_LINKS                   = 2;
@@ -136,9 +139,9 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @param (array|\stdClass)[] $records
      * @param ResourceModel $model
-     * @param IDirective[]  $directives
+     * @param Directive[]   $directives
      * @param int           $flags
-     * @return array
+     * @return Resource[]
      * @throws \Exception
      */
     public static function parseFromRecords(
@@ -146,7 +149,7 @@ class Resource extends \stdClass implements \JsonSerializable
         ResourceModel $model,
         array $directives = [],
         int $flags = Resource::PARSE_DEFAULT
-    ) {
+    ) : array {
         if (empty($records)) {
             return [];
         }
@@ -175,7 +178,7 @@ class Resource extends \stdClass implements \JsonSerializable
     /**
      * @param array|\stdClass $record
      * @param ResourceModel   $model
-     * @param IDirective[]    $directives
+     * @param Directive[]    $directives
      * @param int             $flags
      * @return Resource|null
      * @throws \Exception
@@ -187,7 +190,7 @@ class Resource extends \stdClass implements \JsonSerializable
      *         'status' => 'enabled',
      *         'title'  => 'blog'
      *     ],
-     *     Tag::class
+     *     $model
      * );
      * ```
      * @todo what about getRelationshipData method ?
@@ -496,6 +499,5 @@ class Resource extends \stdClass implements \JsonSerializable
     {
         return $this->data;
     }
-
-
+    
 }

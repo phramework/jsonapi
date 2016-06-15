@@ -16,7 +16,7 @@
  */
 namespace Phramework\JSONAPI\APP\Models;
 
-use APP\DataSource\MemoryDataSource;
+use Phramework\JSONAPI\APP\DataSource\MemoryDataSource;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\Model;
@@ -36,7 +36,10 @@ class User extends Model
      */
     protected static function defineModel() : ResourceModel
     {
-        $model = (new ResourceModel('user', new MemoryDataSource()));
+        $model = (new ResourceModel('user', new MemoryDataSource()))
+            ->addVariable('table', 'user');
+
+        $model->getDataSource()->setModel($model);
 
         return $model;
     }

@@ -198,11 +198,17 @@ class ResourceModel
         return $this;
     }
 
+    /**
+     * @param array $records
+     * @param array $directives
+     * @param int   $flags
+     * @return Resource[]
+     */
     public function collection(
         array $records = [],
         array $directives = [],
         $flags = Resource::PARSE_DEFAULT
-    ) {
+    ) : array {
         return Resource::parseFromRecords(
             $records,
             $this,

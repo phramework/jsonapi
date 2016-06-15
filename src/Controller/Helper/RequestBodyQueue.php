@@ -17,6 +17,8 @@
  */
 namespace Phramework\JSONAPI\Controller\Helper;
 
+use Phramework\JSONAPI\ValidationModel;
+
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
@@ -25,4 +27,32 @@ namespace Phramework\JSONAPI\Controller\Helper;
 trait RequestBodyQueue
 {
 
+    public static function handleResource(
+        \stdClass $resource,
+        ValidationModel $validationModel,
+        array $validationCallbacks = []
+    ) {
+
+        $attributes = $validationModel->getAttributes()->parse(
+            $resource->attributes ?? new \stdClass()
+        );
+
+        //getParsedRelationshipAttributes
+        $relationships = new \stdClass();
+        //todo
+
+        //Call Validation callbacks
+        foreach ($validationCallbacks as $callback) {
+
+            $callback(
+                $resource,
+                $attributes, //parsed
+                $relationships //parsed
+            );
+
+            //todo
+        }
+
+        return new ResourceQueueItem($attributes, $relationships);
+    }
 }

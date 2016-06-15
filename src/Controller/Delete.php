@@ -40,7 +40,7 @@ trait Delete
         callable $viewCallback = null,
         int $bulkLimit = null,
         array $directives
-    ) {
+    ) : ResponseInterface {
         //gather data as a queue
 
         //check bulk limit

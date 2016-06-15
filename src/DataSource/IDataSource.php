@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI\DataSource;
 
+use Phramework\JSONAPI\Directive\Directive;
+
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
@@ -24,7 +26,7 @@ namespace Phramework\JSONAPI\DataSource;
 interface IDataSource
 {
     public function get(
-        array $directives
+        Directive ...$directives
     ) : array;
     
     public function post(

@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace APP\DataSource;
+namespace Phramework\JSONAPI\APP\DataSource;
 
 use Phramework\Database\Operations\Create;
 use Phramework\JSONAPI\DataSource\IDataSource;
+use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
 
 /**
@@ -31,22 +32,22 @@ class MemoryDataSource implements IDataSource
 
     public static function addTable(string $table)
     {
-        if (property_exists(static::$database, $table)) {
+        if (array_key_exists($table, static::$database)) {
             throw new \LogicException('Table name exists');
         }
         
-        static::$database->{$table} = [];
+        static::$database[$table] = [];
     }
 
     public static function insert(string $table, \stdClass $record)
     {
-        static::$database->{$table}[] = $record;
+        static::$database[$table][] = $record;
     }
 
     public static function select(string $table) : array
     {
 
-        return static::$database->{$table};
+        return static::$database[$table];
     }
 
     /**
@@ -54,13 +55,13 @@ class MemoryDataSource implements IDataSource
      */
     protected $model;
 
-    public function __construct(ResourceModel $model)
+    public function __construct(ResourceModel $model = null)
     {
         $this->model = $model;
     }
 
     public function get(
-        array $directives
+        Directive ...$directives
     ) : array {
         // TODO: Implement get() method.
 
@@ -122,4 +123,22 @@ class MemoryDataSource implements IDataSource
         // TODO: Implement delete() method.
     }
 
+    /**
+     * @return ResourceModel
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * @param ResourceModel $model
+     * @return $this
+     */
+    public function setModel($model)
+    {
+        $this->model = $model;
+
+        return $this;
+    }
 }

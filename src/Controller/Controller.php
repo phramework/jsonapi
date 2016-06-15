@@ -16,11 +16,15 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\Exceptions\MissingParametersException;
+use Phramework\Exceptions\Source\ISource;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -46,6 +50,9 @@ trait Controller
         );
     }
 
+    /**
+     * @todo
+     */
     protected static function includeRelationshipResources(
         ServerRequestInterface $request,
         ResourceModel $model,
@@ -54,9 +61,11 @@ trait Controller
     ) {
         //todo
 
-        if ($includeResources === null) {
+        /*if ($includeResources === null) {
             return null;
-        }
+        }*/
+
+        return null;
     }
 
     /**
@@ -100,7 +109,6 @@ trait Controller
      * @param \stdClass $links
      * @param \stdClass $meta
      * @param (Resource|RelationshipResource)[]     $included
-     * @return bool
      * @todo write
      */
     public static function viewData(
@@ -108,7 +116,7 @@ trait Controller
         \stdClass $links = null,
         \stdClass $meta = null,
         array $included = null
-    ) {
+    ) : ResponseInterface {
         $viewParameters = new \stdClass();
 
         if ($links) {
@@ -125,10 +133,13 @@ trait Controller
             $viewParameters->meta = $meta;
         }
 
+        $response = new Response\JsonResponse(
+            $viewParameters,
+            200,
+            [ 'Content-Type' => ['application/vnd.api+json;charset=utf-8']]
+        );
 
-        unset($viewParameters);
-
-        return true;
+        return $response;
     }
 
     /**
@@ -207,5 +218,31 @@ trait Controller
         }
 
         return $directives;
+    }
+
+    public static function requireProperties(
+        $object,
+        ISource $source = null,
+        string ...$properties
+    ) {
+        $missing = [];
+
+        //Work with objects
+        if (is_array($object)) {
+            $object = (object) $object;
+        }
+
+        foreach ($properties as $key) {
+            if (!property_exists($object, $key)) {
+                array_push($missing, $key);
+            }
+        }
+
+        if (!empty($missing)) {
+            throw new MissingParametersException(
+                $missing,
+                $source
+            );
+        }
     }
 }
