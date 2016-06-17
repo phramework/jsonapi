@@ -17,24 +17,57 @@
 namespace Phramework\JSONAPI\DataSource;
 
 use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\ResourceModel;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  */
-interface IDataSource
+abstract class DataSource
 {
-    public function get(
+    /**
+     * @var ResourceModel
+     */
+    protected $resourceModel;
+
+    public abstract  function get(
         Directive ...$directives
     ) : array;
     
-    public function post(
+    public abstract  function post(
         \stdClass $attributes,
         $return = \Phramework\Database\Operations\Create::RETURN_ID
     );
     
-    public function patch(string $id, \stdClass $attributes, $return = null);
+    public abstract  function patch(
+        string $id,
+        \stdClass $attributes,
+        $return = null
+    );
 
-    public function delete(string $id, \stdClass $additionalAttributes = null);
+    public abstract  function delete(
+        string $id,
+        \stdClass $additionalAttributes = null
+    );
+
+    /**
+     * @param ResourceModel $resourceModel
+     * @return DataSource
+     */
+    public function setResourceModel(
+        ResourceModel $resourceModel
+    ) : DataSource {
+        $this->resourceModel = $resourceModel;
+
+        return $this;
+    }
+
+    /**
+     * @return ResourceModel
+     */
+    public function getResourceModel()
+    {
+        return $this->resourceModel;
+    }
 }

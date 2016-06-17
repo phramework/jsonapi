@@ -36,20 +36,15 @@ use Phramework\Operator\Operator;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  */
-class DatabaseDataSource implements IDataSource
+class DatabaseDataSource extends DataSource
 {
-    /**
-     * @var ResourceModel
-     */
-    protected $model;
-
     /**
      * DatabaseDataSource constructor.
      * @param ResourceModel $model
      */
     public function __construct(ResourceModel $model)
     {
-        $this->model = $model;
+        $this->resourceModel = $model;
     }
 
     /**
@@ -62,7 +57,7 @@ class DatabaseDataSource implements IDataSource
         $this->requireTableSetting();
 
         foreach ($directives as $directive) {
-            $directive->validate($this->model);
+            $directive->validate($this->resourceModel);
         }
 
         $query =
@@ -84,7 +79,7 @@ class DatabaseDataSource implements IDataSource
 
         array_walk($records, $this->prepareRecords);
 
-        return $this->model->collection($records, $directives);
+        return $this->resourceModel->collection($records, $directives);
     }
 
     public function post(
@@ -94,7 +89,7 @@ class DatabaseDataSource implements IDataSource
         return Create::create(
             $attributes,
             $this->requireTableSetting(),
-            $this->model->getVariable('schema', null),
+            $this->resourceModel->getVariable('schema', null),
             $return
         );
     }
@@ -107,7 +102,7 @@ class DatabaseDataSource implements IDataSource
             $id,
             (array) $attributes,
             $this->requireTableSetting(),
-            $this->model->getVariable('schema', null)
+            $this->resourceModel->getVariable('schema', null)
         );
     }
 
@@ -123,7 +118,7 @@ class DatabaseDataSource implements IDataSource
                 : []
             ),
             $this->requireTableSetting(),
-            $this->model->getVariable('schema', null)
+            $this->resourceModel->getVariable('schema', null)
         );
     }
 
@@ -132,12 +127,12 @@ class DatabaseDataSource implements IDataSource
      * @return string
      */
     private function requireTableSetting() : string {
-        $table = $this->model->getVariable('table');
+        $table = $this->resourceModel->getVariable('table');
 
         if ($table === null) {
             throw new \LogicException(sprintf(
                 'Setting "table" is required for internal model "%s"',
-                get_class($this->model)
+                get_class($this->resourceModel)
             ));
         }
 
@@ -149,7 +144,7 @@ class DatabaseDataSource implements IDataSource
         bool $queryHasWhere = false,
         array $directives
     ) {
-        $model = $this->model;
+        $model = $this->resourceModel;
 
         //Replace table is setting is set
         if (($table = $model->getVariable('table', null)) !== null) {
@@ -214,7 +209,7 @@ class DatabaseDataSource implements IDataSource
         $replace = '';
 
         if ($sort !== null) {
-            $sort ->validate($this->model);
+            $sort ->validate($this->resourceModel);
 
             $sortAttribute = $sort->getAttribute();
 
@@ -322,7 +317,7 @@ class DatabaseDataSource implements IDataSource
         $additionalQuery = [];
 
         if ($filter !== null) {
-            $filter->validate($model = $this->model);
+            $filter->validate($model = $this->resourceModel);
 
             if (count($filter->getPrimary())) {
                 $additionalQuery[] = sprintf(
@@ -343,7 +338,7 @@ class DatabaseDataSource implements IDataSource
 
             //Apply filters for relationships
             foreach ($filter->getRelationships() as $relationshipKey => $relationshipFilterValue) {
-                if (!$this->model->issetRelationship($relationshipKey)) {
+                if (!$this->resourceModel->issetRelationship($relationshipKey)) {
                     throw new \Exception(sprintf(
                         'Relationship "%s" not found',
                         $relationshipKey
@@ -547,7 +542,7 @@ class DatabaseDataSource implements IDataSource
         Fields $fields = null
     ) : string {
 
-        $model = $this->model;
+        $model = $this->resourceModel;
 
         $type = $model->getResourceType();
 
@@ -557,7 +552,7 @@ class DatabaseDataSource implements IDataSource
 
             $attributes =  array_merge(
                 $fields->get($type),
-                [$this->model->getIdAttribute()] //[static::getTable() . '.' . static::getIdAttribute()]
+                [$this->resourceModel->getIdAttribute()] //[static::getTable() . '.' . static::getIdAttribute()]
             );
         } else {
             $attributes = $fields->get($type);
@@ -566,7 +561,7 @@ class DatabaseDataSource implements IDataSource
                 //Get field attributes for this type and force id attribute
                 $attributes = array_merge(
                     $fields->get($type),
-                    [$this->model->getIdAttribute()]
+                    [$this->resourceModel->getIdAttribute()]
                 );
             }
         }

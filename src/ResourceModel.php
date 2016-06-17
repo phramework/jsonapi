@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\DataSource\DatabaseDataSource;
-use Phramework\JSONAPI\DataSource\IDataSource;
+use Phramework\JSONAPI\DataSource\DataSource;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Model\DataSourceTrait;
 use Phramework\JSONAPI\Model\DirectivesTrait;
@@ -68,10 +68,10 @@ class ResourceModel
      * Will create a new internal model initialized with:
      * - defaultDirectives Page directive limit with value of getMaxPageLimit()
      * - empty prepareRecords
-     * @param string $resourceType
-     * @param IDataSource $dataSource null will interpreted as a new DatabaseDataSource
+     * @param string     $resourceType
+     * @param DataSource $dataSource null will interpreted as a new DatabaseDataSource
      */
-    public function __construct(string $resourceType, IDataSource $dataSource = null)
+    public function __construct(string $resourceType, DataSource $dataSource = null)
     {
         $this->resourceType      = $resourceType;
 
@@ -96,6 +96,8 @@ class ResourceModel
                 $this
             );
         }
+        
+        $dataSource->setResourceModel($this);
 
         //Setup default operations to use data source
         $this->get    = [$dataSource, 'get'];

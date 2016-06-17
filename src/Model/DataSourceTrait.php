@@ -16,7 +16,7 @@
  */
 namespace Phramework\JSONAPI\Model;
 
-use Phramework\JSONAPI\DataSource\IDataSource;
+use Phramework\JSONAPI\DataSource\DataSource;
 use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Directive\Page;
@@ -55,7 +55,7 @@ trait DataSourceTrait
     protected $delete;
 
     /**
-     * @var IDataSource
+     * @var DataSource
      */
     public $dataSource;
 
@@ -121,7 +121,7 @@ trait DataSourceTrait
     }
 
     /**
-     * @return IDataSource
+     * @return DataSource
      */
     public function getDataSource()
     {
@@ -129,10 +129,10 @@ trait DataSourceTrait
     }
 
     /**
-     * @param IDataSource $dataSource
+     * @param DataSource $dataSource
      * @return $this
      */
-    public function setDataSource(IDataSource $dataSource)
+    public function setDataSource(DataSource $dataSource)
     {
         $this->dataSource = $dataSource;
 

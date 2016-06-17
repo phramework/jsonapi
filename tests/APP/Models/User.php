@@ -39,8 +39,6 @@ class User extends Model
         $model = (new ResourceModel('user', new MemoryDataSource()))
             ->addVariable('table', 'user');
 
-        $model->getDataSource()->setModel($model);
-
         return $model;
     }
 }

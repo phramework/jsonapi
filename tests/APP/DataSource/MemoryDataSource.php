@@ -17,7 +17,7 @@
 namespace Phramework\JSONAPI\APP\DataSource;
 
 use Phramework\Database\Operations\Create;
-use Phramework\JSONAPI\DataSource\IDataSource;
+use Phramework\JSONAPI\DataSource\DataSource;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
 
@@ -26,7 +26,7 @@ use Phramework\JSONAPI\ResourceModel;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class MemoryDataSource implements IDataSource
+class MemoryDataSource extends DataSource
 {
     protected static $database = [];
 
@@ -50,14 +50,10 @@ class MemoryDataSource implements IDataSource
         return static::$database[$table];
     }
 
-    /**
-     * @var ResourceModel
-     */
-    protected $model;
 
     public function __construct(ResourceModel $model = null)
     {
-        $this->model = $model;
+        $this->resourceModel = $model;
     }
 
     public function get(
@@ -65,7 +61,9 @@ class MemoryDataSource implements IDataSource
     ) : array {
         // TODO: Implement get() method.
 
-        $table = $this->model->getVariable('table');
+        //todo throw exception if table is not defined
+        
+        $table = $this->resourceModel->getVariable('table');
 
         $data = static::select($table);
 
@@ -92,13 +90,13 @@ class MemoryDataSource implements IDataSource
         $return = \Phramework\Database\Operations\Create::RETURN_ID
     ) {
         //todo insert id
-        if (!property_exists($attributes, $this->model->getIdAttribute())) {
-            $attributes->{$this->model->getIdAttribute()} = md5(mt_rand());
+        if (!property_exists($attributes, $this->resourceModel->getIdAttribute())) {
+            $attributes->{$this->resourceModel->getIdAttribute()} = md5(mt_rand());
         }
 
-        $id = $attributes->{$this->model->getIdAttribute()};
+        $id = $attributes->{$this->resourceModel->getIdAttribute()};
 
-        $table = $this->model->getVariable('table');
+        $table = $this->resourceModel->getVariable('table');
 
         static::insert($table, $attributes);
 
@@ -109,7 +107,7 @@ class MemoryDataSource implements IDataSource
                 return $attributes;
             case Create::RETURN_ID:
             default:
-                return $attributes->{$this->model->getIdAttribute()};
+                return $attributes->{$this->resourceModel->getIdAttribute()};
         }
     }
 
@@ -121,24 +119,5 @@ class MemoryDataSource implements IDataSource
     public function delete(string $id, \stdClass $additionalAttributes = null)
     {
         // TODO: Implement delete() method.
-    }
-
-    /**
-     * @return ResourceModel
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
-     * @param ResourceModel $model
-     * @return $this
-     */
-    public function setModel($model)
-    {
-        $this->model = $model;
-
-        return $this;
     }
 }

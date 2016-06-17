@@ -46,7 +46,8 @@ class GetTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('OK', $response->getReasonPhrase());
 
-        $this->assertSame(
+        //todo use regex instead
+        $this->assertStringStartsWith(
             'application/vnd.api+json',
             $response->getHeader('Content-Type')
         );
