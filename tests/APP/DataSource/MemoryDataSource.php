@@ -19,6 +19,9 @@ namespace Phramework\JSONAPI\APP\DataSource;
 use Phramework\Database\Operations\Create;
 use Phramework\JSONAPI\DataSource\DataSource;
 use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\Directive\Filter;
+use Phramework\JSONAPI\Directive\Page;
+use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\ResourceModel;
 
 /**
@@ -46,32 +49,51 @@ class MemoryDataSource extends DataSource
 
     public static function select(string $table) : array
     {
-
         return static::$database[$table];
     }
 
-
-    public function __construct(ResourceModel $model = null)
+    public function __construct(ResourceModel $resourceModel = null)
     {
-        $this->resourceModel = $model;
+        $this->resourceModel = $resourceModel;
     }
 
     public function get(
         Directive ...$directives
     ) : array {
-        // TODO: Implement get() method.
 
         //todo throw exception if table is not defined
         
         $table = $this->resourceModel->getVariable('table');
 
-        $data = static::select($table);
+        $records = static::select($table);
+        $records = json_decode(json_encode($records));
+        $idAttribute = $this->resourceModel->getIdAttribute();
 
         //apply directives
         //todo
 
         //filter
-        //todo
+
+        //todo don't ignore default
+
+        /**
+         * @var Filter
+         */
+        $filter = Directive::getByClass(
+            Filter::class,
+            $directives
+        );
+
+        if ($filter !== null) {
+            if (!empty($primary = $filter->getPrimary())) {
+                $records = array_filter(
+                    $records,
+                    function ($record) use ($primary, $idAttribute) {
+                        return in_array($record->{$idAttribute}, $primary);
+                    }
+                );
+            }
+        }
 
         //sort
         //todo
@@ -82,7 +104,24 @@ class MemoryDataSource extends DataSource
         //pagination
         //todo
 
-        return $data;
+        $page =  Directive::getByClass(
+            Page::class,
+            $directives
+        );
+
+        if ($page !== null) {
+            $records = array_slice(
+                $records,
+                $page->getOffset(),
+                $page->getLimit()
+            );
+        }
+
+        return Resource::parseFromRecords(
+            $records, //deep copy
+            $this->resourceModel,
+            $directives
+        );
     }
 
     public function post(

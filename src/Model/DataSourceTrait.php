@@ -43,7 +43,6 @@ trait DataSourceTrait
      */
     protected $patch;
 
-
     /**
      * @var callable
      */
@@ -134,6 +133,8 @@ trait DataSourceTrait
      */
     public function setDataSource(DataSource $dataSource)
     {
+        $dataSource->setResourceModel($this);
+        
         $this->dataSource = $dataSource;
 
         return $this;
@@ -142,7 +143,7 @@ trait DataSourceTrait
     /**
      * @param Directive[] ...$directives
      * @return Resource[]
-     * @throws \LogicException When callable get property is not set
+     * @throws \LogicException When get property is not set
      */
     public function get(Directive ...$directives) : array
     {
@@ -246,8 +247,6 @@ trait DataSourceTrait
 
         return $this;
     }
-
-
 
     /**
      * @param string|string[] $id

@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\JSONAPI\APP\Models\User;
 use Phramework\JSONAPI\Controller\Controller;
 use Phramework\JSONAPI\Resource;
+use Phramework\Util\Util;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\ServerRequest;
 
@@ -35,7 +36,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
     {
         $response = static::handleGet(
             new ServerRequest(),
-            User::getModel()
+            User::getResourceModel()
         );
 
         $this->assertInstanceOf(
@@ -49,10 +50,24 @@ class GetTest extends \PHPUnit_Framework_TestCase
         //todo use regex instead
         $this->assertStringStartsWith(
             'application/vnd.api+json',
-            $response->getHeader('Content-Type')
+            $response->getHeader('Content-Type')[0]
         );
 
-        printf("Message:\n%s\n", $response->getBody());
+        $body = $response->getBody()->getContents();
+
+        $this->assertTrue(Util::isJSON($body));
+
+        $bodyParsed = json_decode($body);
+
+        $this->assertObjectHasAttribute(
+            'data',
+            $bodyParsed
+        );
+
+        $this->assertInternalType(
+            'array',
+            $bodyParsed->data
+        );
 
         $this->markTestIncomplete();
     }

@@ -18,7 +18,6 @@ namespace Phramework\JSONAPI\APP\Models;
 
 use Phramework\JSONAPI\APP\DataSource\MemoryDataSource;
 use Phramework\JSONAPI\Directive\Directive;
-use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\Model;
 use Phramework\JSONAPI\ModelTrait;
@@ -28,7 +27,7 @@ use Phramework\JSONAPI\ModelTrait;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class User extends Model
+class Tag extends Model
 {
     use ModelTrait;
 
@@ -37,28 +36,8 @@ class User extends Model
      */
     protected static function defineModel() : ResourceModel
     {
-        $model = (new ResourceModel('user', new MemoryDataSource()))
-            ->addVariable('table', 'user')
-            ->setRelationships((object) [
-                'group' => new Relationship(
-                    Group::getResourceModel(),
-                    Relationship::TYPE_TO_ONE,
-                    'group_id'
-                ),
-                'tag' => new Relationship(
-                    Tag::getResourceModel(),
-                    Relationship::TYPE_TO_MANY,
-                    'tag_id'
-                ),
-                'company' => new Relationship(
-                    Company::getResourceModel(),
-                    Relationship::TYPE_TO_MANY,
-                    null,
-                    function (array $ids) {
-                        //todo
-                    }
-                )
-            ]);
+        $model = (new ResourceModel('tag', new MemoryDataSource()))
+            ->addVariable('table', 'tag');
 
         return $model;
     }

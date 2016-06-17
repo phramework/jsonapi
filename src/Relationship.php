@@ -138,9 +138,9 @@ class Relationship
     }
 
     /**
-     * @return string
+     * @return ResourceModel
      */
-    public function getModel()
+    public function getResourceModel()
     {
         return $this->model;
     }

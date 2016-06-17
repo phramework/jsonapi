@@ -35,7 +35,7 @@ class GetByIdTest extends \PHPUnit_Framework_TestCase
     {
         $response = static::handleGetById(
             new ServerRequest(),
-            User::getModel(),
+            User::getResourceModel(),
             [],
             '1'
         );
@@ -45,8 +45,8 @@ class GetByIdTest extends \PHPUnit_Framework_TestCase
             $response
         );
 
-        var_dump($response->getHeaders());
-        var_dump($response->getBody());
+       /* var_dump($response->getHeaders());
+        var_dump($response->getBody());*/
 
         $this->markTestIncomplete();
     }

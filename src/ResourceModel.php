@@ -21,7 +21,7 @@ use Phramework\JSONAPI\DataSource\DataSource;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Model\DataSourceTrait;
 use Phramework\JSONAPI\Model\DirectivesTrait;
-use Phramework\JSONAPI\Model\Relationships;
+use Phramework\JSONAPI\Model\RelationshipsTrait;
 use Phramework\JSONAPI\Model\VariableTrait;
 use Phramework\Validate\ObjectValidator;
 
@@ -41,7 +41,7 @@ class ResourceModel
     use DirectivesTrait;
     use VariableTrait;
     use DataSourceTrait;
-    use Relationships;
+    use RelationshipsTrait;
     
     /**
      * @var string

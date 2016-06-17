@@ -18,6 +18,9 @@
 namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\RequestException;
+use Phramework\JSONAPI\Directive\AdditionalParameter;
+use Phramework\JSONAPI\Directive\AdditionalRelationshipsParameter;
+use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\Relationship;
@@ -29,7 +32,7 @@ use Phramework\JSONAPI\Resource;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-trait Relationships
+trait RelationshipsTrait
 {
     /**
      * @var \stdClass
@@ -88,25 +91,31 @@ trait Relationships
      * Get records from a relationship link
      * @param string $relationshipKey
      * @param string $id
-     * @param Fields|null $fields
      * @return RelationshipResource|RelationshipResource[]
      * @throws \Phramework\Exceptions\ServerException If relationship doesn't exist
-     * @throws \Phramework\Exceptions\ServerException If relationship's class method is
-     * not defined
+     * @throws \Phramework\Exceptions\ServerException If relationship's class method is not defined
      * @todo
      */
     public static function getRelationshipData(
         ResourceModel $model,
-        $relationshipKey,
-        $id,
-        Fields $fields = null,
-        $primaryDataParameters = [],
-        $relationshipParameters = []
+        string $relationshipKey,
+        string $id,
+        Directive ...$directives
     ) {
+        list(
+            $fields,
+            $primaryDataParameters,
+            $relationshipParameters
+        ) = Directive::getByClasses(
+            Fields::class,
+            AdditionalParameter::class,
+            AdditionalRelationshipsParameter::class
+        );
+
         $relationship = $model->getRelationship($relationshipKey);
 
         switch ($relationship->getType()) {
-            case \Phramework\JSONAPI\Relationship::TYPE_TO_ONE:
+            case Relationship::TYPE_TO_ONE:
                 $resource = $callMethod = $model->getById(
                     $id,
                     $fields,
@@ -123,7 +132,7 @@ trait Relationships
                     ? $resource->relationships->{$relationshipKey}->data
                     : null
                 );
-            case \Phramework\JSONAPI\Relationship::TYPE_TO_MANY:
+            case Relationship::TYPE_TO_MANY:
             default:
                 if (!isset($relationship->getCallbacks()->{'GET'})) {
                     return [];
@@ -134,7 +143,7 @@ trait Relationships
                 if (!is_callable($callMethod)) {
                     throw new \Phramework\Exceptions\ServerException(
                         (//todo
-                            is_array($callMethod[0] . '::' . $callMethod[1])
+                            is_array($callMethod)
                             ? $callMethod[0] . '::' . $callMethod[1]
                             : 'Callable'
                         )
@@ -145,6 +154,7 @@ trait Relationships
                 //also we could attempt to use getById like the above TO_ONE
                 //to use relationships data
                 //todo annotate signature
+                
                 return $callMethod(
                     $id,
                     $fields,
@@ -158,8 +168,7 @@ trait Relationships
      * using id's of relationship's data from resources in primary data object
      * @param Resource|Resource[]  $primaryData Primary data resource or resources
      * @param string[]             $include     An array with the keys of relationships to include
-     * @param Fields|null $fields
-     * @param array $additionalResourceParameters *[Optional]*
+     * @param Fields $fields
      * @return Resource[]           An array with all included related data
      * @throws \Phramework\Exceptions\RequestException When a relationship is not found
      * @throws \Phramework\Exceptions\ServerException
@@ -168,18 +177,36 @@ trait Relationships
      * @example
      * ```php
      * Relationship::getIncludedData(
-     *     Article::get(),
+     *     Article::getResourceModel(),
      *     ['tag', 'author']
      * );
      * ```
      */
+
+    /**
+     * @param ResourceModel  $model
+     * @param Resource[]     $primaryData
+     * @param string[]       $include
+     * @param Directive[] ...$directives
+     * @return Resource[]
+     * @throws RequestException
+     */
     public static function getIncludedData(
         ResourceModel $model,
-        $primaryData,
-        $include = [],
-        Fields $fields = null,
-        $additionalResourceParameters = []
+        array $primaryData = [],
+        array $include = [],
+        Directive ...$directives
     ) {
+        $additionalResourceParameters = Directive::getByClass(
+            AdditionalRelationshipsParameter::class,
+            $directives
+        );
+
+        $fields = Directive::getByClass(
+            Fields::class,
+            $directives
+        );
+        
         /**
          * Store relationshipKeys as key and ids of their related data as value
          * @example
@@ -213,9 +240,9 @@ trait Relationships
 
         //if a single resource convert it to array
         //so it can be iterated in the same way
-        if (!is_array($primaryData)) {
+        /*if (!is_array($primaryData)) {
             $primaryData = [$primaryData];
-        }
+        }*/
 
         foreach ($primaryData as $resource) {
             //Ignore resource if it's relationships are not set or empty
@@ -224,15 +251,14 @@ trait Relationships
             }
 
             foreach ($include as $relationshipKey) {
-                //ignore if requested relationship is not set
-                if (!isset($resource->relationships->{$relationshipKey})) {
+                //ignore if requested relationship is not set or data are not set
+                if (!isset(
+                    $resource->relationships->{$relationshipKey},
+                    $resource->relationships->{$relationshipKey}->data
+                )) {
                     continue;
                 }
 
-                //ignore if requested relationship data are not set
-                if (!isset($resource->relationships->{$relationshipKey}->data)) {
-                    continue;
-                }
 
                 $relationshipData = $resource->relationships->{$relationshipKey}->data;
 
@@ -259,20 +285,27 @@ trait Relationships
         foreach ($include as $relationshipKey) {
             $relationship = $model->getRelationship($relationshipKey);
 
-            $relationshipModelClass = $relationship->getModel();
+            $relationshipModelClass = $relationship->getResourceModel();
 
             $ids = array_unique($tempRelationshipIds->{$relationshipKey});
 
             $additionalArgument = (
-                isset($additionalResourceParameters[$relationshipKey])
-                ? $additionalResourceParameters[$relationshipKey]
+                isset($additionalResourceParameters->{$relationshipKey})
+                ? $additionalResourceParameters->{$relationshipKey}
                 : []
             );
+            //todo pass additional relationship as Primary additional
+
+            $getDirectives = [];
+
+            if ($fields !== null) {
+                $getDirectives[] = $fields;
+            }
 
             $resources = $relationshipModelClass->getById(
                 $ids,
-                $fields,
-                ...$additionalArgument
+                ...$getDirectives
+                //todo ...$additionalArgument
             );
 
             foreach ($resources as $key => $resource) {

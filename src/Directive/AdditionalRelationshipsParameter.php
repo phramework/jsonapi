@@ -87,6 +87,4 @@ class AdditionalRelationshipsParameter extends Directive
     ) {
         return null;
     }
-
-
 }

@@ -41,6 +41,7 @@ class Resource extends \stdClass implements \JsonSerializable
     const PARSE_DEFAULT            = Resource::PARSE_ATTRIBUTES
         | Resource::PARSE_LINKS
         | Resource::PARSE_RELATIONSHIP
+        | Resource::PARSE_RELATIONSHIP_DATA //todo remove ?
         | Resource::PARSE_RELATIONSHIP_LINKS;
 
     const PARSE_ATTRIBUTES              = 1;
@@ -160,11 +161,15 @@ class Resource extends \stdClass implements \JsonSerializable
         foreach ($records as $record) {
             //Parse resource from record
             $resource = static::parseFromRecord(
-                $record,
+                (
+                    is_array($record)
+                    ? (object) $record
+                    : $record
+                ),
                 $model,
                 $directives,
-                $flags)
-            ;
+                $flags
+            );
 
             if (!empty($resource)) {
                 //Push to collection
@@ -196,7 +201,7 @@ class Resource extends \stdClass implements \JsonSerializable
      * @todo what about getRelationshipData method ?
      */
     public static function parseFromRecord(
-        $record,
+        \stdClass $record,
         ResourceModel $model,
         array $directives = [],
         int $flags = Resource::PARSE_DEFAULT
@@ -212,11 +217,6 @@ class Resource extends \stdClass implements \JsonSerializable
             return null;
         }
 
-        //Work with objects
-        if (!is_object($record) && is_array($record)) {
-            $record = (object) $record;
-        }
-
         $flagAttributes    = ($flags & Resource::PARSE_ATTRIBUTES) != 0;
         $flagLinks         = ($flags & Resource::PARSE_LINKS) != 0;
         $flagRelationships = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
@@ -228,8 +228,9 @@ class Resource extends \stdClass implements \JsonSerializable
 
         if (!isset($record->{$idAttribute})) {
             throw new \Exception(sprintf(
-                'Attribute "%s" is not set for record',
-                $idAttribute
+                'Attribute "%s" is not set for record of type "%s"',
+                $idAttribute,
+                $model->getResourceType()
             ));
         }
 
@@ -275,6 +276,7 @@ class Resource extends \stdClass implements \JsonSerializable
                 unset($record->{$attribute});
             }
         }
+
         if (count((array) $privateAttributes)) {
             $resource->{'private-attributes'} = $privateAttributes;
         }
@@ -284,10 +286,11 @@ class Resource extends \stdClass implements \JsonSerializable
         }
 
         //Attach relationships if resource's relationships are set
-        if (/*$flagRelationships &&*/ ($relationships = $model->getRelationships())) {
+//        if (/*$flagRelationships &&*/ ($relationships = $model->getRelationships())) {
+
             $resourceRelationships = new \stdClass();
             //Parse relationships
-            foreach ($relationships as $relationshipKey => $relationshipObject) {
+            foreach ($model->getRelationships() ?? [] as $relationshipKey => $relationshipObject) {
                 //Initialize an new relationship entry object
                 $relationshipEntry = new \stdClass();
 
@@ -304,11 +307,14 @@ class Resource extends \stdClass implements \JsonSerializable
                     ];
                 }*/
 
-                $relationshipFlagData = ($relationshipObject->flags & Relationship::FLAG_DATA) != 0;
+                $relationshipFlagData = ($relationshipObject->getFlags() & Relationship::FLAG_DATA) != 0;
 
-                $relationshipModel   = $relationshipObject->modelClass;
-                $relationshipType    = $relationshipObject->type;
-                $recordDataAttribute = $relationshipObject->recordDataAttribute;
+                /**
+                 * @var ResourceModel
+                 */
+                $relationshipModel   = $relationshipObject->getResourceModel();
+                $relationshipType    = $relationshipObject->getType();
+                $recordDataAttribute = $relationshipObject->getRecordDataAttribute();
 
                 $relationshipResourceType = $relationshipModel->getResourceType();
 
@@ -323,21 +329,21 @@ class Resource extends \stdClass implements \JsonSerializable
                     $directives,
                     $flags
                 ) {
-                    return $relationshipObject->callbacks->{'GET'}(
+                    return $relationshipObject->getCallbacks()->{'GET'}(
                         $resource->id,
                         $directives,
                         $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
                     );
                 };
-
+                
                 if ($flagRelationships && ($flagRelationshipData || $relationshipFlagData)) {
                     //Include data only if $flagRelationshipData is true
-                    if ($relationshipType == Relationship::TYPE_TO_ONE) {
+                    if ($relationshipType === Relationship::TYPE_TO_ONE) {
                         $relationshipEntryResource = null;
 
                         if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
                             $relationshipEntryResource = $record->{$recordDataAttribute};
-                        } elseif (isset($relationshipObject->callbacks->{'GET'})) { //available from callback
+                        } elseif (isset($relationshipObject->getCallbacks()->{'GET'})) { //available from callback
                             $relationshipEntryResource = $dataCallback();
                         }
 
@@ -361,7 +367,7 @@ class Resource extends \stdClass implements \JsonSerializable
                                 ));
                             }
                         }
-                    } elseif ($relationshipType == Relationship::TYPE_TO_MANY) {
+                    } elseif ($relationshipType === Relationship::TYPE_TO_MANY) {
                         //Initialize
                         $relationshipEntry->data = [];
 
@@ -369,7 +375,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
                         if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
                             $relationshipEntryResources = $record->{$recordDataAttribute};
-                        } elseif (isset($relationshipObject->callbacks->{'GET'})) { //available from callback
+                        } elseif (isset($relationshipObject->getCallbacks()->{'GET'})) { //available from callback
                             $relationshipEntryResources = $dataCallback();
                         }
 
@@ -413,15 +419,16 @@ class Resource extends \stdClass implements \JsonSerializable
                 $resourceRelationships->{$relationshipKey} = $relationshipEntry;
             }
 
+
             //Attach only if set
             if ($flagRelationships) {
                 $resource->relationships = $resourceRelationships;
             }
-        }
+        //}
 
         //Attach resource attributes
         if ($flagAttributes) {
-            $resource->attributes = (object) $record;
+            $resource->attributes = $record;
         }
 
         //Attach resource link
@@ -440,7 +447,9 @@ class Resource extends \stdClass implements \JsonSerializable
     public function jsonSerialize()
     {
         $vars = get_object_vars($this);
+        //Important
         unset($vars['private-attributes']);
+
         return $vars;
     }
 

@@ -28,7 +28,7 @@ abstract class Model
     /**
      * @return ResourceModel
      */
-    public static function getModel() : ResourceModel
+    public static function getResourceModel() : ResourceModel
     {
 
         if (static::$model === null) {
@@ -49,7 +49,7 @@ abstract class Model
      */
     public static function get(Directive ...$directives) : array
     {
-        return static::getModel()->get(...func_get_args());
+        return static::getResourceModel()->get(...func_get_args());
     }
 
     /**
@@ -61,7 +61,7 @@ abstract class Model
         string $id,
         Directive ...$directives
     ) {
-        return static::getModel()->getById(...func_get_args());
+        return static::getResourceModel()->getById(...func_get_args());
     }
 
     /**
@@ -69,6 +69,6 @@ abstract class Model
      */
     public static function getResourceType()
     {
-        return static::getModel()->getResourceType();
+        return static::getResourceModel()->getResourceType();
     }
 }

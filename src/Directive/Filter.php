@@ -188,7 +188,7 @@ class Filter extends Directive
                 }
 
                 $relationshipObject = $model->getRelationship($relationshipKey);
-                $relationshipObjectModel = $relationshipObject->getModel();
+                $relationshipObjectModel = $relationshipObject->getResourceModel();
                 
                 $relationshipValidationModel = $relationshipObjectModel->getValidationModel();
                 $relationshipFilterValidationModel = $relationshipObjectModel->getValidationModel();

@@ -70,7 +70,7 @@ class ResourceModelTest extends \PHPUnit_Framework_TestCase
      */
     public function testResource()
     {
-        $record = [
+        $record = (object) [
             $this->model->getIdAttribute() => '15',
             'title' => 'Lorem ipsum'
         ];

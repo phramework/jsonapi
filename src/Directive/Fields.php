@@ -164,7 +164,7 @@ class Fields extends Directive
             } elseif ($model->issetRelationship($resourceType)) {
                 //check if $resourceType allowed (primary's relationships)
                 $resourceModel = $model->getRelationship($resourceType)
-                    ->getModel();
+                    ->getResourceModel();
             } else {
                 //TODO incomplete since we will support 2nd level relationship data inclusion
                 throw new IncorrectParameterException(

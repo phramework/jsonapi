@@ -16,15 +16,29 @@
  */
 namespace Phramework\JSONAPI\APP\Models;
 
-use Phramework\JSONAPI\APP\Models\Article;
-use Phramework\JSONAPI\APP\Models\Tag;
-use Phramework\JSONAPI\Directive\Page;
+use Phramework\JSONAPI\APP\DataSource\MemoryDataSource;
+use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\ResourceModel;
+use Phramework\JSONAPI\Model;
+use Phramework\JSONAPI\ModelTrait;
 
 /**
- * @coversDefaultClass Phramework\JSONAPI\Model\Relationships
+ * @since 3.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class RelationshipsTest extends \PHPUnit_Framework_TestCase
+class Company extends Model
 {
+    use ModelTrait;
+
+    /**
+     * @inheritDoc
+     */
+    protected static function defineModel() : ResourceModel
+    {
+        $model = (new ResourceModel('company', new MemoryDataSource()))
+            ->addVariable('table', 'company');
+
+        return $model;
+    }
 }

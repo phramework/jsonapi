@@ -19,20 +19,97 @@ use Phramework\JSONAPI\APP\DataSource\MemoryDataSource;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
+/**
+ * group
+ */
+MemoryDataSource::addTable('group');
+
+MemoryDataSource::insert(
+    'group',
+    (object) [
+        'id'   => '1',
+        'name' => 'Members'
+    ]
+);
+MemoryDataSource::insert(
+    'group',
+    (object) [
+        'id'   => '2',
+        'name' => 'Administrators'
+    ]
+);
+
+
+/**
+ * tag
+ */
+MemoryDataSource::addTable('tag');
+
+MemoryDataSource::insert(
+    'tag',
+    (object) [
+        'id'   => '1',
+        'name' => 'A tag'
+    ]
+);
+MemoryDataSource::insert(
+    'tag',
+    (object) [
+        'id'   => '2',
+        'name' => 'Another tag'
+    ]
+);
+
+/**
+ * company
+ */
+
+MemoryDataSource::addTable('company');
+
+MemoryDataSource::insert(
+    'company',
+    (object) [
+        'id'       => '1',
+        'username' => 'nohponex',
+        'email'    => 'nohponex@gmail.com',
+        'group_id' => '1'
+    ]
+);
+
+MemoryDataSource::insert(
+    'company',
+    (object) [
+        'id'       => '2',
+        'username' => 'nohponex2',
+        'email'    => 'nohponex+2@gmail.com',
+        'group_id' => '2'
+    ]
+);
+
+/**
+ * user
+ */
+
 MemoryDataSource::addTable('user');
 
 MemoryDataSource::insert(
     'user',
     (object) [
+        'id'       => '1',
         'username' => 'nohponex',
-        'email'    => 'nohponex@gmail.com'
+        'email'    => 'nohponex@gmail.com',
+        'group_id' => '1',
+        'tag_id'   => ['1', '2']
     ]
 );
 
 MemoryDataSource::insert(
     'user',
     (object) [
+        'id'       => '2',
         'username' => 'nohponex2',
-        'email'    => 'nohponex+2@gmail.com'
+        'email'    => 'nohponex+2@gmail.com',
+        'group_id' => '2',
+        'tag_id'   => []
     ]
 );

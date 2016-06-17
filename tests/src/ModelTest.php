@@ -42,12 +42,12 @@ class ModelTest extends \PHPUnit_Framework_TestCase
     public static $administrator;
 
     /**
-     * @covers ::getModel
+     * @covers ::getResourceModel
      * @before testInheritance
      */
     public function testGetModel()
     {
-        $model = static::$administrator->getModel();
+        $model = static::$administrator->getResourceModel();
 
         $this->assertInstanceOf(
             ResourceModel::class,
@@ -67,11 +67,11 @@ class ModelTest extends \PHPUnit_Framework_TestCase
         $user          = static::$user;
 
         $administratorDefaultDirectives = $administrator
-            ::getModel()
+            ::getResourceModel()
             ->getDefaultDirectives();
 
         $defaultDirectives              = $user
-            ::getModel()
+            ::getResourceModel()
             ->getDefaultDirectives();
 
         /**
