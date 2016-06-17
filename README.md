@@ -5,6 +5,8 @@ based on specifications from http://jsonapi.org/
 
 
 ## Usage
+
+[![Join the chat at https://gitter.im/phramework/jsonapi](https://badges.gitter.im/phramework/jsonapi.svg)](https://gitter.im/phramework/jsonapi?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Require package using composer 
 ```bash
 composer require phramework/jsonapi
