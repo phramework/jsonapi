@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\Exceptions\MissingParametersException;
 use Phramework\Exceptions\Source\ISource;
 use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\Directive\IncludeResources;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\RelationshipResource;
 use Phramework\JSONAPI\Resource;
@@ -59,13 +60,21 @@ trait Controller
         array $resources,
         Directive ...$directives
     ) {
-        //todo
+        $include = Directive::getByClass(
+            IncludeResources::class,
+            $directives
+        );
 
-        /*if ($includeResources === null) {
+        if ($include === null || empty($include->getInclude())) {
             return null;
-        }*/
+        }
 
-        return null;
+        return $model::getIncludedData(
+            $model,
+            $resources,
+            $include->getInclude(),
+            ...$directives
+        );
     }
 
     /**
@@ -112,6 +121,7 @@ trait Controller
      * @todo write
      */
     public static function viewData(
+        ResponseInterface $response,
         $data,
         \stdClass $links = null,
         \stdClass $meta = null,
@@ -133,13 +143,14 @@ trait Controller
             $viewParameters->meta = $meta;
         }
 
-        $response = new Response\JsonResponse(
-            $viewParameters,
-            200,
-            [ 'Content-Type' => ['application/vnd.api+json;charset=utf-8']]
-        );
+        $response->getBody()->write(json_encode($viewParameters));
 
-        return $response;
+        return $response
+            ->withStatus(200)
+            ->withHeader(
+                'Content-Type',
+                'application/vnd.api+json;charset=utf-8'
+            );
     }
 
     /**

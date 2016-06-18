@@ -37,6 +37,7 @@ trait Get
 
     public static function handleGet(
         ServerRequestInterface $request,
+        ResponseInterface $response,
         ResourceModel $model,
         array $directives = []
     ) : ResponseInterface {
@@ -59,6 +60,7 @@ trait Get
         );
 
         return static::viewData(
+            $response,
             $collection,
             (object) [
                 //todo

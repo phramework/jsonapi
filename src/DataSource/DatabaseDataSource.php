@@ -42,7 +42,7 @@ class DatabaseDataSource extends DataSource
      * DatabaseDataSource constructor.
      * @param ResourceModel $model
      */
-    public function __construct(ResourceModel $model)
+    public function __construct(ResourceModel $model = null)
     {
         $this->resourceModel = $model;
     }
@@ -126,7 +126,7 @@ class DatabaseDataSource extends DataSource
      * @throws \LogicException If setting table is not set
      * @return string
      */
-    private function requireTableSetting() : string {
+    public function requireTableSetting() : string {
         $table = $this->resourceModel->getVariable('table');
 
         if ($table === null) {
@@ -165,7 +165,7 @@ class DatabaseDataSource extends DataSource
         }
 
         //merge with default
-        $activeDirectives = array_merge(
+        $activeDirectives = (object) array_merge(
             (array) $model->getDefaultDirectives(),
             (array) $definedPassed
         );
@@ -252,18 +252,20 @@ class DatabaseDataSource extends DataSource
          */
         $additionalQuery = [];
 
-        if ($page->getLimit() !== null) {
-            $additionalQuery[] = sprintf(
-                'LIMIT %s',
-                $page->getLimit()
-            );
-        }
+        if ($page !== null) {
+            if ($page->getLimit() !== null) {
+                $additionalQuery[] = sprintf(
+                    'LIMIT %s',
+                    $page->getLimit()
+                );
+            }
 
-        if ($page->getOffset()) {
-            $additionalQuery[] = sprintf(
-                'OFFSET %s',
-                $page->getOffset()
-            );
+            if ($page->getOffset()) {
+                $additionalQuery[] = sprintf(
+                    'OFFSET %s',
+                    $page->getOffset()
+                );
+            }
         }
 
         $query = str_replace(
@@ -321,10 +323,9 @@ class DatabaseDataSource extends DataSource
 
             if (count($filter->getPrimary())) {
                 $additionalQuery[] = sprintf(
-                    '%s "%s" IN (%s)', //'%s "%s"."%s" IN (%s)',
+                    '%s "%s" IN (%s)',
                     ($hasWhere ? 'AND' : 'WHERE'),
-                    //static::$table,
-                    static::$idAttribute,
+                    $model->getIdAttribute(),
                     self::handleFilterParseIn($filter->getPrimary())
                 );
 
@@ -567,7 +568,7 @@ class DatabaseDataSource extends DataSource
         }
 
         //if ($fields !== null && !empty($fields->get($type))) {
-        $fields->validate(static::class);
+        $fields->validate($this->getResourceModel());
 
         $attributes = array_unique($attributes);
 
