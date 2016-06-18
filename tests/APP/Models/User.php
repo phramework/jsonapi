@@ -54,9 +54,11 @@ class User extends Model
                     Company::getResourceModel(),
                     Relationship::TYPE_TO_MANY,
                     null,
-                    function (array $ids) {
-                        //todo
-                    }
+                    (object) [
+                        /*'GET' => function (array $ids) {
+                            //todo
+                        }*/
+                    ]
                 )
             ]);
 

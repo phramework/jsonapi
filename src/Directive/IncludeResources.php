@@ -52,22 +52,37 @@ class IncludeResources extends Directive
      * @param string[] $include
      * @return $this
      */
-    public function setInclude($include)
+    public function setInclude(string ...$include)
     {
         $this->include = $include;
 
         return $this;
     }
 
+    /**
+     * @param ResourceModel $model
+     * @return bool
+     * @throws \DomainException If include relationship is not defined
+     *     at resource model relationships
+     */
     public function validate(ResourceModel $model) : bool
     {
-        // TODO: Implement validate() method.
+        foreach ($this->include as $include) {
+            if (!$model->issetRelationship($include)) {
+                throw new \DomainException(sprintf(
+                    'Relationship "%s" is not defined for resource model "%s"',
+                    $include,
+                    $model->getResourceType()
+                ));
+            }
+        }
+
         return true;
     }
 
     /**
      * @inheritDoc
-     * todo use include by default class defined in mode's relationships
+     * @todo use include by default class defined in mode's relationships
      */
     public static function parseFromRequest(
         ServerRequestInterface $request,
@@ -87,8 +102,12 @@ class IncludeResources extends Directive
             $include[] = trim($i);
         }
 
-        return new IncludeResources(
+        $include =  new IncludeResources(
             ...array_unique($include)
         );
+        
+        $include->validate($model);
+        
+        return $include;
     }
 }
