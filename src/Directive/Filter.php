@@ -42,7 +42,7 @@ class Filter extends Directive
      * [1, 2]
      * ```
      */
-    protected $primary;
+    protected $primary = [];
 
     /**
      * @var \stdClass
@@ -60,7 +60,7 @@ class Filter extends Directive
     /**
      * @var (FilterAttributeFilterJSONAttribute)[]
      */
-    protected $attributes;
+    protected $attributes = [];
 
     /**
      * Filter constructor.
@@ -108,7 +108,7 @@ class Filter extends Directive
 
         if (!is_object($relationships)) {
             throw new \InvalidArgumentException(
-                '$relationships filter must be an object'
+                'Relationships filter must be an object'
             );
         }
 
@@ -467,7 +467,7 @@ class Filter extends Directive
     /**
      * @return string[]
      */
-    public function getPrimary()
+    public function getPrimary() : array
     {
         return $this->primary;
     }
