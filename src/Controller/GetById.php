@@ -16,8 +16,8 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
-use Phramework\JSONAPI\Directive\AdditionalParameter;
-use Phramework\JSONAPI\Directive\AdditionalRelationshipsParameter;
+use Phramework\JSONAPI\Directive\AdditionalParameters;
+use Phramework\JSONAPI\Directive\AdditionalRelationshipParameters;
 use Phramework\JSONAPI\Directive\IncludeResources;
 use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\Directive\Filter;

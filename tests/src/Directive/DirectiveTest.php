@@ -32,7 +32,7 @@ class DirectiveTest extends \PHPUnit_Framework_TestCase
     {
         $this->directives = [
             new Page(),
-            new AdditionalParameter([1])
+            new AdditionalParameters(1)
         ];
     }
 
@@ -56,12 +56,12 @@ class DirectiveTest extends \PHPUnit_Framework_TestCase
     public function testGetByClass()
     {
         $additionalParameter = Directive::getByClass(
-            AdditionalParameter::class,
+            AdditionalParameters::class,
             $this->directives
         );
 
         $this->assertInstanceOf(
-            AdditionalParameter::class,
+            AdditionalParameters::class,
             $additionalParameter
         );
 
@@ -78,7 +78,7 @@ class DirectiveTest extends \PHPUnit_Framework_TestCase
     {
         list($additionalParameter, $page, $filter) = Directive::getByClasses(
             [
-                AdditionalParameter::class,
+                AdditionalParameters::class,
                 Page::class,
                 Filter::class
             ],
@@ -86,7 +86,7 @@ class DirectiveTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertInstanceOf(
-            AdditionalParameter::class,
+            AdditionalParameters::class,
             $additionalParameter
         );
 

@@ -24,63 +24,46 @@ use Psr\Http\Message\ServerRequestInterface;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  */
-class AdditionalRelationshipsParameter extends Directive
+class AdditionalParameters extends Directive
 {
     /**
-     * @var \stdClass
+     * @var array
      */
-    protected $relationshipObjects;
+    protected $parameters = [];
 
     /**
-     * AdditionalRelationshipsModelParameter constructor.
-     * @param \stdClass $relationshipObjects
+     * AdditionalModelParameter constructor.
+     * @param mixed[] $parameters
      */
-    public function __construct(\stdClass $relationshipObjects = null)
+    public function __construct(...$parameters)
     {
-        if ($relationshipObjects === null) {
-            $relationshipObjects = new \stdClass();
-        }
-
-        foreach ($relationshipObjects as $relationship => $relationshipParameters) {
-            assert(is_string($relationship));
-
-            assert(is_array($relationshipParameters));
-        }
-
-        $this->relationshipObjects = $relationshipObjects;
+        $this->parameters = $parameters;
     }
 
     /**
-     * @return \stdClass
+     * @return array
      */
-    public function getRelationshipObjects()
+    public function getParameters() : array
     {
-        return $this->relationshipObjects;
+        return $this->parameters;
     }
 
     /**
-     * @param \stdClass $relationshipObjects
+     * @param mixed[] $parameters
      * @return $this
      */
-    public function setRelationshipObjects($relationshipObjects)
+    public function setParameters(...$parameters)
     {
-        $this->relationshipObjects = $relationshipObjects;
+        $this->parameters = $parameters;
 
         return $this;
     }
 
-    /**
-     * @param ResourceModel $model
-     * @return bool
-     */
-    public function validate(ResourceModel $model) : bool
+    public function validate(ResourceModel $model) : bool 
     {
         return true;
     }
 
-    /**
-     * @inheritDoc
-     */
     public static function parseFromRequest(
         ServerRequestInterface $request,
         ResourceModel $model

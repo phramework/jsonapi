@@ -18,8 +18,8 @@
 namespace Phramework\JSONAPI\Model;
 
 use Phramework\Exceptions\RequestException;
-use Phramework\JSONAPI\Directive\AdditionalParameter;
-use Phramework\JSONAPI\Directive\AdditionalRelationshipsParameter;
+use Phramework\JSONAPI\Directive\AdditionalParameters;
+use Phramework\JSONAPI\Directive\AdditionalRelationshipParameters;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\ResourceModel;
@@ -108,8 +108,8 @@ trait RelationshipsTrait
             $relationshipParameters
         ) = Directive::getByClasses(
             Fields::class,
-            AdditionalParameter::class,
-            AdditionalRelationshipsParameter::class
+            AdditionalParameters::class,
+            AdditionalRelationshipParameters::class
         );
 
         $relationship = $model->getRelationship($relationshipKey);
@@ -198,7 +198,7 @@ trait RelationshipsTrait
         Directive ...$directives
     ) {
         $additionalResourceParameters = Directive::getByClass(
-            AdditionalRelationshipsParameter::class,
+            AdditionalRelationshipParameters::class,
             $directives
         );
 
