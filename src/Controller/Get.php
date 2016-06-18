@@ -62,7 +62,7 @@ trait Get
             $collection,
             (object) [
                 //todo
-                // 'self' => $model->getSelfLink($id)
+                // 'self' => $resourceModel->getSelfLink($id)
             ],
             null,
             //todo

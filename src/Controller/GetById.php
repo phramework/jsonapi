@@ -49,7 +49,7 @@ trait GetById
         array $directives = [],
         string $id
     ) : ResponseInterface {
-        //todo filter id if model filter is set
+        //todo filter id if resourceModel filter is set
 
         //Parse request related directives from request
         $directives = static::parseDirectives(
@@ -74,7 +74,7 @@ trait GetById
             $resource,
             (object) [
                //todo 
-               // 'self' => $model->getSelfLink($id)
+               // 'self' => $resourceModel->getSelfLink($id)
             ],
             null,
             //todo

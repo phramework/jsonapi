@@ -65,7 +65,7 @@ class ResourceModel
     
     /**
      * InternalModel constructor.
-     * Will create a new internal model initialized with:
+     * Will create a new internal resourceModel initialized with:
      * - defaultDirectives Page directive limit with value of getMaxPageLimit()
      * - empty prepareRecords
      * @param string     $resourceType
@@ -81,12 +81,10 @@ class ResourceModel
         $this->relationships        = new \stdClass();
         $this->filterableAttributes = new \stdClass();
 
-        $this->variables = new \stdClass();
-
+        $this->initializeVariables();
 
         //Set default prepareRecords method as an empty method
-        $this->prepareRecords = function (array &$records) {
-        };
+        $this->prepareRecords = function (array &$records) {};
 
         $this->dataSource = $dataSource;
 
@@ -117,10 +115,10 @@ class ResourceModel
     }
 
     /**
-     * If a validation model for request method is not found, "DEFAULT" will be used
+     * If a validation resourceModel for request method is not found, "DEFAULT" will be used
      * @param string          $requestMethod
      * @return ValidationModel
-     * @throws \DomainException If none validation model is set
+     * @throws \DomainException If none validation resourceModel is set
      */
     public function getValidationModel(
         string $requestMethod = 'DEFAULT'
@@ -135,7 +133,7 @@ class ResourceModel
 
         if (!isset($this->validationModels->{$key})) {
             throw new \DomainException(
-                'No validation model is set'
+                'No validation resourceModel is set'
             );
         }
 

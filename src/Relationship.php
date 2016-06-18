@@ -50,7 +50,7 @@ class Relationship
     /**
      * @var ResourceModel
      */
-    protected $model;
+    protected $resourceModel;
 
     /**
      * The type of relationship from the resource to relationship resource
@@ -77,7 +77,7 @@ class Relationship
     protected $flags;
 
     /**
-     * @param ResourceModel $model               Class path of relationship resource model
+     * @param ResourceModel $model               Class path of relationship resource resourceModel
      * @param int           $type                *[Optional] Relationship type
      * @param string        $recordDataAttribute *[Optional] Attribute name in record containing relationship data
      * @param \stdClass     $callbacks           *[Optional] Callable method can be used
@@ -89,7 +89,7 @@ class Relationship
      * getValidationModel() {
      *     return (object) [
      *         'tag' => new Relationship(
-     *             $model,
+     *             $resourceModel,
      *             Relationship::TYPE_TO_MANY,
      *             null,
      *             (object) [
@@ -131,7 +131,7 @@ class Relationship
             $this->callbacks = $callbacks;
         }
 
-        $this->model                = $model;
+        $this->resourceModel                = $model;
         $this->type                 = $type;
         $this->recordDataAttribute  = $recordDataAttribute;
         $this->flags                = $flags;
@@ -142,7 +142,7 @@ class Relationship
      */
     public function getResourceModel()
     {
-        return $this->model;
+        return $this->resourceModel;
     }
 
     /**

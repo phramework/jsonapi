@@ -131,7 +131,7 @@ class DatabaseDataSource extends DataSource
 
         if ($table === null) {
             throw new \LogicException(sprintf(
-                'Setting "table" is required for internal model "%s"',
+                'Setting "table" is required for internal resourceModel "%s"',
                 get_class($this->resourceModel)
             ));
         }
@@ -547,7 +547,7 @@ class DatabaseDataSource extends DataSource
         $type = $model->getResourceType();
 
         if ($fields === null || empty($fields->get($type))) {
-            //Use resource model's default fields
+            //Use resource resourceModel's default fields
             $fields = static::getDefaultFields();
 
             $attributes =  array_merge(

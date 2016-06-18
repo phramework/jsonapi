@@ -195,7 +195,7 @@ class Resource extends \stdClass implements \JsonSerializable
      *         'status' => 'enabled',
      *         'title'  => 'blog'
      *     ],
-     *     $model
+     *     $resourceModel
      * );
      * ```
      * @todo what about getRelationshipData method ?
@@ -206,9 +206,9 @@ class Resource extends \stdClass implements \JsonSerializable
         array $directives = [],
         int $flags = Resource::PARSE_DEFAULT
     ) {
-        /*if (!is_subclass_of($model, Model::class)) {
+        /*if (!is_subclass_of($resourceModel, Model::class)) {
             throw new \Exception(sprintf(
-                'model MUST extend "%s"',
+                'resourceModel MUST extend "%s"',
                 Model::class
             ));
         }*/
@@ -286,7 +286,7 @@ class Resource extends \stdClass implements \JsonSerializable
         }
 
         //Attach relationships if resource's relationships are set
-//        if (/*$flagRelationships &&*/ ($relationships = $model->getRelationships())) {
+//        if (/*$flagRelationships &&*/ ($relationships = $resourceModel->getRelationships())) {
 
             $resourceRelationships = new \stdClass();
             //Parse relationships
@@ -298,10 +298,10 @@ class Resource extends \stdClass implements \JsonSerializable
                 //TODO RESTORE
                /* if ($flagRelationshipLinks) {
                     $relationshipEntry->links = [
-                        'self' => $model::getSelfLink(
+                        'self' => $resourceModel::getSelfLink(
                             $resource->id . '/relationships/' . $relationshipKey
                         ),
-                        'related' => $model::getSelfLink(
+                        'related' => $resourceModel::getSelfLink(
                             $resource->id . '/' . $relationshipKey
                         )
                     ];
@@ -435,7 +435,7 @@ class Resource extends \stdClass implements \JsonSerializable
         //TODO RESTORE
         /*if ($flagLinks) {
             $resource->links = (object) [
-                'self' => $model::getSelfLink(
+                'self' => $resourceModel::getSelfLink(
                     $resource->id
                 )
             ];

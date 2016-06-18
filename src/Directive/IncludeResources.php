@@ -63,14 +63,14 @@ class IncludeResources extends Directive
      * @param ResourceModel $model
      * @return bool
      * @throws \DomainException If include relationship is not defined
-     *     at resource model relationships
+     *     at resource resourceModel relationships
      */
     public function validate(ResourceModel $model) : bool
     {
         foreach ($this->include as $include) {
             if (!$model->issetRelationship($include)) {
                 throw new \DomainException(sprintf(
-                    'Relationship "%s" is not defined for resource model "%s"',
+                    'Relationship "%s" is not defined for resource resourceModel "%s"',
                     $include,
                     $model->getResourceType()
                 ));

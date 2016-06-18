@@ -125,7 +125,7 @@ class Fields extends Directive
 
     /**
      * @param ServerRequestInterface $request Request parameters
-     * @param ResourceModel          $model   Primary model class
+     * @param ResourceModel          $model   Primary resourceModel class
      * @return Sort|null
      * @throws IncorrectParameterException
      * @uses Model::getFields for each resource type to parse allowed fields
@@ -195,7 +195,7 @@ class Fields extends Directive
 
             $allowedFields = $resourceModel->getFieldableAtributes();
 
-            //Validate parsedFields (allowed in $model)
+            //Validate parsedFields (allowed in $resourceModel)
             foreach ($parsedFields as $parsedField) {
                 if (!in_array($parsedField, $allowedFields)) {
                     throw new IncorrectParameterException(

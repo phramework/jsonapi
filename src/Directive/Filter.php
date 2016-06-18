@@ -134,7 +134,7 @@ class Filter extends Directive
     }
 
     /**
-     * Validate against a resource model class
+     * Validate against a resource resourceModel class
      * @param ResourceModel $model
      * @throws RequestException
      * @throws \Exception
@@ -239,7 +239,7 @@ class Filter extends Directive
 
             $attributeValidator = null;
 
-            //Attempt to use filter validation model first
+            //Attempt to use filter validation resourceModel first
             if ($filterValidator
                 //&& isset($filterValidator)
                 && isset($filterValidator->properties->{$attribute})
@@ -250,7 +250,7 @@ class Filter extends Directive
                 && isset(
                     $validationModel->attributes,
                     $validationModel->attributes->properties->{$attribute})
-            ) { //Then attempt to use attribute validation model first
+            ) { //Then attempt to use attribute validation resourceModel first
                 $attributeValidator =
                     $validationModel->attributes->properties->{$attribute};
             } else {
@@ -314,7 +314,7 @@ class Filter extends Directive
      * @throws IncorrectParameterException
      * @throws RequestException
      * @todo allow strings and integers as id
-     * @todo Todo use filterValidation model for relationships
+     * @todo Todo use filterValidation resourceModel for relationships
      * @todo allowed operator for JSON properties
      * @todo add support for operators of class in, parsing input using explode `,` (as array)
      * @todo fix definition for version 3.x
@@ -385,7 +385,7 @@ class Filter extends Directive
                 if ($filterValue === Operator::EMPTY) {
                     $values = Operator::EMPTY;
                 } else {
-                    //Todo use filterValidation model
+                    //Todo use filterValidation resourceModel
 
                     //Split multiples and trim additional spaces and force string
                     $values = array_map(

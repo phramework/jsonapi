@@ -167,7 +167,7 @@ trait DirectivesTrait
      * @return $this
      * @example
      * <code>
-     * $model->setFilterableAttributes((object) [
+     * $resourceModel->setFilterableAttributes((object) [
      *     'email'  => Operator::CLASS_COMPARABLE,
      *     'status' => Operator::CLASS_COMPARABLE,
      *     'title'  => Operator::CLASS_COMPARABLE | Operator::CLASS_LIKE,

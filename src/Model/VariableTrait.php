@@ -29,6 +29,11 @@ trait VariableTrait
      */
     protected $variables;
 
+    protected function initializeVariables()
+    {
+        $this->variables = new \stdClass();
+    }
+
     /**
      * Set value of a variable
      * @param string $key
@@ -48,7 +53,7 @@ trait VariableTrait
      * @param mixed  $default
      * @return mixed
      */
-    public function getVariable(string $key, mixed $default = null) {
+    public function getVariable(string $key, $default = null) {
         if (property_exists($this->variables, $key)) {
             return $this->variables->{$key};
         }

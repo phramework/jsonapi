@@ -47,7 +47,7 @@ trait Put
 
         //on each validate
 
-        //prefer PATCH validation model
+        //prefer PATCH validation resourceModel
         $validationModel = $model->getValidationModel(
             'PUT'
         );

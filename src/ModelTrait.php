@@ -9,6 +9,6 @@ trait ModelTrait
     /**
      * @var ResourceModel
      */
-    protected static $model = null;  //important to define $model in extended classes
+    protected static $model = null;  //important to define $resourceModel in extended classes
 
 }

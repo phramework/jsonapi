@@ -16,6 +16,8 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\JSONAPI\APP\Models\User;
+
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
@@ -115,7 +117,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
             Relationship::TYPE_TO_ONE,
             null,
             (object) [
-                'HTTPMETODNOTALLOWED' => [
+                1 => [ //key method must be string
                     $this->model,
                     'getRelationshipByArticle'
                 ]
@@ -139,6 +141,104 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
                     'getRelationshipByArticleNotCallable'
                 ]
             ]
+        );
+    }
+
+    /**
+     * @covers ::getResourceModel
+     */
+    public function testGetResourceModel()
+    {
+        $this->assertInstanceOf(
+            ResourceModel::class,
+            $this->relationship->getResourceModel()
+        );
+    }
+    
+    /**
+     * @covers ::getType
+     */
+    public function testGetType()
+    {
+        $this->assertSame(
+            Relationship::TYPE_TO_ONE,
+            $this->relationship->getType()
+        );
+
+        $relationship = new Relationship(
+            User::getResourceModel(),
+            Relationship::TYPE_TO_MANY,
+            'group_id'
+        );
+
+        $this->assertSame(
+            Relationship::TYPE_TO_MANY,
+            $relationship->getType()
+        );
+    }
+
+    /**
+     * @covers ::getRecordDataAttribute
+     */
+    public function testGetRecordDataAttribute()
+    {
+        $this->assertSame(
+            null,
+            $this->relationship->getRecordDataAttribute()
+        );
+
+        $relationship = new Relationship(
+            User::getResourceModel(),
+            Relationship::TYPE_TO_MANY,
+            'group_id'
+        );
+
+        $this->assertSame(
+            'group_id',
+            $relationship->getRecordDataAttribute()
+        );
+    }
+
+    /**
+     * @covers ::getCallbacks
+     */
+    public function testGetCallbacks()
+    {
+        $this->assertEquals(
+            (object) [],
+            $this->relationship->getCallbacks()
+        );
+
+        $relationship = new Relationship(
+            User::getResourceModel(),
+            Relationship::TYPE_TO_MANY,
+            null,
+            (object) [
+                'GET' => function () {
+
+                }
+            ]
+        );
+
+        $this->assertObjectHasAttribute(
+            'GET',
+            $relationship->getCallbacks()
+        );
+
+        $this->assertInternalType(
+            'callable',
+            $relationship->getCallbacks()->{'GET'}
+        );
+    }
+
+    /**
+     * @covers ::getFlags
+     */
+    public function testGetFlags()
+    {
+        $this->assertSame(
+            Relationship::FLAG_DEFAULT,
+            $this->relationship->getFlags()
         );
     }
 }

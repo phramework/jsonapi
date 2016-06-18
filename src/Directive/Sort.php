@@ -89,10 +89,10 @@ class Sort extends Directive
             $sortableAttributes = $model->getSortableAttributes();
 
             if (empty($sortableAttributes)) {
-                throw new RequestException('Not sortable attributes for this resource model');
+                throw new RequestException('Not sortable attributes for this resource resourceModel');
             }
 
-            //Check attribute is in resource model's sortable and parse if is descending
+            //Check attribute is in resource resourceModel's sortable and parse if is descending
             $validateExpression = sprintf(
                 '/^(?P<descending>\-)?(?P<attribute>%s)$/',
                 implode('|', array_map(

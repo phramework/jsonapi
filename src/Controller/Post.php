@@ -70,7 +70,7 @@ trait Post
         
         $requestQueue = new \SplQueue();
         
-        //prefer POST validation model
+        //prefer POST validation resourceModel
         $validationModel = $model->getValidationModel(
             'POST'
         );

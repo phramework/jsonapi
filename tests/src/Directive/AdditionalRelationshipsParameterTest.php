@@ -53,6 +53,19 @@ class AdditionalRelationshipsParameterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     */
+    public function testConstructNull()
+    {
+        $additionalParameters = new AdditionalRelationshipParameters();
+
+        $this->assertEquals(
+            (object)[],
+            $additionalParameters->getRelationshipObjects()
+        );
+    }
+
+    /**
      * @covers ::getRelationshipObjects
      */
     public function testGetRelationshipObjects()

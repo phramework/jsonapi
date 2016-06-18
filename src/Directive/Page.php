@@ -53,7 +53,7 @@ class Page extends Directive implements \JsonSerializable
 
     /**
      * @param ResourceModel $model
-     * @throws IncorrectParameterException When limit exceeds model's maximum page limit
+     * @throws IncorrectParameterException When limit exceeds resourceModel's maximum page limit
      */
     public function validate(ResourceModel $model) : bool
     {
