@@ -33,8 +33,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait GetById
 {
-    use Controller;
-
     /**
      * @param ServerRequestInterface $request
      * @param string                 $id
@@ -45,6 +43,7 @@ trait GetById
      */
     public static function handleGetById(
         ServerRequestInterface $request,
+        ResponseInterface $response,
         ResourceModel $model,
         array $directives = [],
         string $id
@@ -52,7 +51,7 @@ trait GetById
         //todo filter id if resourceModel filter is set
 
         //Parse request related directives from request
-        $directives = static::parseDirectives(
+        $directives = Controller::parseDirectives(
             [
                 Fields::class,
                 IncludeResources::class
@@ -62,24 +61,23 @@ trait GetById
             $directives
         );
 
-        $resource = static::getById(
+        $resource = Controller::getById(
             $id,
             $model,
             ...$directives
         );
 
-        static::assertExists($resource);
+        Controller::assertExists($resource);
 
-        return static::viewData(
+        return Controller::viewData(
+            $response,
             $resource,
             (object) [
                //todo 
                // 'self' => $resourceModel->getSelfLink($id)
             ],
             null,
-            //todo
-            static::includeRelationshipResources(
-                $request,
+            Controller::includeRelationshipResources(
                 $model,
                 [$resource],
                 ...$directives

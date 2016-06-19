@@ -33,8 +33,14 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait Get
 {
-    use Controller;
-
+    /**
+     * Handle GET requests to collections
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     * @param ResourceModel          $model
+     * @param array                  $directives
+     * @return ResponseInterface
+     */
     public static function handleGet(
         ServerRequestInterface $request,
         ResponseInterface $response,
@@ -42,7 +48,7 @@ trait Get
         array $directives = []
     ) : ResponseInterface {
         //Parse request related directives from request
-        $directives = static::parseDirectives(
+        $directives = Controller::parseDirectives(
             [
                 Fields::class,
                 IncludeResources::class,
@@ -59,17 +65,28 @@ trait Get
             ...$directives
         );
 
-        return static::viewData(
+        $page = Directive::getByClass(
+            Page::class,
+            $directives
+        );
+
+        $meta = (object) [
+            'page' => (
+            $page === null
+                ? $model->getDefaultDirectives()->{Page::class} ?? null
+                : $page
+            )
+        ];
+
+        return Controller::viewData(
             $response,
             $collection,
             (object) [
                 //todo
                 // 'self' => $resourceModel->getSelfLink($id)
             ],
-            null,
-            //todo
-            static::includeRelationshipResources(
-                $request,
+            $meta,
+            Controller::includeRelationshipResources(
                 $model,
                 $collection,
                 ...$directives

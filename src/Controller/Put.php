@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -28,12 +29,12 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait Put
 {
-    use Controller;
     use RequestBodyQueue;
 
     //prototype
     public static function handlePut(
         ServerRequestInterface $request,
+        ResponseInterface $response,
         ResourceModel $model,
         string $id,
         array $validationCallbacks = [],

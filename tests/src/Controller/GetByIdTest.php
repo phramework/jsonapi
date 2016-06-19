@@ -20,6 +20,7 @@ use Phramework\JSONAPI\APP\Models\User;
 use Phramework\JSONAPI\Controller\Controller;
 use Phramework\JSONAPI\Resource;
 use Psr\Http\Message\ResponseInterface;
+use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 
 /**
@@ -35,6 +36,7 @@ class GetByIdTest extends \PHPUnit_Framework_TestCase
     {
         $response = static::handleGetById(
             new ServerRequest(),
+            new Response(),
             User::getResourceModel(),
             [],
             '1'
@@ -44,9 +46,6 @@ class GetByIdTest extends \PHPUnit_Framework_TestCase
             ResponseInterface::class,
             $response
         );
-
-       /* var_dump($response->getHeaders());
-        var_dump($response->getBody());*/
 
         $this->markTestIncomplete();
     }

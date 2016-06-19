@@ -35,12 +35,12 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait Post
 {
-    use Controller;
     use RequestBodyQueue;
 
     //prototype
     public static function handlePost(
         ServerRequestInterface $request,
+        ResponseInterface $response,
         ResourceModel $model,
         array $validationCallbacks = [],
         callable $viewCallback = null,
@@ -82,7 +82,7 @@ trait Post
             //todo remove index if no bulk
             $source = new Pointer('/data/' . $index );
 
-            self::requireProperties($resource, $source, 'type');
+            Controller::requireProperties($resource, $source, 'type');
 
             //Validate resource type
             $typeValidator
@@ -133,7 +133,7 @@ trait Post
                 $queueItem->attributes
             );
 
-            self::testUnknownError($id);
+            Controller::testUnknownError($id);
 
 
             //POST item's relationships

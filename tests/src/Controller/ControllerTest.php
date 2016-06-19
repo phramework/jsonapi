@@ -26,8 +26,6 @@ use Phramework\JSONAPI\Resource;
  */
 class ControllerTest extends \PHPUnit_Framework_TestCase
 {
-    use Controller;
-
     /**
      * @return array
      */
@@ -45,9 +43,9 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testExists()
     {
-        static::assertExists(true);
-        static::assertExists(new Resource('user', '1'));
-        static::assertExists([new Resource('user', '1')]);
+        Controller::assertExists(true);
+        Controller::assertExists(new Resource('user', '1'));
+        Controller::assertExists([new Resource('user', '1')]);
     }
 
 
@@ -57,6 +55,6 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      * @expectedException \Phramework\Exceptions\NotFoundException
      */
     public function testExistsFailure($assert) {
-        static::assertExists($assert);
+        Controller::assertExists($assert);
     }
 }

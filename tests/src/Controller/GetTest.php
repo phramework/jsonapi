@@ -21,6 +21,7 @@ use Phramework\JSONAPI\Controller\Controller;
 use Phramework\JSONAPI\Resource;
 use Phramework\Util\Util;
 use Psr\Http\Message\ResponseInterface;
+use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 
 /**
@@ -36,6 +37,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
     {
         $response = static::handleGet(
             new ServerRequest(),
+            new Response(),
             User::getResourceModel()
         );
 

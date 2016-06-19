@@ -28,11 +28,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response;
 
 /**
+ * Common controller methods
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  */
-trait Controller
+class Controller
 {
     /**
      * @param string        $id
@@ -40,7 +41,7 @@ trait Controller
      * @param Directive[]   ...$directives
      * @return Resource|null
      */
-    protected static function getById(
+    public static function getById(
         string $id,
         ResourceModel $model,
         Directive ...$directives
@@ -51,11 +52,15 @@ trait Controller
         );
     }
 
+
     /**
-     * @todo
+     * @param ResourceModel                             $model
+     * @param array                                     $resources
+     * @param \Phramework\JSONAPI\Directive\Directive[] ...$directives
+     * @return null|\Resource[]
+     * @throws \Phramework\Exceptions\RequestException
      */
-    protected static function includeRelationshipResources(
-        ServerRequestInterface $request,
+    public static function includeRelationshipResources(
         ResourceModel $model,
         array $resources,
         Directive ...$directives

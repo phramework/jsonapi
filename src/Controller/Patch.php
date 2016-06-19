@@ -29,12 +29,12 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait Patch
 {
-    use Controller;
     use RequestBodyQueue;
 
     //prototype
     public static function handlePatch(
         ServerRequestInterface $request,
+        ResponseInterface $response,
         ResourceModel $model,
         string $id,
         array $validationCallbacks = [],
