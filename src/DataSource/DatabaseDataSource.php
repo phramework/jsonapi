@@ -25,6 +25,7 @@ use Phramework\JSONAPI\Directive\Fields;
 use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\Directive\FilterAttribute;
 use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\Directive\FilterJSONAttribute;
 use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\ResourceModel;
@@ -494,7 +495,7 @@ class DatabaseDataSource extends DataSource
                 }
 
                 $attribute = $filterValue->getAttribute();
-                $key = $filterValue->key;
+                $key = $filterValue->getKey();
                 $operator = $filterValue->getOperator();
                 $operand = $filterValue->getOperand();
 
@@ -536,34 +537,36 @@ class DatabaseDataSource extends DataSource
      * @return string
      * @since 1.0.0
      * @todo add table prefix
-     * @uses Model::getDefaultFields if fields is null
      */
     private function handleFields(
         string $query,
         Fields $fields = null
     ) : string {
-
         $model = $this->resourceModel;
 
         $type = $model->getResourceType();
 
         if ($fields === null || empty($fields->get($type))) {
             //Use resource resourceModel's default fields
-            $fields = static::getDefaultFields();
+            //$fields = static::getDefaultFields();
+            $fields = new Fields((object) [
+                $type => ['*']
+            ]);
 
-            $attributes =  array_merge(
+            //todo apply column prefixes
+            $attributes = array_unique(array_merge(
                 $fields->get($type),
-                [$this->resourceModel->getIdAttribute()] //[static::getTable() . '.' . static::getIdAttribute()]
-            );
+                [$this->resourceModel->getIdAttribute()]
+            ));
         } else {
             $attributes = $fields->get($type);
 
             if ($fields->get($type) !== ['*']) {
                 //Get field attributes for this type and force id attribute
-                $attributes = array_merge(
+                $attributes = array_unique(array_merge(
                     $fields->get($type),
                     [$this->resourceModel->getIdAttribute()]
-                );
+                ));
             }
         }
 

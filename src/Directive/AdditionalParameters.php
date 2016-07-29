@@ -20,6 +20,7 @@ use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
+ * Additional parameters required to get for primary resource
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
@@ -59,11 +60,20 @@ class AdditionalParameters extends Directive
         return $this;
     }
 
+    /**
+     * @param ResourceModel $model
+     * @return true
+     */
     public function validate(ResourceModel $model) : bool 
     {
         return true;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResourceModel          $model
+     * @return null
+     */
     public static function parseFromRequest(
         ServerRequestInterface $request,
         ResourceModel $model
