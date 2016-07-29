@@ -363,7 +363,7 @@ class Resource extends \stdClass implements \JsonSerializable
                             }
                         } elseif (Util::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
                             //If returned $relationshipEntryResources are RelationshipResource
-                            $relationshipEntry->data[] = $relationshipEntryResources;
+                            $relationshipEntry->data = $relationshipEntryResources;
                         } else {
                             throw new \Exception(sprintf(
                                 'Unexpected relationship entry resources of relationship "%s",'
