@@ -17,16 +17,19 @@ declare(strict_types=1);
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\JSONAPI\APP\Models\Group;
 use Phramework\JSONAPI\APP\Models\User;
 use Phramework\JSONAPI\Controller\Controller;
+use Phramework\JSONAPI\GetResponse;
 use Phramework\JSONAPI\Resource;
 use Phramework\Util\Util;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 
 /**
- * @coversDefaultClass \Phramework\JSONAPI\Controller\GetById
+ * @coversDefaultClass \Phramework\JSONAPI\Controller\Get
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
@@ -34,10 +37,37 @@ class GetTest extends \PHPUnit_Framework_TestCase
 {
     use Get;
 
+    /**
+     * @covers ::handleGet
+     */
     public function testHandleGet()
     {
+        $body = $this->getBody(
+            new ServerRequest()
+        );
+
+        $this->assertObjectHasAttribute(
+            'data',
+            $body
+        );
+
+        $this->assertInternalType(
+            'array',
+            $body->data
+        );
+
+        $this->assertSame(
+            User::getResourceModel()->getResourceType(),
+            $body->data[0]->type
+        );
+
+        $this->markTestIncomplete();
+    }
+
+    protected function checkRequest(RequestInterface $request) : ResponseInterface
+    {
         $response = static::handleGet(
-            new ServerRequest(),
+            $request,
             new Response(),
             User::getResourceModel()
         );
@@ -60,18 +90,64 @@ class GetTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue(Util::isJSON($body));
 
-        $bodyParsed = json_decode($body);
+        return $response;
+    }
 
-        $this->assertObjectHasAttribute(
-            'data',
-            $bodyParsed
+    /**
+     * @param RequestInterface $request
+     * @return GetResponse
+     */
+    protected function getBody(RequestInterface $request)
+    {
+        $response = $this->checkRequest($request);
+
+        $body = $response->getBody()->__toString();
+
+        $bodyParsed = (json_decode($body));
+
+        return $bodyParsed;
+    }
+
+    /**
+     * @covers ::handleGet
+     * @after handleGet
+     */
+    public function testHandleGetWithInclude()
+    {
+        $request = new ServerRequest();
+        $request = $request
+            ->withQueryParams(
+                [
+                    'include' => 'group',
+                    'page' => [
+                        'limit' => 1
+                    ]
+                ]
+            );
+
+        $body = $this->getBody(
+            $request
+        );
+
+        $this->assertCount(
+            1,
+            $body->data
         );
 
         $this->assertInternalType(
             'array',
-            $bodyParsed->data
+            $body->included
         );
 
-        $this->markTestIncomplete();
+        $this->assertCount(
+            1,
+            $body->included
+        );
+
+        $this->assertSame(
+            Group::getResourceModel()->getResourceType(),
+            $body->included[0]->type
+        );
+
     }
 }

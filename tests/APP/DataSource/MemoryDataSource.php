@@ -104,7 +104,7 @@ class MemoryDataSource extends DataSource
         //pagination
         //todo
 
-        $page =  Directive::getByClass(
+        $page = Directive::getByClass(
             Page::class,
             $directives
         );
