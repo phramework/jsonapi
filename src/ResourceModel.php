@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -24,6 +25,7 @@ use Phramework\JSONAPI\Model\DirectivesTrait;
 use Phramework\JSONAPI\Model\RelationshipsTrait;
 use Phramework\JSONAPI\Model\VariableTrait;
 use Phramework\Validate\ObjectValidator;
+use Phramework\Validate\StringValidator;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
@@ -62,6 +64,11 @@ class ResourceModel
      * @var ObjectValidator
      */
     public $filterValidator;
+
+    /**
+     * @var StringValidator
+     */
+    public $idAttributeValidator;
     
     /**
      * InternalModel constructor.
@@ -195,6 +202,26 @@ class ResourceModel
     {
         $this->idAttribute = $idAttribute;
 
+        return $this;
+    }
+
+    /**
+     * Get idAttribute validator
+     * @return StringValidator
+     */
+    public function getIdAttributeValidator() : StringValidator
+    {
+        return $this->idAttributeValidator;
+    }
+
+    /**
+     * @param StringValidator $idAttributeValidator
+     * @return $this
+     */
+    public function setIdAttributeValidator(
+        StringValidator $idAttributeValidator
+    ) {
+        $this->idAttributeValidator  = $idAttributeValidator;
         return $this;
     }
 
