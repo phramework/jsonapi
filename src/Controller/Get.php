@@ -40,6 +40,7 @@ trait Get
      * @param ResourceModel          $model
      * @param array                  $directives
      * @return ResponseInterface
+     * @todo add links
      */
     public static function handleGet(
         ServerRequestInterface $request,

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -14,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Phramework\JSONAPI;
 
-use Directive\Model\Directives;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\Util\Util;
 
@@ -31,8 +32,8 @@ use Phramework\Util\Util;
  * @property \stdClass $links
  * @property \stdClass $attributes
  * @property \stdClass $relationships
- * @property \stdClass $data
  * @property \stdClass $private-attributes
+ * @property \stdClass $'attributes-meta'
  */
 class Resource extends \stdClass implements \JsonSerializable
 {
@@ -73,10 +74,10 @@ class Resource extends \stdClass implements \JsonSerializable
      * @param string $type
      * @param string $id
      */
-    public function __construct($type, $id)
+    public function __construct(string $type, string $id)
     {
         $this->type = $type;
-        $this->id   = (string) $id;
+        $this->id   = $id;
     }
 
     /**
@@ -99,7 +100,7 @@ class Resource extends \stdClass implements \JsonSerializable
 
             $this->{$name} = $value;
         } elseif (in_array($name, ['id', 'type'])) {
-            $this->{$name} = $value;
+            $this->{$name} = (string) $value;
         } else {
             throw new \Exception(sprintf(
                 'Undefined property via __set(): %s',

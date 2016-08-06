@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -55,7 +56,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
             $response->getHeader('Content-Type')[0]
         );
 
-        $body = $response->getBody()->getContents();
+        $body = $response->getBody()->__toString();
 
         $this->assertTrue(Util::isJSON($body));
 

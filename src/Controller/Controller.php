@@ -148,14 +148,16 @@ class Controller
             $viewParameters->meta = $meta;
         }
 
-        $response->getBody()->write(json_encode($viewParameters));
-
-        return $response
+        $response = $response
             ->withStatus(200)
             ->withHeader(
                 'Content-Type',
                 'application/vnd.api+json;charset=utf-8'
             );
+
+        $response->getBody()->write(json_encode($viewParameters));
+
+        return $response;
     }
 
     /**
