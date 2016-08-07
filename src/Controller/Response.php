@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -19,6 +20,7 @@ namespace Phramework\JSONAPI\Controller;
 use Psr\Http\Message\ResponseInterface;
 
 /**
+ * Helper class containing methods for standard HTTP responses
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0

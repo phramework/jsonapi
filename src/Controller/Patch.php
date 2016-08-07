@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -26,6 +27,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
+ * @todo modify to allow batch, remove id ?
  */
 trait Patch
 {
@@ -42,13 +44,16 @@ trait Patch
         int $bulkLimit = null,
         array $directives
     ) : ResponseInterface {
+        //Validate id using model's validator
+        $id = $model->getIdAttributeValidator()->parse($id);
+
         //gather data as a queue
 
-        //check bulk limit
+        //check bulk limit ??
 
         //on each validate
 
-        //prefer PATCH validation resourceModel
+        //prefer PATCH validation model
         $validationModel = $model->getValidationModel(
             'PATCH'
         );

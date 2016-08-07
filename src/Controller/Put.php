@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -42,6 +43,9 @@ trait Put
         int $bulkLimit = null,
         array $directives
     ) : ResponseInterface {
+        //Validate id using model's validator
+        $id = $model->getIdAttributeValidator()->parse($id);
+
         //gather data as a queue
 
         //check bulk limit

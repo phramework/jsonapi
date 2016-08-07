@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -21,6 +22,7 @@ use Phramework\JSONAPI\DataSource\DataSource;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Directive\Filter;
 use Phramework\JSONAPI\Directive\Page;
+use Phramework\JSONAPI\Directive\Sort;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\ResourceModel;
 
@@ -66,7 +68,8 @@ class MemoryDataSource extends DataSource
         $table = $this->resourceModel->getVariable('table');
 
         $records = static::select($table);
-        $records = json_decode(json_encode($records));
+        $records = json_decode(json_encode($records)); //deep clone
+
         $idAttribute = $this->resourceModel->getIdAttribute();
 
         //apply directives
@@ -79,7 +82,7 @@ class MemoryDataSource extends DataSource
         /**
          * @var Filter
          */
-        $filter = Directive::getByClass(
+        $filter = Filter::getByClass(
             Filter::class,
             $directives
         );
@@ -96,14 +99,35 @@ class MemoryDataSource extends DataSource
         }
 
         //sort
-        //todo
+        $sort = Sort::getByClass(
+            Sort::class,
+            $directives
+        );
+
+        if ($sort !== null) {
+            $sortCallback =
+                $sort->getAscending()
+                ? function ($a, $b) {return $a > $b;}
+                : function ($a, $b) {return $a < $b;}
+            ;
+
+            $sortAttribute = $sort->getAttribute();
+
+            usort(
+                $records,
+                function ($a, $b) use ($sortCallback, $sortAttribute) {
+                    return $sortCallback(
+                        $a->{$sortAttribute} ?? null,
+                        $b->{$sortAttribute} ?? null
+                    );
+                }
+            );
+        }
 
         //fields
         //todo
 
         //pagination
-        //todo
-
         $page = Directive::getByClass(
             Page::class,
             $directives
@@ -118,7 +142,7 @@ class MemoryDataSource extends DataSource
         }
 
         return Resource::parseFromRecords(
-            $records, //deep copy
+            $records,
             $this->resourceModel,
             $directives
         );
@@ -128,12 +152,12 @@ class MemoryDataSource extends DataSource
         \stdClass $attributes,
         $return = \Phramework\Database\Operations\Create::RETURN_ID
     ) {
-        //todo insert id
-        if (!property_exists($attributes, $this->resourceModel->getIdAttribute())) {
-            $attributes->{$this->resourceModel->getIdAttribute()} = md5(mt_rand());
-        }
+        $idAttribute = $this->resourceModel->getIdAttribute();
 
-        $id = $attributes->{$this->resourceModel->getIdAttribute()};
+        if (!property_exists($attributes, $idAttribute)) {
+            //generate an id
+            $attributes->{$idAttribute} = md5(mt_rand());
+        }
 
         $table = $this->resourceModel->getVariable('table');
 
@@ -146,7 +170,7 @@ class MemoryDataSource extends DataSource
                 return $attributes;
             case Create::RETURN_ID:
             default:
-                return $attributes->{$this->resourceModel->getIdAttribute()};
+                return $attributes->{$idAttribute};
         }
     }
 

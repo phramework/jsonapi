@@ -20,7 +20,7 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\JSONAPI\APP\Models\Group;
 use Phramework\JSONAPI\APP\Models\User;
 use Phramework\JSONAPI\Controller\Controller;
-use Phramework\JSONAPI\GetResponse;
+use Phramework\JSONAPI\CollectionResponse;
 use Phramework\JSONAPI\Resource;
 use Phramework\Util\Util;
 use Psr\Http\Message\RequestInterface;
@@ -60,9 +60,181 @@ class GetTest extends \PHPUnit_Framework_TestCase
             User::getResourceModel()->getResourceType(),
             $body->data[0]->type
         );
-
-        $this->markTestIncomplete();
     }
+
+    /**
+     * @covers ::handleGet
+     * @after testHandleGet
+     */
+    public function testHandleGetWithInclude()
+    {
+        $request = new ServerRequest();
+        $request = $request
+            ->withQueryParams(
+                [
+                    'include' => Group::getResourceType(),
+                    'page' => [
+                        'limit' => '1'
+                    ]
+                ]
+            );
+
+        $body = $this->getBody(
+            $request
+        );
+
+        $this->assertCount(
+            1,
+            $body->data
+        );
+
+        $this->assertInternalType(
+            'array',
+            $body->included
+        );
+
+        $this->assertCount(
+            1,
+            $body->included
+        );
+
+        $this->assertSame(
+            Group::getResourceType(),
+            $body->included[0]->type
+        );
+    }
+
+    /**
+     * @covers ::handleGet
+     * @after testHandleGet
+     */
+    public function testHandleGetWithFilterPrimarySingle()
+    {
+        $id = '2';
+
+        $request = new ServerRequest();
+        $request = $request
+            ->withQueryParams(
+                [
+                    'include' => 'group',
+                    'filter'    => [
+                        User::getResourceType() => $id
+                    ]
+                ]
+            );
+
+        $body = $this->getBody(
+            $request
+        );
+
+        $this->assertCount(
+            1,
+            $body->data
+        );
+
+        $this->assertSame(
+            $id,
+            $body->data[0]->id
+        );
+    }
+
+    /**
+     * @covers ::handleGet
+     * @after testHandleGet
+     */
+    public function testHandleGetWithFilterPrimaryMultiple()
+    {
+        $ids = ['2', '3'];
+
+        $request = new ServerRequest();
+        $request = $request
+            ->withQueryParams(
+                [
+                    'filter'    => [
+                        User::getResourceType() => implode(',', $ids)
+                    ]
+                ]
+            );
+
+        $body = $this->getBody(
+            $request
+        );
+
+        $this->assertCount(
+            count($ids),
+            $body->data
+        );
+
+        foreach ($body->data as $resource) {
+            $this->assertContains(
+                $resource->id,
+                $ids
+            );
+        }
+    }
+
+    /**
+     * @covers ::handleGet
+     * @after testHandleGet
+     */
+    public function testHandleGetWithSorId()
+    {
+        $ids = ['2', '3'];
+
+        $request = new ServerRequest();
+        $request = $request
+            ->withQueryParams(
+                [
+                    'filter' => [
+                        User::getResourceType() => implode(',', $ids)
+                    ],
+                    'sort'   => User::getResourceModel()->getIdAttribute()
+                ]
+            );
+
+        $body = $this->getBody(
+            $request
+        );
+
+        $this->assertSame(
+            $ids[0],
+            $body->data[0]->id
+        );
+
+        $this->assertSame(
+            $ids[1],
+            $body->data[1]->id
+        );
+
+        $request = new ServerRequest();
+        $request = $request
+            ->withQueryParams(
+                [
+                    'filter' => [
+                        User::getResourceType() => implode(',', $ids)
+                    ],
+                    'sort'   => '-' . User::getResourceModel()->getIdAttribute()
+                ]
+            );
+
+        $body = $this->getBody(
+            $request
+        );
+
+        $this->assertSame(
+            $ids[1],
+            $body->data[0]->id
+        );
+
+        $this->assertSame(
+            $ids[0],
+            $body->data[1]->id
+        );
+    }
+
+    /**
+     * Helper
+     */
 
     protected function checkRequest(RequestInterface $request) : ResponseInterface
     {
@@ -95,7 +267,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param RequestInterface $request
-     * @return GetResponse
+     * @return CollectionResponse
      */
     protected function getBody(RequestInterface $request)
     {
@@ -105,49 +277,28 @@ class GetTest extends \PHPUnit_Framework_TestCase
 
         $bodyParsed = (json_decode($body));
 
-        return $bodyParsed;
-    }
-
-    /**
-     * @covers ::handleGet
-     * @after handleGet
-     */
-    public function testHandleGetWithInclude()
-    {
-        $request = new ServerRequest();
-        $request = $request
-            ->withQueryParams(
-                [
-                    'include' => 'group',
-                    'page' => [
-                        'limit' => 1
-                    ]
-                ]
-            );
-
-        $body = $this->getBody(
-            $request
+        $this->assertInternalType(
+            'array',
+            $bodyParsed->data
         );
 
-        $this->assertCount(
-            1,
-            $body->data
+        if (isset($bodyParsed->included)) {
+            $this->assertInternalType(
+                'array',
+                $bodyParsed->included
+            );
+        }
+
+        $this->assertInternalType(
+            'object',
+            $bodyParsed->links
         );
 
         $this->assertInternalType(
-            'array',
-            $body->included
+            'object',
+            $bodyParsed->meta
         );
 
-        $this->assertCount(
-            1,
-            $body->included
-        );
-
-        $this->assertSame(
-            Group::getResourceModel()->getResourceType(),
-            $body->included[0]->type
-        );
-
+        return $bodyParsed;
     }
 }

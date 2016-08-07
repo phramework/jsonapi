@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -61,12 +62,12 @@ trait DataSourceTrait
     /**
      * @var callable
      */
-    public $prepareRecords;
+    public $prepareRecord;
 
     /**
      * @param callable $get
      * @return $this
-     * @todo validate callable using https://secure.php.net/manual/en/reflectionfunction.construct.php
+     * @todo validate callable signature using https://secure.php.net/manual/en/reflectionfunction.construct.php
      */
     public function setGet(callable $get = null)
     {
@@ -141,6 +142,7 @@ trait DataSourceTrait
     }
 
     /**
+     * Execute "get" method
      * @param Directive[] ...$directives
      * @return Resource[]
      * @throws \LogicException When get property is not set
@@ -157,6 +159,12 @@ trait DataSourceTrait
         return $get(...$directives);
     }
 
+    /**
+     * Execute "post" method
+     * @param \stdClass $attributes
+     * @param int       $return
+     * @return mixed
+     */
     public function post(
         \stdClass $attributes,
         $return = \Phramework\Database\Operations\Create::RETURN_ID
@@ -174,6 +182,13 @@ trait DataSourceTrait
         );
     }
 
+    /**
+     * Execute "patch" method
+     * @param string    $id
+     * @param \stdClass $attributes
+     * @param null      $return
+     * @return mixed
+     */
     public function patch(
         string $id,
         \stdClass $attributes,
@@ -193,6 +208,13 @@ trait DataSourceTrait
         );
     }
 
+    /**
+     * Execute "put" method
+     * @param string    $id
+     * @param \stdClass $attributes
+     * @param null      $return
+     * @return mixed
+     */
     public function put(
         string $id,
         \stdClass $attributes,
@@ -212,6 +234,12 @@ trait DataSourceTrait
         );
     }
 
+    /**
+     * Execute "delete" method
+     * @param string         $id
+     * @param \stdClass|null $additionalAttributes
+     * @return mixed
+     */
     public function delete(
         string $id,
         \stdClass $additionalAttributes = null
@@ -232,27 +260,31 @@ trait DataSourceTrait
     /**
      * @return callable
      */
-    public function getPrepareRecords() : callable
+    public function getPrepareRecord() : callable
     {
-        return $this->prepareRecords;
+        return $this->prepareRecord;
     }
 
     /**
-     * @param callable $prepareRecords
+     * Set "prepare records" callable, used to apply various transformation to raw record values.
+     * This method is executed before raw records from data source are
+     * parsed as Resources.
+     * @param callable $prepareRecord
      * @return $this
      */
-    public function setPrepareRecords(callable $prepareRecords)
+    public function setPrepareRecord(callable $prepareRecord)
     {
-        $this->prepareRecords = $prepareRecords;
+        $this->prepareRecord = $prepareRecords;
 
         return $this;
     }
 
     /**
+     * @see setPrepareRecord
      * @param string|string[] $id
      * @param Directive[]     ...$directives
      * @return Resource|\stdClass|null
-     * @todo rewrite cache from scratch
+     * @todo rewrite cache from scratch without cache or include abstract implementation of cache
      */
     public function getById($id, Directive ...$directives)
     {

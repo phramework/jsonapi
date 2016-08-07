@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\DataSource\DatabaseDataSource;
 use Phramework\JSONAPI\DataSource\DataSource;
+use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Directive\Page;
 use Phramework\JSONAPI\Model\DataSourceTrait;
 use Phramework\JSONAPI\Model\DirectivesTrait;
@@ -74,7 +75,7 @@ class ResourceModel
      * InternalModel constructor.
      * Will create a new internal resourceModel initialized with:
      * - defaultDirectives Page directive limit with value of getMaxPageLimit()
-     * - empty prepareRecords
+     * - empty prepareRecord
      * @param string     $resourceType
      * @param DataSource $dataSource null will interpreted as a new DatabaseDataSource
      */
@@ -90,8 +91,8 @@ class ResourceModel
 
         $this->initializeVariables();
 
-        //Set default prepareRecords method as an empty method
-        $this->prepareRecords = function (array &$records) {};
+        //Set default prepareRecord method as an empty method
+        $this->prepareRecord = function (array &$records) {};
 
         $this->dataSource = $dataSource;
 
@@ -119,6 +120,9 @@ class ResourceModel
             [],
             false
         );
+
+        //todo provide better default idAttributeValidator
+        $this->idAttributeValidator = new StringValidator(1);
     }
 
     /**
@@ -226,15 +230,16 @@ class ResourceModel
     }
 
     /**
-     * @param array $records
-     * @param array $directives
-     * @param int   $flags
+     * Parse an array of raw records as a collection of Resources
+     * @param \stdClass[] $records
+     * @param Directive[] $directives
+     * @param int         $flags
      * @return Resource[]
      */
     public function collection(
         array $records = [],
         array $directives = [],
-        $flags = Resource::PARSE_DEFAULT
+        int $flags = Resource::PARSE_DEFAULT
     ) : array {
         return Resource::parseFromRecords(
             $records,
@@ -244,10 +249,17 @@ class ResourceModel
         );
     }
 
+    /**
+     * Parse a record as a Resource
+     * @param \stdClass   $record
+     * @param Directive[] $directives
+     * @param int         $flags
+     * @return null|Resource
+     */
     public function resource(
-        $record,
+        \stdClass $record,
         array $directives = [],
-        $flags = Resource::PARSE_DEFAULT
+        int $flags = Resource::PARSE_DEFAULT
     ) {
         return Resource::parseFromRecord(
             $record,

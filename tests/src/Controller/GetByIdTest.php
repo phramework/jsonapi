@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -16,9 +17,14 @@
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\JSONAPI\APP\Models\Group;
 use Phramework\JSONAPI\APP\Models\User;
+use Phramework\JSONAPI\CollectionResponse;
 use Phramework\JSONAPI\Controller\Controller;
 use Phramework\JSONAPI\Resource;
+use Phramework\JSONAPI\ResourceResponse;
+use Phramework\Util\Util;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
@@ -32,14 +38,74 @@ class GetByIdTest extends \PHPUnit_Framework_TestCase
 {
     use GetById;
 
+    /**
+     * @covers ::handleGetById
+     */
     public function testHandleGetById()
     {
-        $response = static::handleGetById(
+        $id = '1';
+
+        $body = $this->getBody(
             new ServerRequest(),
+            $id
+        );
+
+        $this->assertSame(
+            User::getResourceModel()->getResourceType(),
+            $body->data->type
+        );
+
+        $this->assertSame(
+            $id,
+            $body->data->id
+        );
+    }
+
+    /**
+     * @covers ::handleGetById
+     * @after testHandleGetById
+     */
+    public function testHandleGetWithInclude()
+    {
+        $id = '1';
+
+        $request = new ServerRequest();
+        $request = $request
+            ->withQueryParams(
+                [
+                    'include' => 'group',
+                ]
+            );
+
+        $body = $this->getBody(
+            $request,
+            $id
+        );
+
+        $this->assertInternalType(
+            'array',
+            $body->included
+        );
+
+        $this->assertCount(
+            1,
+            $body->included
+        );
+
+        $this->assertSame(
+            Group::getResourceModel()->getResourceType(),
+            $body->included[0]->type
+        );
+    }
+
+    protected function checkRequest(RequestInterface $request, string  $id) : ResponseInterface
+    {
+        $response = static::handleGetById(
+            $request,
             new Response(),
             User::getResourceModel(),
             [],
-            '1'
+            $id
         );
 
         $this->assertInstanceOf(
@@ -47,6 +113,34 @@ class GetByIdTest extends \PHPUnit_Framework_TestCase
             $response
         );
 
-        $this->markTestIncomplete();
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('OK', $response->getReasonPhrase());
+
+        //todo use regex instead
+        $this->assertStringStartsWith(
+            'application/vnd.api+json',
+            $response->getHeader('Content-Type')[0]
+        );
+
+        $body = $response->getBody()->__toString();
+
+        $this->assertTrue(Util::isJSON($body));
+
+        return $response;
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return ResourceResponse
+     */
+    protected function getBody(RequestInterface $request, string $id)
+    {
+        $response = $this->checkRequest($request, $id);
+
+        $body = $response->getBody()->__toString();
+
+        $bodyParsed = (json_decode($body));
+
+        return $bodyParsed;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -48,7 +49,8 @@ trait GetById
         array $directives = [],
         string $id
     ) : ResponseInterface {
-        //todo filter id if resourceModel filter is set
+        //Validate id using model's validator
+        $id = $model->getIdAttributeValidator()->parse($id);
 
         //Parse request related directives from request
         $directives = Controller::parseDirectives(

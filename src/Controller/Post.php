@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -29,9 +30,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
+ * Handle HTTP POST request method to create new resources
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
+ * @todo modify to allow batch, remove id ?
  */
 trait Post
 {
@@ -43,18 +46,24 @@ trait Post
         ResponseInterface $response,
         ResourceModel $model,
         array $validationCallbacks = [],
-        callable $viewCallback = null,
-        int $bulkLimit = null,
-        array $directives
+        callable $viewCallback = null, //function (request, response, $ids) : ResponseInterface
+        int $bulkLimit = null, //todo decide 1 or null for default
+        array $directives = []
     ) : ResponseInterface {
         //Request primary data
         $data = $request->getParsedBody()->data;
 
-        //Treat all request data as an array of resources
+        /**
+         * @var bool
+         */
+        $isBulk = true;
+
+        //Treat all request data (bulk or not) as an array of resources
         if (
             is_object($data)
             || (is_array($data) && Util::isArrayAssoc($data))
         ) {
+            $isBulk = false;
             $data = [$data];
         }
         
@@ -75,13 +84,20 @@ trait Post
             'POST'
         );
 
-        $index = 0;
+        $bulkIndex = 0;
         //gather data as a queue
         foreach ($data as $resource) {
-            //Request::requireParameters($resource, 'type');
-            //todo remove index if no bulk
-            $source = new Pointer('/data/' . $index );
+            //Prepare exception source
+            $source = new Pointer(
+                '/data' .
+                (
+                    $isBulk
+                    ? '/' . $bulkIndex
+                    : ''
+                )
+            );
 
+            //Require resource type
             Controller::requireProperties($resource, $source, 'type');
 
             //Validate resource type
@@ -89,29 +105,27 @@ trait Post
                 ->setSource($source->getPath() . '/type')
                 ->parse($resource->type);
 
+            //Throw exception if resource id is forced
             if (property_exists($resource, 'id')) {
+                //todo include source
                 throw new ForbiddenException(
                     'Unsupported request to create a resource with a client-generated ID'
                 );
             }
 
-            $requestAttributes = (
-                isset($resource->attributes) && $resource->attributes
-                ? $resource->attributes
-                : new \stdClass()
-            );
+            //Fetch request attributes
+            $requestAttributes    = $resource->attributes    ?? new \stdClass();
+            $requestRelationships = $resource->relationships ?? new \stdClass();
 
-            if (property_exists($resource, 'relationships')) {
-                $requestRelationships = $resource->relationships;
-            } else {
-                $requestRelationships = new \stdClass();
-            }
-
-            $queueItem; //todo;
+            //todo use helper class
+            $queueItem = (object) [
+                'attributes'    => $requestAttributes,
+                'relationships' => $requestRelationships
+            ];
                 
             $requestQueue->push($queueItem);
             
-            ++$index;
+            ++$bulkIndex;
         }
 
         //on each validate
@@ -122,10 +136,12 @@ trait Post
         //post
 
         /**
+         * Gather the created ids
          * @var string[]
          */
         $ids = [];
 
+        //process queue
         while (!$requestQueue->isEmpty()) {
             $queueItem = $requestQueue->pop();
 
@@ -133,11 +149,10 @@ trait Post
                 $queueItem->attributes
             );
 
-            Controller::testUnknownError($id);
-
+            Controller::assertUnknownError($id);
 
             //POST item's relationships
-            $relationships = $queueItem->getRelationships();
+            $relationships = $queueItem->relationships;
 
             foreach ($relationships as $key => $relationship) {
                 //Call post relationship method to post each of relationships pairs
@@ -157,20 +172,25 @@ trait Post
             $ids[] = $id;
         }
 
-        //return view callback, MUST return a ResponseInterface
+        //return view callback, it MUST return a ResponseInterface
 
         if ($viewCallback !== null) {
             return $viewCallback(
+                $request,
+                $response,
                 $ids
             );
         }
 
         if (count($ids) === 1) {
             //Prepare response with 201 Created status code
-            return Response::created('link' . $ids[0]);
+            return Response::created(
+                $response,
+                'link' . $ids[0] // location
+            );
         }
 
-        //Return 204
-        return Response::noContent();
+        //Return 204 No Content
+        return Response::noContent($response);
     }
 }

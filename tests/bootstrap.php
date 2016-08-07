@@ -114,3 +114,14 @@ MemoryDataSource::insert(
         'tag_id'   => []
     ]
 );
+
+MemoryDataSource::insert(
+    'user',
+    (object) [
+        'id'       => '3',
+        'username' => 'nohponex3',
+        'email'    => 'nohponex+3@gmail.com',
+        'group_id' => '2',
+        'tag_id'   => ['2']
+    ]
+);

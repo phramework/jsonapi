@@ -39,6 +39,9 @@ class User extends Model
     {
         $model = (new ResourceModel('user', new MemoryDataSource()))
             ->addVariable('table', 'user')
+            ->setSortableAttributes(
+                'id'
+            )
             ->setRelationships((object) [
                 'group' => new Relationship(
                     Group::getResourceModel(),

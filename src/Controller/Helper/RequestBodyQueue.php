@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -26,7 +26,9 @@ use Phramework\JSONAPI\ValidationModel;
  */
 trait RequestBodyQueue
 {
-
+    /**
+     * @todo
+     */
     public static function handleResource(
         \stdClass $resource,
         ValidationModel $validationModel,

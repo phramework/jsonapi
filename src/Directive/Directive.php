@@ -42,7 +42,7 @@ abstract class Directive
     /**
      * @param string      $class
      * @param Directive[] $directives
-     * @return Directive|null
+     * @return static|null
      */
     public static function getByClass(string $class, array $directives)
     {

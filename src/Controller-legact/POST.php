@@ -376,6 +376,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                 )
             );
 
+            //todo allow attribute existing as read, callback to write
+
             $relationship = $modelClass::getRelationship($relationshipKey);
 
             $relationshipModelClass   = $relationship->modelClass;

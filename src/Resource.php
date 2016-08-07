@@ -81,6 +81,27 @@ class Resource extends \stdClass implements \JsonSerializable
     }
 
     /**
+     * @param $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        switch ($name) {
+            case 'id':
+            case 'type':
+                return true;
+            case 'links':
+            case 'attributes':
+            case 'relationships':
+            case 'meta':
+            case 'private':
+                return isset($this->{$name});
+        }
+
+        return false;
+    }
+
+    /**
      * @param string $name
      * @param mixed $value
      * @throws \Exception
@@ -207,13 +228,6 @@ class Resource extends \stdClass implements \JsonSerializable
         array $directives = [],
         int $flags = Resource::PARSE_DEFAULT
     ) {
-        /*if (!is_subclass_of($resourceModel, Model::class)) {
-            throw new \Exception(sprintf(
-                'resourceModel MUST extend "%s"',
-                Model::class
-            ));
-        }*/
-
         if (empty($record)) {
             return null;
         }
@@ -455,6 +469,7 @@ class Resource extends \stdClass implements \JsonSerializable
     }
 
     /**
+     * Get resource id
      * @return string
      */
     public function getId() : string
@@ -463,6 +478,7 @@ class Resource extends \stdClass implements \JsonSerializable
     }
 
     /**
+     * Get resource type
      * @return string
      */
     public function getType() : string
@@ -501,13 +517,4 @@ class Resource extends \stdClass implements \JsonSerializable
     {
         return $this->relationships;
     }
-
-    /**
-     * @return \stdClass
-     */
-    public function getData() : \stdClass
-    {
-        return $this->data;
-    }
-    
 }
