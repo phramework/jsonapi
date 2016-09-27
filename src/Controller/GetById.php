@@ -17,6 +17,7 @@ declare(strict_types=1);
  */
 namespace Phramework\JSONAPI\Controller;
 
+use Phramework\Exceptions\Source\Parameter;
 use Phramework\JSONAPI\Directive\AdditionalParameters;
 use Phramework\JSONAPI\Directive\AdditionalRelationshipParameters;
 use Phramework\JSONAPI\Directive\IncludeResources;
@@ -50,7 +51,11 @@ trait GetById
         string $id
     ) : ResponseInterface {
         //Validate id using model's validator
-        $id = $model->getIdAttributeValidator()->parse($id);
+        $id = $model->getIdAttributeValidator()
+            ->setSource(
+                new Parameter('filter[' . $model->getResourceType() . ']')
+            )
+            ->parse($id);
 
         //Parse request related directives from request
         $directives = Controller::parseDirectives(
