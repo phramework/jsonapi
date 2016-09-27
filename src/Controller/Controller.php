@@ -111,7 +111,7 @@ class Controller
      * @throws \Exception
      */
     public static function assertUnknownError(
-        mixed $assert,
+        $assert,
         string $exceptionMessage = 'Unknown error'
     ) {
         if (!$assert) {

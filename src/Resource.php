@@ -344,7 +344,9 @@ class Resource extends \stdClass implements \JsonSerializable
                     $directives,
                     $flags
                 ) {
-                    return $relationshipObject->getCallbacks()->{'GET'}(
+                    $cb = $relationshipObject->getCallbacks()->{'GET'};
+
+                    return $cb(
                         $resource->id,
                         $directives,
                         $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes

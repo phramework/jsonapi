@@ -102,7 +102,7 @@ trait Post
 
             //Validate resource type
             $typeValidator
-                ->setSource($source->getPath() . '/type')
+                ->setSource(new Pointer($source->getPath() . '/type'))
                 ->parse($resource->type);
 
             //Throw exception if resource id is forced
@@ -129,9 +129,15 @@ trait Post
         }
 
         //on each validate
-
+        //todo
+        foreach ($requestQueue as $i => $q) {
+            $validationModel->attributes
+                ->setSource(new Pointer('/data/' . $i . '/attributes'))
+                ->parse($q->attributes);
+        }
 
         //on each call validation callback
+        //todo
 
         //post
 
@@ -149,13 +155,17 @@ trait Post
                 $queueItem->attributes
             );
 
-            Controller::assertUnknownError($id);
+            Controller::assertUnknownError(
+                $id,
+                'Unknown error while posting resource'
+            );
 
             //POST item's relationships
             $relationships = $queueItem->relationships;
 
             foreach ($relationships as $key => $relationship) {
                 //Call post relationship method to post each of relationships pairs
+                //todo fix
                 foreach ($relationship->resources as $resourceId) {
                     call_user_func(
                         $relationship->callback,

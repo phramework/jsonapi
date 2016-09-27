@@ -21,6 +21,7 @@ use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Parameter;
+use Phramework\Exceptions\Source\Pointer;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\Operator\Operator;
 use Phramework\Util\Util;
@@ -148,12 +149,11 @@ class Filter extends Directive
      * $filter->validate(Article::class);
      * ```
      * @todo add relationship idAttribute validators
+     * @todo add correct pointers
      */
     public function validate(ResourceModel $model) : bool
     {
-        $idAttribute     = $model->getIdAttribute();
-        $filterValidator = $model->getFilterValidator();
-        $validationModel = $model->getValidationModel();
+        //$idAttribute     = $model->getIdAttribute();
 
         /**
          * Validate primary
@@ -164,7 +164,12 @@ class Filter extends Directive
 
         //Run parse, if any value is incorrect IncorrectParametersException will be thrown
         foreach ($this->primary as &$id) {
-            $id = $idAttributeValidator->parse($id);
+            $id = $idAttributeValidator
+                //todo add correct source
+                ->setSource(
+                    new Parameter('filter[' . $model->getResourceType() . ']')
+                )
+                ->parse($id);
         }
 
         /**
@@ -186,9 +191,10 @@ class Filter extends Directive
 
                 $relationshipObject = $model->getRelationship($relationshipKey);
                 $relationshipObjectModel = $relationshipObject->getResourceModel();
-                
-                $relationshipValidationModel = $relationshipObjectModel->getValidationModel();
-                $relationshipFilterValidationModel = $relationshipObjectModel->getValidationModel();
+
+                $relationshipIdValidator = $relationshipObjectModel->getIdAttributeValidator();
+
+                /*$relationshipFilterValidationModel = $relationshipObjectModel->getValidationModel();
 
                 if ($relationshipFilterValidationModel !== null
                     && isset($relationshipFilterValidationModel->properties->{$relationshipObjectModel->getIdAttribute()})) {
@@ -205,11 +211,16 @@ class Filter extends Directive
                     ];
                 } else {
                     $relationshipValidator = [UnsignedIntegerValidator::class, 'parseStatic'];
-                }
+                }*/
 
                 //Run validator, if any value is incorrect IncorrectParametersException will be thrown
                 foreach ($relationshipValue as $id) {
-                    call_user_func($relationshipValidator, $id);
+                    $id = $relationshipIdValidator
+                        //todo add correct source
+                        ->setSource(
+                            new Parameter('filter[' . $relationshipKey . ']')
+                        )
+                        ->parse($id);
                 }
             }
         }
@@ -225,91 +236,110 @@ class Filter extends Directive
          */
         $filterable = $model->getFilterableAttributes();
 
-        foreach ($this->attributes as $filterAttribute) {
-            $attribute = $filterAttribute->getAttribute();
-            $operator  = $filterAttribute->getOperator();
-            $operand   = $filterAttribute->getOperand();
+        if (!empty($this->attributes)) {
+            $filterValidator = $model->getFilterValidator();
+            $validationModel = $model->getValidationModel(); //used as fallback when $filterValidator is not available
 
-            /**
-             * @var bool
-             */
-            $isJSONFilter = ($filterAttribute instanceof FilterJSONAttribute);
+            foreach ($this->attributes as $filterAttribute) {
+                $attribute = $filterAttribute->getAttribute();
+                $operator = $filterAttribute->getOperator();
+                $operand = $filterAttribute->getOperand();
 
-            if (!property_exists($filterable, $attribute)) {
-                throw new RequestException(sprintf(
-                    'Filter attribute "%s" not allowed',
-                    $attribute
-                ));
-            }
+                //todo add correct source
+                $source = new Parameter('filter[' . $attribute . ']');
 
-            $attributeValidator = null;
+                /**
+                 * @var bool
+                 */
+                $isJSONFilter = ($filterAttribute instanceof FilterJSONAttribute);
 
-            //Attempt to use filter validation resourceModel first
-            //todo rewrite with better indentation
-            if ($filterValidator
-                //&& isset($filterValidator)
-                && isset($filterValidator->properties->{$attribute})
-            ) {
-                $attributeValidator =
-                    $filterValidator->properties->{$attribute};
-            } elseif ($validationModel
-                && isset(
-                    $validationModel->attributes,
-                    $validationModel->attributes->properties->{$attribute})
-            ) { //Then attempt to use attribute validation resourceModel first
-                $attributeValidator =
-                    $validationModel->attributes->properties->{$attribute};
-            } else {
-                //todo add source
-                throw new \Exception(sprintf(
-                    'Filter attribute "%s" has not a filter validator',
-                    $attribute
-                ));
-            }
+                if (!property_exists($filterable, $attribute)) {
+                    //todo add source
+                    throw new RequestException(sprintf(
+                        'Filter attribute "%s" not allowed',
+                        $attribute
+                    ));
+                }
 
-            $operatorClass = $filterable->{$attribute};
+                $attributeValidator = null;
 
-            if ($isJSONFilter && ($operatorClass & Operator::CLASS_JSONOBJECT) === 0) {
-                //todo add source
-                throw new RequestException(sprintf(
-                    'Filter attribute "%s" is not accepting JSON object filtering',
-                    $attribute
-                ));
-            }
-
-            //Check if operator is allowed
-            if (!$isJSONFilter && !in_array(
-                $operator,
-                Operator::getByClassFlags($operatorClass)
-            )) {
-                //todo add source
-                throw new RequestException(sprintf(
-                    'Filter operator "%s" is not allowed for attribute "%s"',
-                    $operator,
-                    $attribute
-                ));
-            }
-
-            //Validate filterAttribute operand against filter validator or validator if set
-            if (!in_array($operator, Operator::getNullableOperators())) {
-                if ($isJSONFilter) {
-                    //If filter validator is set for dereference JSON object property
-                    if ($filterValidator
-                        && isset($filterValidator->properties->{$attribute})
-                        && isset($filterValidator->properties->{$attribute}
-                                ->properties->{$filterAttribute->getKey()})
-                    ) {
-                        $attributePropertyValidator = $filterValidator->properties
-                            ->{$attribute}->properties->{$filterAttribute->getKey()};
-
-                        $attributePropertyValidator->parse($operand);
-                    }
-                    //todo
-                    //} else {
-                    //    //**NOTE** Remain unparsed!
-                    //}
+                //Attempt to use filter validation resourceModel first
+                //todo rewrite with better indentation
+                if ($filterValidator
+                    //&& isset($filterValidator)
+                    && isset($filterValidator->properties->{$attribute})
+                ) {
+                    $attributeValidator =
+                        $filterValidator->properties->{$attribute};
+                } elseif ($validationModel
+                    && isset(
+                        $validationModel->attributes,
+                        $validationModel->attributes->properties->{$attribute})
+                ) { //Then attempt to use attribute validation resourceModel first
+                    $attributeValidator =
+                        $validationModel->attributes->properties->{$attribute};
                 } else {
-                    $attributeValidator->parse($operand);
+                    //todo add source
+                    throw new \Exception(sprintf(
+                        'Filter attribute "%s" has not a filter validator',
+                        $attribute
+                    ));
+                }
+
+                $operatorClass = $filterable->{$attribute};
+
+                if ($isJSONFilter && ($operatorClass & Operator::CLASS_JSONOBJECT) === 0) {
+                    //todo add source
+                    throw new RequestException(sprintf(
+                        'Filter attribute "%s" is not accepting JSON object filtering',
+                        $attribute
+                    ));
+                }
+
+                //Check if operator is allowed
+                if (!$isJSONFilter && !in_array(
+                        $operator,
+                        Operator::getByClassFlags($operatorClass)
+                    )
+                ) {
+                    //todo add source
+                    throw new RequestException(sprintf(
+                        'Filter operator "%s" is not allowed for attribute "%s"',
+                        $operator,
+                        $attribute
+                    ));
+                }
+
+                //Validate filterAttribute operand against filter validator or validator if set
+                if (!in_array($operator, Operator::getNullableOperators())) {
+                    if ($isJSONFilter) {
+                        //If filter validator is set for dereference JSON object property
+                        if ($filterValidator
+                            && isset($filterValidator->properties->{$attribute})
+                            && isset($filterValidator->properties->{$attribute}
+                                    ->properties->{$filterAttribute->getKey()})
+                        ) {
+                            $attributePropertyValidator = $filterValidator->properties
+                                ->{$attribute}->properties->{$filterAttribute->getKey()};
+
+                            $attributePropertyValidator
+                                //todo add correct pointers
+                                ->setSource(
+                                    $source
+                                )
+                                ->parse($operand);
+                        }
+                        //todo
+                        //} else {
+                        //    //**NOTE** Remain unparsed!
+                        //}
+                    } else {
+                        $attributeValidator
+                            ->setSource(
+                                $source
+                            )
+                            ->parse($operand);
+                    }
                 }
             }
         }
@@ -371,10 +401,10 @@ class Filter extends Directive
                 $values = array_map(
                     'strval',
                     array_map('trim', explode(',', trim($filterValue)))
-                    //array_map(
-                    //    $function,
-                    //    array_map('trim', explode(',', trim($filterValue)))
-                    //)
+                //array_map(
+                //    $function,
+                //    array_map('trim', explode(',', trim($filterValue)))
+                //)
                 );
 
                 $filterPrimary = $values;
