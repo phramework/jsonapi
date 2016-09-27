@@ -78,7 +78,7 @@ class DatabaseDataSource extends DataSource
             $query
         );
 
-        array_walk($records, $this->prepareRecords);
+        array_walk($records, $this->resourceModel->prepareRecord);
 
         return $this->resourceModel->collection($records, $directives);
     }

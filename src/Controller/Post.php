@@ -51,7 +51,7 @@ trait Post
         array $directives = []
     ) : ResponseInterface {
         //Request primary data
-        $data = $request->getParsedBody()->data;
+        $data = $request->getParsedBody()->data ?? new \stdClass();
 
         /**
          * @var bool

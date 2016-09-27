@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -16,7 +17,6 @@
  */
 namespace Phramework\JSONAPI\Model;
 
-
 use Phramework\JSONAPI\Directive\Directive;
 
 /**
@@ -33,6 +33,8 @@ trait DirectivesTrait
     protected $defaultDirectives;
     
     /**
+     * @todo check restriction should be applied based on this property
+     * List of supported directives
      * @var string[]
      */
     protected $supportedDirectives = [];
@@ -56,6 +58,10 @@ trait DirectivesTrait
     protected $fieldableAtributes =  [];
 
     /**
+     * Attribute that are not returned via the API response,
+     * they are useful for internal data processing
+     * Resource parse will store the specified attributes under it's
+     * private-attributes object member
      * @var string[]
      */
     protected $privateAttributes = [];
@@ -67,7 +73,9 @@ trait DirectivesTrait
     protected $maxPageLimit = 25000;
 
     /**
-     * Attributes that are allow filter directive, and specifying allowed operator classes to be applied
+     * Dictionary of filterable attributes key => value
+     * Where key is the attribute and
+     * value the allowed operator classes (represented as flags)
      * @var \stdClass
      * @example
      * <code>
@@ -138,17 +146,23 @@ trait DirectivesTrait
      * Returns an array with class names of supported directives
      * @return string[]
      */
-    public function getSupportedDirectives()  : array
+    public function getSupportedDirectives() : array
     {
         return $this->supportedDirectives;
     }
 
     /**
      * @param int $maxPageLimit
+     * @throws \InvalidArgumentException
      * @return $this
      */
     public function setMaxPageLimit(int $maxPageLimit)
     {
+        if ($maxPageLimit < 1) {
+            throw new \InvalidArgumentException(
+                'maxPageLimit must be a positive interger'
+            );
+        }
         $this->maxPageLimit = $maxPageLimit;
 
         return $this;
@@ -163,6 +177,9 @@ trait DirectivesTrait
     }
 
     /**
+     * Get dictionary of filterable attributes key => value
+     * Where key is the attribute and
+     * value the allowed operator classes (represented as flags)
      * @param \stdClass $filterableAttributes
      * @return $this
      * @example
@@ -228,6 +245,7 @@ trait DirectivesTrait
     }
 
     /**
+     * Set the resource's that are allowed to be changed by patch method
      * @param string[] $mutableAttributes
      * @return $this
      */
@@ -239,6 +257,7 @@ trait DirectivesTrait
     }
 
     /**
+     * Get the resource's that are allowed to be changed by patch method
      * @return string[]
      */
     public function getMutableAttributes() : array

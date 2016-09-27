@@ -94,7 +94,7 @@ class Resource extends \stdClass implements \JsonSerializable
             case 'attributes':
             case 'relationships':
             case 'meta':
-            case 'private':
+            case 'private-attributes':
                 return isset($this->{$name});
         }
 
