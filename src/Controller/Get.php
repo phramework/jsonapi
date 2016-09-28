@@ -48,7 +48,8 @@ trait Get
         ResponseInterface $response,
         ResourceModel $model,
         array $directives = []
-    ) : ResponseInterface {
+    ) : ResponseInterface
+    {
         //Parse request related directives from request
         $directives = Controller::parseDirectives(
             [
@@ -72,7 +73,7 @@ trait Get
             $directives
         );
 
-        $meta = (object) [
+        $meta = (object)[
             'page' => (
             $page === null
                 ? $model->getDefaultDirectives()->{Page::class} ?? null

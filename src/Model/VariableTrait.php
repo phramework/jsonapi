@@ -40,7 +40,8 @@ trait VariableTrait
      * @param mixed  $value
      * @return $this
      */
-    public function addVariable(string $key, $value) {
+    public function addVariable(string $key, $value)
+    {
         $this->variables->{$key} = $value;
 
         return $this;
@@ -53,7 +54,8 @@ trait VariableTrait
      * @param mixed  $default
      * @return mixed
      */
-    public function getVariable(string $key, $default = null) {
+    public function getVariable(string $key, $default = null)
+    {
         if (property_exists($this->variables, $key)) {
             return $this->variables->{$key};
         }

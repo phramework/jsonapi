@@ -24,5 +24,4 @@ namespace Phramework\JSONAPI\Controller;
  */
 trait Relationship
 {
-
 }

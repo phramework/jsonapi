@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -31,7 +32,6 @@ class AdditionalRelationshipParameters extends Directive
      * (object) [
      *     'author' => [1, 'abc']
      * ]
-     * 
      * @var \stdClass
      */
     protected $relationshipObjects;

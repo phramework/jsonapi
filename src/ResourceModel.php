@@ -92,7 +92,9 @@ class ResourceModel
         $this->initializeVariables();
 
         //Set default prepareRecord method as an empty method
-        $this->prepareRecord = function (array &$records) {};
+        $this->prepareRecord = function (array &$record) {
+
+        };
 
         $this->dataSource = $dataSource;
 

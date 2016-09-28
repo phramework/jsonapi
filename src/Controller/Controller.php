@@ -207,7 +207,7 @@ class Controller
             $directives
         );
 
-        foreach($classes as $directiveClass) {
+        foreach ($classes as $directiveClass) {
             if ($ignoreIfExists && in_array($directiveClass, $existClasses)) {
                 continue;
             }
@@ -227,7 +227,7 @@ class Controller
                         $directiveClass,
                         $existClasses,
                         true
-                    )  !== false)
+                    ) !== false)
                 ) {
                     $directives[$key] = $parsed;
                 } else {

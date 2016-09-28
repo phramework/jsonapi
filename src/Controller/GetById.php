@@ -80,8 +80,8 @@ trait GetById
             $response,
             $resource,
             (object) [
-               //todo 
-               // 'self' => $resourceModel->getSelfLink($id)
+                //todo
+                // 'self' => $resourceModel->getSelfLink($id)
             ],
             null,
             Controller::includeRelationshipResources(

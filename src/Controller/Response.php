@@ -61,11 +61,9 @@ class Response
      */
     public static function noContent(
         ResponseInterface $response
-    ) : ResponseInterface
-    {
+    ) : ResponseInterface {
         $response = $response->withStatus(204);
 
         return $response;
     }
-
 }

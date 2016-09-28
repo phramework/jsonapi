@@ -290,7 +290,7 @@ trait DataSourceTrait
     {
         $collectionObject = new \stdClass();
 
-        if (FALSE && !is_array($id) && ($cached = static::getCache($id)) !== null) {
+        if (false && !is_array($id) && ($cached = static::getCache($id)) !== null) {
             //Return a single resource immediately if cached
             return $cached;
         } elseif (is_array($id)) {
@@ -300,7 +300,7 @@ trait DataSourceTrait
 
             foreach ($originalId as $resourceId) {
                 $collectionObject->{$resourceId} = null;
-                if (FALSE && ($cached = static::getCache($resourceId)) !== null) {
+                if (false && ($cached = static::getCache($resourceId)) !== null) {
                     $collectionObject->{$resourceId} = $cached;
                     //remove $resourceId from id array, so we wont request the same item again,
                     //but it will be returned in $collectionObject
@@ -372,7 +372,7 @@ trait DataSourceTrait
             }
 
             //Store resource
-            //FALSE && static::setCache($id, $collection[0]);
+            //false && static::setCache($id, $collection[0]);
 
             //Return a resource
             return $collection[0];
@@ -381,7 +381,7 @@ trait DataSourceTrait
         //If ids are an array
         foreach ($collection as $resource) {
             $collectionObject->{$resource->id} = $resource;
-            //FALSE && static::setCache($resource->id, $resource);
+            //false && static::setCache($resource->id, $resource);
         }
 
         unset($collection);

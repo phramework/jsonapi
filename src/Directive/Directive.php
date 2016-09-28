@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -92,7 +93,7 @@ abstract class Directive
             $directives
         );
 
-        foreach($classes as $directiveClass) {
+        foreach ($classes as $directiveClass) {
             if ($ignoreIfExists && in_array($directiveClass, $existClasses)) {
                 continue;
             }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -62,9 +63,9 @@ class AdditionalParameters extends Directive
 
     /**
      * @param ResourceModel $model
-     * @return true
+     * @return bool
      */
-    public function validate(ResourceModel $model) : bool 
+    public function validate(ResourceModel $model) : bool
     {
         return true;
     }

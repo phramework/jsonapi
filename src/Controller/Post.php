@@ -50,8 +50,11 @@ trait Post
         int $bulkLimit = null, //todo decide 1 or null for default
         array $directives = []
     ) : ResponseInterface {
-        //Request primary data
-        $data = $request->getParsedBody()->data ?? new \stdClass();
+        //todo figure out a permanent solution to have body as object instead of array, for every framework
+        $body = json_decode(json_encode($request->getParsedBody()));
+
+        //Access request body primary data
+        $data = $body->data ?? new \stdClass();
 
         /**
          * @var bool

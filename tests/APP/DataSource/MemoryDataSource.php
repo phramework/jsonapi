@@ -107,9 +107,12 @@ class MemoryDataSource extends DataSource
         if ($sort !== null) {
             $sortCallback =
                 $sort->getAscending()
-                ? function ($a, $b) {return $a > $b;}
-                : function ($a, $b) {return $a < $b;}
-            ;
+                ? function ($a, $b) {
+                    return $a > $b;
+                }
+                : function ($a, $b) {
+                    return $a < $b;
+                };
 
             $sortAttribute = $sort->getAttribute();
 

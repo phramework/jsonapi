@@ -109,7 +109,6 @@ class Relationship
         \stdClass $callbacks = null,
         int $flags = Relationship::FLAG_DEFAULT
     ) {
-
         $this->callbacks = new \stdClass();
 
         if ($callbacks !== null) {

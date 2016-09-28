@@ -400,11 +400,10 @@ class Filter extends Directive
                 //Split multiples and trim additional spaces and force string
                 $values = array_map(
                     'strval',
-                    array_map('trim', explode(',', trim($filterValue)))
-                //array_map(
-                //    $function,
-                //    array_map('trim', explode(',', trim($filterValue)))
-                //)
+                    array_map(
+                        'trim',
+                        explode(',', trim((string) $filterValue))
+                    )
                 );
 
                 $filterPrimary = $values;
@@ -430,7 +429,10 @@ class Filter extends Directive
                     //Split multiples and trim additional spaces and force string
                     $values = array_map(
                         'strval',
-                        array_map('trim', explode(',', trim($filterValue)))
+                        array_map(
+                            'trim',
+                            explode(',', trim((string) $filterValue))
+                        )
                     );
                 }
 

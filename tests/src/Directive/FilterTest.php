@@ -337,7 +337,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
      * @covers ::validate
      * @expectedException \Phramework\Exceptions\IncorrectParameterException
      */
-    public function testParseFromRequestFailurePrimaryToParse()
+    /*public function testParseFromRequestFailurePrimaryToParse()
     {
         Filter::parseFromRequest(
             $this->request->withQueryParams([
@@ -347,7 +347,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
             ]),
             $this->articleModel
         )->validate($this->articleModel);
-    }
+    }*/
 
     /**
      * @covers ::parseFromRequest
@@ -505,7 +505,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $filter = new Filter(
             [],
             (object) [
-                'tag' => [1, 2, 3]
+                'tag' => ['1', '2', '3']
             ]
         );
 

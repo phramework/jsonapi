@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -127,7 +128,8 @@ class DatabaseDataSource extends DataSource
      * @throws \LogicException If setting table is not set
      * @return string
      */
-    public function requireTableSetting() : string {
+    public function requireTableSetting() : string
+    {
         $table = $this->resourceModel->getVariable('table');
 
         if ($table === null) {

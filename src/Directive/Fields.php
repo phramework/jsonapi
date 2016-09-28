@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -98,7 +99,7 @@ class Fields extends Directive
      * @param string[] $fields
      * @return $this
      */
-    public function add(string $resourceType,string ...$fields)
+    public function add(string $resourceType, string ...$fields)
     {
         //Initialize if not set
         if (!isset($this->fields->{$resourceType})) {

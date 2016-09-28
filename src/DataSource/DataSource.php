@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright 2015-2016 Xenofon Spafaridis
  *
@@ -31,22 +32,22 @@ abstract class DataSource
      */
     protected $resourceModel;
 
-    public abstract  function get(
+    abstract public function get(
         Directive ...$directives
     ) : array;
     
-    public abstract  function post(
+    abstract public function post(
         \stdClass $attributes,
         $return = \Phramework\Database\Operations\Create::RETURN_ID
     );
     
-    public abstract  function patch(
+    abstract public function patch(
         string $id,
         \stdClass $attributes,
         $return = null
     );
 
-    public abstract  function delete(
+    abstract public function delete(
         string $id,
         \stdClass $additionalAttributes = null
     );

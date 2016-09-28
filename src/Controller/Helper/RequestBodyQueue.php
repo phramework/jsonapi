@@ -34,7 +34,6 @@ trait RequestBodyQueue
         ValidationModel $validationModel,
         array $validationCallbacks = []
     ) {
-
         $attributes = $validationModel->getAttributes()->parse(
             $resource->attributes ?? new \stdClass()
         );
@@ -45,7 +44,6 @@ trait RequestBodyQueue
 
         //Call Validation callbacks
         foreach ($validationCallbacks as $callback) {
-
             $callback(
                 $resource,
                 $attributes, //parsed
