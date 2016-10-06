@@ -22,6 +22,7 @@ namespace Phramework\JSONAPI;
  * @since 0.0.0
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
+ * @todo POST callbacks should be defined as f ($insertedId, $relationshipResourceId)
  */
 class Relationship
 {
@@ -115,14 +116,14 @@ class Relationship
             foreach ($callbacks as $method => $callback) {
                 if (!is_string($method)) {
                     throw new \LogicException(sprintf(
-                        'callback method "%s" must be string',
+                        'Method "%s" for callback must be string',
                         $method
                     ));
                 }
 
                 if (!is_callable($callback)) {
                     throw new \LogicException(sprintf(
-                        'callback for method "%s" must be a callable',
+                        'Callback for method "%s" must be a callable',
                         $method
                     ));
                 }

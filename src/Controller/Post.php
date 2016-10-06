@@ -20,9 +20,12 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\Exceptions\ForbiddenException;
 use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\RequestException;
+use Phramework\Exceptions\ServerException;
 use Phramework\Exceptions\Source\Pointer;
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
+use Phramework\JSONAPI\Controller\Helper\ResourceQueueItem;
 use Phramework\JSONAPI\Directive\Directive;
+use Phramework\JSONAPI\Relationship;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\Util\Util;
 use Phramework\Validate\EnumValidator;
@@ -34,13 +37,26 @@ use Psr\Http\Message\ServerRequestInterface;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
- * @todo modify to allow batch, remove id ?
+ * @todo modify to allow batch
  */
 trait Post
 {
     use RequestBodyQueue;
 
     //prototype
+    /**
+     * Handle HTTP POST request method to create new resources
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface      $response
+     * @param ResourceModel          $model
+     * @param array                  $validationCallbacks
+     * @param callable|null          $viewCallback
+     * @param int|null               $bulkLimit
+     * @param array                  $directives
+     * @return ResponseInterface
+     * @throws ForbiddenException
+     * @throws RequestException
+     */
     public static function handlePost(
         ServerRequestInterface $request,
         ResponseInterface $response,
@@ -54,7 +70,7 @@ trait Post
         $body = json_decode(json_encode($request->getParsedBody()));
 
         //Access request body primary data
-        $data = $body->data ?? new \stdClass();
+        $data = $body->data ?? [new \stdClass()];
 
         /**
          * @var bool
@@ -87,18 +103,21 @@ trait Post
         );
 
         $bulkIndex = 0;
-        //gather data as a queue
-        foreach ($data as $resource) {
-            //Prepare exception source
-            $source = new Pointer(
-                '/data' .
-                (
-                    $isBulk
-                    ? '/' . $bulkIndex
-                    : ''
-                )
-            );
 
+        //Prepare exception source
+        $source = new Pointer(
+            '/data' .
+            (
+                $isBulk
+                ? '/' . $bulkIndex
+                : ''
+            )
+        );
+
+        /*
+         * gather data as a queue
+         */
+        foreach ($data as $resource) {
             //Require resource type
             Controller::requireProperties($resource, $source, 'type');
 
@@ -115,31 +134,29 @@ trait Post
                 );
             }
 
-            //Fetch request attributes
-            $requestAttributes    = $resource->attributes    ?? new \stdClass();
-            $requestRelationships = $resource->relationships ?? new \stdClass();
+            /*
+             * Will call validationCallbacks
+             * Will call $validationModel attribute validator on attributes
+             * Will call $validationModel relationship validator on relationships
+             * Will copy TO_ONE relationship data to parsed attributes
+             */
+            $item = static::handleResource(
+                $resource,
+                $source,
+                $validationModel,
+                $validationCallbacks
+            );
 
-            //todo use helper class
+            /*//todo use helper class
             $queueItem = (object) [
                 'attributes'    => $requestAttributes,
                 'relationships' => $requestRelationships
-            ];
+            ];*/
                 
-            $requestQueue->push($queueItem);
+            $requestQueue->push($item);
             
             ++$bulkIndex;
         }
-
-        //on each validate
-        //todo
-        foreach ($requestQueue as $i => $q) {
-            $validationModel->attributes
-                ->setSource(new Pointer('/data/' . $i . '/attributes'))
-                ->parse($q->attributes);
-        }
-
-        //on each call validation callback
-        //todo
 
         //post
 
@@ -149,12 +166,17 @@ trait Post
          */
         $ids = [];
 
-        //process queue
+        /*
+         * process queue
+         */
         while (!$requestQueue->isEmpty()) {
+            /**
+             * @var ResourceQueueItem
+             */
             $queueItem = $requestQueue->pop();
 
             $id = $model->post(
-                $queueItem->attributes
+                $queueItem->getAttributes()
             );
 
             Controller::assertUnknownError(
@@ -162,18 +184,35 @@ trait Post
                 'Unknown error while posting resource'
             );
 
-            //POST item's relationships
-            $relationships = $queueItem->relationships;
+            /**
+             * @var \stdClass
+             */
+            $relationships = $queueItem->getRelationships();
 
-            foreach ($relationships as $key => $relationship) {
-                //Call post relationship method to post each of relationships pairs
-                //todo fix
-                foreach ($relationship->resources as $resourceId) {
+            /**
+             * POST item's relationships
+             * @param string[] $rValue
+             */
+            foreach ($relationships as $rKey => $rValue) {
+                $r = $model->getRelationship($rKey);
+
+                if ($r->getType() == Relationship::TYPE_TO_MANY) {
+                    if (!isset($r->getCallbacks()->{'PATCH'})) {
+                        throw new ServerException(sprintf(
+                            'POST callback is not defined for relationship "%s"',
+                            $rKey
+                        ));
+                    }
+                }
+
+                /*
+                 * Call post relationship callback to post each of relationships pairs
+                 */
+                foreach ($rValue as $v) {
                     call_user_func(
-                        $relationship->callback,
-                        $id,
-                        $resourceId,
-                        null //$additionalAttributes
+                        $r->getCallbacks()->{'PATCH'},
+                        $id, //Inserted resource id
+                        $v
                     );
                 }
             }
