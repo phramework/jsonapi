@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
+/*
  * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ trait Patch
         array $validationCallbacks = [],
         callable $viewCallback = null,
         int $bulkLimit = null,
-        array $directives
+        array $directives = []
     ) : ResponseInterface {
         //Validate id using model's validator
         $id = $model->getIdAttributeValidator()->parse($id);

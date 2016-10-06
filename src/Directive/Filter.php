@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
+/*
  * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -274,7 +274,8 @@ class Filter extends Directive
                 } elseif ($validationModel
                     && isset(
                         $validationModel->attributes,
-                        $validationModel->attributes->properties->{$attribute})
+                        $validationModel->attributes->properties->{$attribute}
+                    )
                 ) { //Then attempt to use attribute validation resourceModel first
                     $attributeValidator =
                         $validationModel->attributes->properties->{$attribute};
@@ -297,7 +298,8 @@ class Filter extends Directive
                 }
 
                 //Check if operator is allowed
-                if (!$isJSONFilter && !in_array(
+                if (!$isJSONFilter
+                    && !in_array(
                         $operator,
                         Operator::getByClassFlags($operatorClass)
                     )

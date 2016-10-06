@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
+/*
  * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -145,7 +145,7 @@ class DatabaseDataSource extends DataSource
     public function handleGet(
         string $query,
         bool $queryHasWhere = false,
-        array $directives
+        array $directives = []
     ) {
         $model = $this->resourceModel;
 
@@ -223,10 +223,10 @@ class DatabaseDataSource extends DataSource
             );*/
 
             $replace = "\n" . sprintf(
-                    'ORDER BY "%s" %s',
-                    $sortAttribute,
-                    ($sort->getAttribute() ? 'ASC' : 'DESC')
-                );
+                'ORDER BY "%s" %s',
+                $sortAttribute,
+                ($sort->getAttribute() ? 'ASC' : 'DESC')
+            );
         }
 
         $query = str_replace(
@@ -289,9 +289,9 @@ class DatabaseDataSource extends DataSource
         return implode(
             ',',
             array_map(
-            /**
-             * Apply single quotes around key
-             */
+                /**
+                 * Apply single quotes around key
+                 */
                 function ($key) {
                     return '\'' . $key . '\'';
                 },

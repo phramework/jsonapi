@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
+/*
  * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,8 +62,7 @@ trait Post
         $isBulk = true;
 
         //Treat all request data (bulk or not) as an array of resources
-        if (
-            is_object($data)
+        if (is_object($data)
             || (is_array($data) && Util::isArrayAssoc($data))
         ) {
             $isBulk = false;
@@ -195,13 +194,13 @@ trait Post
             );
         }
 
-        if (count($ids) === 1) {
+        /*if (count($ids) === 1) {
             //Prepare response with 201 Created status code
             return Response::created(
                 $response,
                 'link' . $ids[0] // location
             );
-        }
+        }*/ //see https://stackoverflow.com/questions/11309444/can-the-location-header-be-used-for-multiple-resource-locations-in-a-201-created
 
         //Return 204 No Content
         return Response::noContent($response);

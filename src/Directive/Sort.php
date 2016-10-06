@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
+/*
  * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,8 @@ class Sort extends Directive
      * @param bool   $ascending
      */
     public function __construct(
-        $attribute, $ascending = true
+        string $attribute,
+        bool $ascending = true
     ) {
         $this->attribute = $attribute;
         $this->ascending = $ascending;
@@ -125,7 +126,7 @@ class Sort extends Directive
     /**
      * @return boolean
      */
-    public function getAscending()
+    public function getAscending() : bool
     {
         return $this->ascending;
     }
@@ -133,7 +134,7 @@ class Sort extends Directive
     /**
      * @return string
      */
-    public function getAttribute()
+    public function getAttribute() : string
     {
         return $this->attribute;
     }

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
+/*
  * Copyright 2015-2016 Xenofon Spafaridis
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -232,11 +232,11 @@ class Resource extends \stdClass implements \JsonSerializable
             return null;
         }
 
-        $flagAttributes    = ($flags & Resource::PARSE_ATTRIBUTES) != 0;
-        $flagLinks         = ($flags & Resource::PARSE_LINKS) != 0;
+        $flagAttributes = ($flags & Resource::PARSE_ATTRIBUTES) != 0;
+        $flagLinks = ($flags & Resource::PARSE_LINKS) != 0;
         $flagRelationships = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
-        $flagRelationshipLinks       = ($flags & Resource::PARSE_RELATIONSHIP_LINKS) != 0;
-        $flagRelationshipData        = ($flags & Resource::PARSE_RELATIONSHIP_DATA) != 0;
+        $flagRelationshipLinks = ($flags & Resource::PARSE_RELATIONSHIP_LINKS) != 0;
+        $flagRelationshipData = ($flags & Resource::PARSE_RELATIONSHIP_DATA) != 0;
 
 
         $idAttribute = $model->getIdAttribute();
@@ -255,7 +255,7 @@ class Resource extends \stdClass implements \JsonSerializable
         //Initialize resource
         $resource = new $resourceClass(
             $model->getResourceType(),
-            (string) $record->{$idAttribute}
+            (string)$record->{$idAttribute}
         );
 
         //Delete $idAttribute from record's attributes
@@ -266,7 +266,7 @@ class Resource extends \stdClass implements \JsonSerializable
             $meta = $record->{Resource::META_MEMBER};
 
             if (is_array($meta) && Util::isArrayAssoc($meta)) {
-                $meta = (object) $meta;
+                $meta = (object)$meta;
             }
 
             if (!is_object($meta)) {
@@ -292,7 +292,7 @@ class Resource extends \stdClass implements \JsonSerializable
             }
         }
 
-        if (count((array) $privateAttributes)) {
+        if (count((array)$privateAttributes)) {
             $resource->{'private-attributes'} = $privateAttributes;
         }
 
@@ -303,145 +303,144 @@ class Resource extends \stdClass implements \JsonSerializable
         //Attach relationships if resource's relationships are set
 //        if (/*$flagRelationships &&*/ ($relationships = $resourceModel->getRelationships())) {
 
-            $resourceRelationships = new \stdClass();
-            //Parse relationships
-            foreach ($model->getRelationships() ?? [] as $relationshipKey => $relationshipObject) {
-                //Initialize an new relationship entry object
-                $relationshipEntry = new \stdClass();
+        $resourceRelationships = new \stdClass();
+        //Parse relationships
+        foreach ($model->getRelationships() ?? [] as $relationshipKey => $relationshipObject) {
+            //Initialize an new relationship entry object
+            $relationshipEntry = new \stdClass();
 
-                //Attach relationship links
-                //TODO RESTORE
-               /* if ($flagRelationshipLinks) {
-                    $relationshipEntry->links = [
-                        'self' => $resourceModel::getSelfLink(
-                            $resource->id . '/relationships/' . $relationshipKey
-                        ),
-                        'related' => $resourceModel::getSelfLink(
-                            $resource->id . '/' . $relationshipKey
-                        )
-                    ];
-                }*/
+            //Attach relationship links
+            //TODO RESTORE
+            /* if ($flagRelationshipLinks) {
+                 $relationshipEntry->links = [
+                     'self' => $resourceModel::getSelfLink(
+                         $resource->id . '/relationships/' . $relationshipKey
+                     ),
+                     'related' => $resourceModel::getSelfLink(
+                         $resource->id . '/' . $relationshipKey
+                     )
+                 ];
+             }*/
 
-                $relationshipFlagData = ($relationshipObject->getFlags() & Relationship::FLAG_DATA) != 0;
+            $relationshipFlagData = ($relationshipObject->getFlags() & Relationship::FLAG_DATA) != 0;
 
-                /**
-                 * @var ResourceModel
-                 */
-                $relationshipModel   = $relationshipObject->getResourceModel();
-                $relationshipType    = $relationshipObject->getType();
-                $recordDataAttribute = $relationshipObject->getRecordDataAttribute();
+            /**
+             * @var ResourceModel
+             */
+            $relationshipModel = $relationshipObject->getResourceModel();
+            $relationshipType = $relationshipObject->getType();
+            $recordDataAttribute = $relationshipObject->getRecordDataAttribute();
 
-                $relationshipResourceType = $relationshipModel->getResourceType();
+            $relationshipResourceType = $relationshipModel->getResourceType();
 
-                //todo Define callback signature to fetch data
-                /**
-                 * @return string[]|RelationshipResource[]
-                 */
-                $dataCallback = function () use (
-                    $relationshipObject,
-                    $resource,
-                    $relationshipKey,
+            //todo Define callback signature to fetch data
+            /**
+             * @return string[]|RelationshipResource[]
+             */
+            $dataCallback = function () use (
+                $relationshipObject,
+                $resource,
+                $relationshipKey,
+                $directives,
+                $flags
+            ) {
+                $cb = $relationshipObject->getCallbacks()->{'GET'};
+
+                return $cb(
+                    $resource->id,
                     $directives,
-                    $flags
-                ) {
-                    $cb = $relationshipObject->getCallbacks()->{'GET'};
+                    $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
+                );
+            };
 
-                    return $cb(
-                        $resource->id,
-                        $directives,
-                        $flags // use $flagRelationshipsAttributes to enable/disable parsing of relationship attributes
-                    );
-                };
-                
-                if ($flagRelationships && ($flagRelationshipData || $relationshipFlagData)) {
-                    //Include data only if $flagRelationshipData is true
-                    if ($relationshipType === Relationship::TYPE_TO_ONE) {
-                        $relationshipEntryResource = null;
+            if ($flagRelationships && ($flagRelationshipData || $relationshipFlagData)) {
+                //Include data only if $flagRelationshipData is true
+                if ($relationshipType === Relationship::TYPE_TO_ONE) {
+                    $relationshipEntryResource = null;
 
-                        if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
-                            $relationshipEntryResource = $record->{$recordDataAttribute};
-                        } elseif (isset($relationshipObject->getCallbacks()->{'GET'})) { //available from callback
-                            $relationshipEntryResource = $dataCallback();
-                        }
+                    if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
+                        $relationshipEntryResource = $record->{$recordDataAttribute};
+                    } elseif (isset($relationshipObject->getCallbacks()->{'GET'})) { //available from callback
+                        $relationshipEntryResource = $dataCallback();
+                    }
 
-                        if ($relationshipEntryResource !== null) {
-                            //parse relationship resource
-                            if (is_string($relationshipEntryResource)) {
-                                //If returned $relationshipEntryResource is an id string
-                                $relationshipEntry->data = new RelationshipResource(
-                                    $relationshipResourceType,
-                                    (string) $relationshipEntryResource
-                                );
-                            } elseif ($relationshipEntryResource instanceof RelationshipResource) {
-                                //If returned $relationshipEntryResource is RelationshipResource
-                                $relationshipEntry->data = $relationshipEntryResource;
-                            } else {
-                                throw new \Exception(sprintf(
-                                    'Unexpected relationship entry resource of relationship "%s",'
-                                    . ' expecting string or RelationshipResource "%s" given',
-                                    $relationshipKey,
-                                    gettype($relationshipEntryResource)
-                                ));
-                            }
-                        }
-                    } elseif ($relationshipType === Relationship::TYPE_TO_MANY) {
-                        //Initialize
-                        $relationshipEntry->data = [];
-
-                        $relationshipEntryResources = [];
-
-                        if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
-                            $relationshipEntryResources = $record->{$recordDataAttribute};
-                        } elseif (isset($relationshipObject->getCallbacks()->{'GET'})) { //available from callback
-                            $relationshipEntryResources = $dataCallback();
-                        }
-
-                        if (!is_array($relationshipEntryResources)) {
-                            throw new \Exception(sprintf(
-                                'Expecting array for relationship entry resources of relationship "%s"',
-                                $relationshipKey
-                            ));
-                        }
-
-                        //Parse relationship resources
-
-                        if (Util::isArrayOf($relationshipEntryResources, 'string')) {
-                            //If returned $relationshipEntryResources are id strings
-                            foreach ($relationshipEntryResources as $relationshipEntryResourceId) {
-                                $relationshipEntry->data[] = new RelationshipResource(
-                                    $relationshipResourceType,
-                                    (string)$relationshipEntryResourceId
-                                );
-                            }
-                        } elseif (Util::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
-                            //If returned $relationshipEntryResources are RelationshipResource
-                            $relationshipEntry->data = $relationshipEntryResources;
+                    if ($relationshipEntryResource !== null) {
+                        //parse relationship resource
+                        if (is_string($relationshipEntryResource)) {
+                            //If returned $relationshipEntryResource is an id string
+                            $relationshipEntry->data = new RelationshipResource(
+                                $relationshipResourceType,
+                                (string)$relationshipEntryResource
+                            );
+                        } elseif ($relationshipEntryResource instanceof RelationshipResource) {
+                            //If returned $relationshipEntryResource is RelationshipResource
+                            $relationshipEntry->data = $relationshipEntryResource;
                         } else {
                             throw new \Exception(sprintf(
-                                'Unexpected relationship entry resources of relationship "%s",'
+                                'Unexpected relationship entry resource of relationship "%s",'
                                 . ' expecting string or RelationshipResource "%s" given',
                                 $relationshipKey,
-                                gettype($relationshipEntryResources[0])
+                                gettype($relationshipEntryResource)
                             ));
                         }
                     }
-                }
+                } elseif ($relationshipType === Relationship::TYPE_TO_MANY) {
+                    //Initialize
+                    $relationshipEntry->data = [];
 
-                if ($recordDataAttribute !== null) {
-                    //Unset this attribute (MUST not be visible in resource's attributes)
-                    unset($record->{$recordDataAttribute});
-                }
+                    $relationshipEntryResources = [];
 
-                //Push relationship to relationships
-                $resourceRelationships->{$relationshipKey} = $relationshipEntry;
+                    if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
+                        $relationshipEntryResources = $record->{$recordDataAttribute};
+                    } elseif (isset($relationshipObject->getCallbacks()->{'GET'})) { //available from callback
+                        $relationshipEntryResources = $dataCallback();
+                    }
+
+                    if (!is_array($relationshipEntryResources)) {
+                        throw new \Exception(sprintf(
+                            'Expecting array for relationship entry resources of relationship "%s"',
+                            $relationshipKey
+                        ));
+                    }
+
+                    //Parse relationship resources
+
+                    if (Util::isArrayOf($relationshipEntryResources, 'string')) {
+                        //If returned $relationshipEntryResources are id strings
+                        foreach ($relationshipEntryResources as $relationshipEntryResourceId) {
+                            $relationshipEntry->data[] = new RelationshipResource(
+                                $relationshipResourceType,
+                                (string)$relationshipEntryResourceId
+                            );
+                        }
+                    } elseif (Util::isArrayOf($relationshipEntryResources, RelationshipResource::class)) {
+                        //If returned $relationshipEntryResources are RelationshipResource
+                        $relationshipEntry->data = $relationshipEntryResources;
+                    } else {
+                        throw new \Exception(sprintf(
+                            'Unexpected relationship entry resources of relationship "%s",'
+                            . ' expecting string or RelationshipResource "%s" given',
+                            $relationshipKey,
+                            gettype($relationshipEntryResources[0])
+                        ));
+                    }
+                }
             }
 
-
-            //Attach only if set
-            if ($flagRelationships) {
-                $resource->relationships = $resourceRelationships;
+            if ($recordDataAttribute !== null) {
+                //Unset this attribute (MUST not be visible in resource's attributes)
+                unset($record->{$recordDataAttribute});
             }
-        //}
+
+            //Push relationship to relationships
+            $resourceRelationships->{$relationshipKey} = $relationshipEntry;
+        }
+
+
+        //Attach only if set
+        if ($flagRelationships) {
+            $resource->relationships = $resourceRelationships;
+        }
 
         //Attach resource attributes
         if ($flagAttributes) {
