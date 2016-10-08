@@ -28,16 +28,16 @@ use Phramework\JSONAPI\ValidationModel;
 use Phramework\Validate\ArrayValidator;
 use Phramework\Validate\EnumValidator;
 use Phramework\Validate\ObjectValidator;
+use Phramework\Validate\StringValidator;
 
 /**
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @since 3.0.0
  */
-trait RequestBodyQueue
+abstract class RequestBodyQueue
 {
     /**
-     * What is resource ?
      * @todo
      * @param \stdClass $resource Primary data resource
      */
@@ -59,10 +59,10 @@ trait RequestBodyQueue
         $parsedAttributes = $validationModel->getAttributes()
             ->setSource(new Pointer($source->getPath() . '/attributes'))
             ->parse(
-            $requestAttributes
-        );
+                $requestAttributes
+            );
 
-        $parsedRelationships = new \stdClass();
+        //$parsedRelationships = new \stdClass();
 
         /**
          * Format, object with
@@ -103,17 +103,19 @@ trait RequestBodyQueue
 
             $relationshipData = $rValue->data;
 
+            $itemValidator = (new ObjectValidator(
+                (object) [
+                    'id'   => new StringValidator(), // $r->getResourceModel()->getIdAttributeValidator(),
+                    'type' => new EnumValidator([$resourceType], true)
+                ],
+                ['id', 'type']
+            ))->setSource(new Pointer(
+                $rSource->getPath() . '/data'
+            ));
+
             switch ($r->getType()) {
                 case Relationship::TYPE_TO_ONE:
-                    (new ObjectValidator(
-                        (object)[
-                            'id'   => $r->getResourceModel()->getIdAttributeValidator(),
-                            'type' => new EnumValidator($resourceType, true)
-                        ],
-                        ['id', 'type']
-                    ))->setSource(new Pointer(
-                        $rSource->getPath() . '/data'
-                    ))->parse($relationshipData);
+                    $itemValidator->parse($relationshipData);
 
                     //Push relationship for this relationship key
                     $relationships->{$rKey} = $relationshipData->id;
@@ -122,35 +124,45 @@ trait RequestBodyQueue
                     $parsed = (new ArrayValidator(
                         0,
                         null,
-                        (new ObjectValidator(
-                            (object)[
-                                'id'   => $r->getResourceModel()->getIdAttributeValidator(),
-                                'type' => new EnumValidator($resourceType, true)
-                            ],
-                            ['id', 'type']
-                        ))->setSource(new Pointer(
-                            $rSource->getPath() . '/data'
-                        ))
+                        $itemValidator
+                    ))->setSource(new Pointer(
+                        $rSource->getPath() . '/data'
                     ))->parse($relationshipData);
 
-                    //Push relationship for this relationship key
-                    $relationships->{$relationshipKey} = array_map(
-                        function (\stdClass $p) {
-                            return $p->id;
-                        },
-                        $parsed
-                    );
+                    if (count($parsed)) {
+                        //Push relationship for this relationship key
+                        $relationships->{$rKey} = array_map(
+                            function (\stdClass $p) {
+                                return $p->id;
+                            },
+                            $parsed
+                        );
+                    }
                     break;
             }
         }
 
         /*
-         * Validate relationships against relationships validator
+         * Validate relationships against relationships validator if is set
          */
-        if (count((array)$relationships)) {
-            $parsedRelationships = $validationModel->getRelationships()->parse(
-                $relationships
-            );
+        if ($validationModel->getRelationships() !== null) {
+            $validator = $validationModel->getRelationships();
+
+            foreach ($validator->properties as $k => &$p) {
+                //force source to be ../data/id
+                $p->setSource(new Pointer(
+                    $source->getPath() . '/relationships/' . $k . '/data/id'
+                ));
+            }
+
+            $validator
+                //set source that will be used for missing parameters exception
+                ->setSource(new Pointer(
+                    $source->getPath() . '/relationships'
+                ))
+                ->parse(
+                    $relationships
+                );
         }
 
         /*
@@ -158,13 +170,19 @@ trait RequestBodyQueue
          * Check if requested relationship resources exist
          * Copy TYPE_TO_ONE attributes to primary data's attributes
          */
-        foreach ($parsedRelationships as $rKey => $rValue) {
+        foreach ($relationships as $rKey => $rValue) {
+            if ($rValue === null) { //null added by relationship validator ?
+                //filer out null relationships, careful with TO_ONE might be needed as null
+                unset($relationships->{$rKey});
+                continue;
+            }
+
             $r = $model->getRelationship($rKey);
             $rResourceModel = $r->getResourceModel();
 
             //Convert to array
             $tempIds = (
-            is_array($rValue)
+                is_array($rValue)
                 ? $rValue
                 : [$rValue]
             );
@@ -192,11 +210,9 @@ trait RequestBodyQueue
              * //todo what if a TO_MANY has getRecordDataAttribute ?
              */
             if ($r->getType() === Relationship::TYPE_TO_ONE) {
-                $parsedAttributes->{$r->getRecordDataAttribute()} = $relationshipData;
+                $parsedAttributes->{$r->getRecordDataAttribute()} = $rValue;
             }
         }
-
-
         /*
          * Call Validation callbacks
          */
@@ -204,14 +220,14 @@ trait RequestBodyQueue
             $callback(
                 $resource,
                 $parsedAttributes, //parsed
-                $parsedRelationships //parsed
+                $relationships, //parsed
+                $source
             );
         }
 
         return new ResourceQueueItem(
             $parsedAttributes,
-            $parsedRelationships
+            $relationships
         );
     }
 }
-

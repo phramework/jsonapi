@@ -22,6 +22,9 @@ use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\JSONAPI\Model;
 use Phramework\JSONAPI\ModelTrait;
+use Phramework\JSONAPI\ValidationModel;
+use Phramework\Validate\ObjectValidator;
+use Phramework\Validate\StringValidator;
 
 /**
  * @since 3.0.0
@@ -38,7 +41,19 @@ class Tag extends Model
     protected static function defineModel() : ResourceModel
     {
         $model = (new ResourceModel('tag', new MemoryDataSource()))
-            ->addVariable('table', 'tag');
+            ->addVariable('table', 'tag')
+            ->setValidationModel(
+                new ValidationModel(
+                    new ObjectValidator(
+                        (object) [
+                            'name' => new StringValidator(2, 10)
+                        ],
+                        ['name'],
+                        false
+                    )
+                ),
+                'POST'
+            );
 
         return $model;
     }

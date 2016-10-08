@@ -159,7 +159,7 @@ class MemoryDataSource extends DataSource
 
         if (!property_exists($attributes, $idAttribute)) {
             //generate an id
-            $attributes->{$idAttribute} = md5(mt_rand());
+            $attributes->{$idAttribute} = md5((string) mt_rand());
         }
 
         $table = $this->resourceModel->getVariable('table');

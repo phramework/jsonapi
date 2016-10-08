@@ -326,8 +326,8 @@ trait DataSourceTrait
         //Prepare filter
         $filter = new Filter(
             is_array($id)
-                ? $id
-                : [$id]
+            ? $id
+            : [$id]
         ); //Force array for primary data
 
         if (!empty($passedfilter)) {

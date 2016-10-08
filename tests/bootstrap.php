@@ -125,3 +125,16 @@ MemoryDataSource::insert(
         'tag_id'   => ['2']
     ]
 );
+
+MemoryDataSource::addTable('article');
+
+MemoryDataSource::insert(
+    'article',
+    (object) [
+        'id'              => '1',
+        'title'           => 'Hello World',
+        'body'            => 'Lorem ipsum',
+        'status'          => 1,
+        'creator-user_id' => '2'
+    ]
+);

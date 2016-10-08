@@ -374,7 +374,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'not-found'   => 1
+                    'not-found' => '1'
                 ]
             ]),
             $this->articleModel

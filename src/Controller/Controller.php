@@ -217,7 +217,6 @@ class Controller
                 $model
             );
 
-
             if ($parsed !== null) {
                 //overwrite
                 if ($overwrite
@@ -238,6 +237,12 @@ class Controller
         return $directives;
     }
 
+    /**
+     * @param              $object
+     * @param ISource|null $source
+     * @param string[]    ...$properties
+     * @throws MissingParametersException
+     */
     public static function requireProperties(
         $object,
         ISource $source = null,

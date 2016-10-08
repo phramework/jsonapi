@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Controller;
 
 use Phramework\Exceptions\ForbiddenException;
 use Phramework\Exceptions\IncorrectParameterException;
+use Phramework\Exceptions\MissingParametersException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\ServerException;
 use Phramework\Exceptions\Source\Pointer;
@@ -41,21 +42,29 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait Post
 {
-    use RequestBodyQueue;
-
-    //prototype
     /**
      * Handle HTTP POST request method to create new resources
      * @param ServerRequestInterface $request
      * @param ResponseInterface      $response
      * @param ResourceModel          $model
-     * @param array                  $validationCallbacks
-     * @param callable|null          $viewCallback
+     * @param array                  $validationCallbacks function of
+     * - \stdClass $resource
+     * - \stdClass $parsedAttributes
+     * - \stdClass $parsedRelationships
+     * - ISource $source
+     * returning void
+     * @param callable|null          $viewCallback function of
+     * - ServerRequestInterface $request,
+     * - ResponseInterface $response,
+     * - string[] $ids
+     * - returning ResponseInterface
      * @param int|null               $bulkLimit
      * @param array                  $directives
      * @return ResponseInterface
      * @throws ForbiddenException
      * @throws RequestException
+     * @throws MissingParametersException
+     * @throws ServerException
      */
     public static function handlePost(
         ServerRequestInterface $request,
@@ -67,10 +76,12 @@ trait Post
         array $directives = []
     ) : ResponseInterface {
         //todo figure out a permanent solution to have body as object instead of array, for every framework
-        $body = json_decode(json_encode($request->getParsedBody()));
+        $body = json_decode(json_encode($request->getParsedBody())) ?? new \stdClass();
+
+        Controller::requireProperties($body, new Pointer('/'), 'data');
 
         //Access request body primary data
-        $data = $body->data ?? [new \stdClass()];
+        $data = $body->data;
 
         /**
          * @var bool
@@ -88,7 +99,7 @@ trait Post
         //check bulk limit
         if ($bulkLimit !== null && count($data) > $bulkLimit) {
             throw new RequestException(sprintf(
-                'Number of batch requests is exceeding the maximum of %s',
+                'Number of bulk requests is exceeding the maximum of %s',
                 $bulkLimit
             ));
         }
@@ -128,9 +139,10 @@ trait Post
 
             //Throw exception if resource id is forced
             if (property_exists($resource, 'id')) {
-                //todo include source
-                throw new ForbiddenException(
-                    'Unsupported request to create a resource with a client-generated ID'
+                throw new IncorrectParameterException(
+                    'additionalProperties',
+                    'Unsupported request to create a resource with a client-generated id',
+                    new Pointer($source->getPath())
                 );
             }
 
@@ -140,18 +152,13 @@ trait Post
              * Will call $validationModel relationship validator on relationships
              * Will copy TO_ONE relationship data to parsed attributes
              */
-            $item = static::handleResource(
+            $item = RequestBodyQueue::handleResource(
                 $resource,
                 $source,
+                $model,
                 $validationModel,
                 $validationCallbacks
             );
-
-            /*//todo use helper class
-            $queueItem = (object) [
-                'attributes'    => $requestAttributes,
-                'relationships' => $requestRelationships
-            ];*/
                 
             $requestQueue->push($item);
             
@@ -197,23 +204,23 @@ trait Post
                 $r = $model->getRelationship($rKey);
 
                 if ($r->getType() == Relationship::TYPE_TO_MANY) {
-                    if (!isset($r->getCallbacks()->{'PATCH'})) {
+                    if (!isset($r->getCallbacks()->{'POST'})) {
                         throw new ServerException(sprintf(
                             'POST callback is not defined for relationship "%s"',
                             $rKey
                         ));
                     }
-                }
 
-                /*
-                 * Call post relationship callback to post each of relationships pairs
-                 */
-                foreach ($rValue as $v) {
-                    call_user_func(
-                        $r->getCallbacks()->{'PATCH'},
-                        $id, //Inserted resource id
-                        $v
-                    );
+                    /*
+                     * Call post relationship callback to post each of relationships pairs
+                     */
+                    foreach ($rValue as $v) {
+                        call_user_func(
+                            $r->getCallbacks()->{'POST'},
+                            $id, //Inserted resource id
+                            $v
+                        );
+                    }
                 }
             }
 
@@ -233,13 +240,25 @@ trait Post
             );
         }
 
-        /*if (count($ids) === 1) {
-            //Prepare response with 201 Created status code
-            return Response::created(
+        return Post::defaultPostViewCallback(
+            $request,
+            $response,
+            $ids
+        );
+    }
+
+    public static function defaultPostViewCallback(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        array $ids
+    ) : ResponseInterface {
+        if (count($ids) === 1) {
+            //Prepare Location header
+            $response = Response::created(
                 $response,
-                'link' . $ids[0] // location
+                'link/' . $ids[0] // location //todo
             );
-        }*/ //see https://stackoverflow.com/questions/11309444/can-the-location-header-be-used-for-multiple-resource-locations-in-a-201-created
+        } //see https://stackoverflow.com/questions/11309444/can-the-location-header-be-used-for-multiple-resource-locations-in-a-201-created
 
         //Return 204 No Content
         return Response::noContent($response);
