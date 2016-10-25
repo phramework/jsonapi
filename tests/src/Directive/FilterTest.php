@@ -52,7 +52,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
                 new ObjectValidator()
             ))->setFilterValidator(new ObjectValidator((object) [
                 'id'      => new UnsignedIntegerValidator(0, 10),
-                'meta' => new ObjectValidator((object) [
+                'meta'    => new ObjectValidator((object) [
                     'timestamp' => new UnsignedIntegerValidator(),
                     'keywords'  => new StringValidator()
                 ]),
@@ -76,26 +76,31 @@ class FilterTest extends \PHPUnit_Framework_TestCase
                     | Operator::CLASS_NULLABLE,
             ])->setRelationships((object) [
                 'creator' => new Relationship(
-                    (new ResourceModel('user'))
-                    ->setValidationModel(new ValidationModel(
-                        new ObjectValidator(
-                        )
-                    )),
+                    function () {
+                        return (new ResourceModel('user'))
+                            ->setValidationModel(new ValidationModel(
+                                new ObjectValidator()
+                            ));
+                    },
                     Relationship::TYPE_TO_ONE,
                     'creator-user_id'
                 ),
-                'tag' => new Relationship(
-                    (new ResourceModel('tag'))
-                    ->setValidationModel(new ValidationModel(
-                        new ObjectValidator(
-                        )
-                    )),
+                'tag'     => new Relationship(
+                    function () {
+                        return (new ResourceModel('tag'))
+                            ->setValidationModel(new ValidationModel(
+                                new ObjectValidator()
+                            ));
+                    },
                     Relationship::TYPE_TO_MANY,
                     null,
                     (object) [
-                        'GET'   => function () {},
-                        'POST'  => function () {},
-                        'PATCH' => function () {}
+                        'GET'   => function () {
+                        },
+                        'POST'  => function () {
+                        },
+                        'PATCH' => function () {
+                        }
                     ]
                 )
             ]);
@@ -228,15 +233,15 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $filter = Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'article'   => '1, 2',
-                    'tag'       => '4, 5, 7',
-                    'creator'   => '1',
-                    'status'    => [true, false],
-                    'title'     => [
+                    'article'       => '1, 2',
+                    'tag'           => '4, 5, 7',
+                    'creator'       => '1',
+                    'status'        => [true, false],
+                    'title'         => [
                         Operator::LIKE . 'blog',
                         Operator::NOT_LIKE . 'welcome'
                     ],
-                    'updated'   => Operator::NOT_ISNULL,
+                    'updated'       => Operator::NOT_ISNULL,
                     'meta.keywords' => 'blog'
                 ]
             ]),
@@ -325,7 +330,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'article'   => [1, 2]
+                    'article' => [1, 2]
                 ]
             ]),
             $this->articleModel
@@ -358,7 +363,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'tag'   => [1, 2]
+                    'tag' => [1, 2]
                 ]
             ]),
             $this->articleModel
@@ -374,7 +379,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'not-found'   => 1
+                    'not-found' => 1
                 ]
             ]),
             $this->articleModel
@@ -390,7 +395,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'no-validator'   => 1
+                    'no-validator' => 1
                 ]
             ]),
             $this->articleModel
@@ -406,7 +411,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'updated'   => [[Operator::ISNULL]]
+                    'updated' => [[Operator::ISNULL]]
                 ]
             ]),
             $this->articleModel
@@ -422,7 +427,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'updated'   => 'qwerty'
+                    'updated' => 'qwerty'
                 ]
             ]),
             $this->articleModel
@@ -438,7 +443,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'status'   => Operator::GREATER_EQUAL . '1'
+                    'status' => Operator::GREATER_EQUAL . '1'
                 ]
             ]),
             $this->articleModel
@@ -454,7 +459,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'status.ok'   => true
+                    'status.ok' => true
                 ]
             ]),
             $this->articleModel
@@ -470,7 +475,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $filter = Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'meta.timestamp'   => 'xsadas'
+                    'meta.timestamp' => 'xsadas'
                 ]
             ]),
             $this->articleModel
@@ -488,7 +493,7 @@ class FilterTest extends \PHPUnit_Framework_TestCase
         $filter = Filter::parseFromRequest(
             $this->request->withQueryParams([
                 'filter' => [
-                    'meta.timestamp.time'   => 123456789
+                    'meta.timestamp.time' => 123456789
                 ]
             ]),
             $this->articleModel

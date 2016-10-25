@@ -49,11 +49,6 @@ class Relationship
     const TYPE_TO_MANY = 2;
 
     /**
-     * @var ResourceModel
-     */
-    protected $resourceModel;
-
-    /**
      * The type of relationship from the resource to relationship resource
      * @var int
      */
@@ -76,6 +71,8 @@ class Relationship
      * @var int
      */
     protected $flags;
+
+    protected $modelPromise;
 
     /**
      * @param ResourceModel $model               Class path of relationship resource resourceModel
@@ -103,7 +100,7 @@ class Relationship
      * ```
      */
     public function __construct(
-        ResourceModel $model,
+        callable $modelPromise,
         int $type = Relationship::TYPE_TO_ONE,
         string $recordDataAttribute = null,
         \stdClass $callbacks = null,
@@ -131,7 +128,7 @@ class Relationship
             $this->callbacks = $callbacks;
         }
 
-        $this->resourceModel                = $model;
+        $this->modelPromise         = $modelPromise;
         $this->type                 = $type;
         $this->recordDataAttribute  = $recordDataAttribute;
         $this->flags                = $flags;
@@ -142,7 +139,14 @@ class Relationship
      */
     public function getResourceModel()
     {
-        return $this->resourceModel;
+        $promise = $this->getModelPromise();
+
+        return $promise();
+    }
+
+    public function getModelPromise() : callable
+    {
+        return $this->modelPromise;
     }
 
     /**

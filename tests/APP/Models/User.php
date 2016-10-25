@@ -45,17 +45,23 @@ class User extends Model
             )
             ->setRelationships((object) [
                 'group' => new Relationship(
-                    Group::getResourceModel(),
+                    function () {
+                        return Group::getResourceModel();
+                    },
                     Relationship::TYPE_TO_ONE,
                     'group_id'
                 ),
                 'tag' => new Relationship(
-                    Tag::getResourceModel(),
+                    function () {
+                        return Tag::getResourceModel();
+                    },
                     Relationship::TYPE_TO_MANY,
                     'tag_id'
                 ),
                 'company' => new Relationship(
-                    Company::getResourceModel(),
+                    function () {
+                        return Company::getResourceModel();
+                    },
                     Relationship::TYPE_TO_MANY,
                     null,
                     (object) [
