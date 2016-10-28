@@ -19,6 +19,7 @@ namespace Phramework\JSONAPI\Controller;
 use Phramework\Exceptions\ForbiddenException;
 use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\JSONAPI\Controller\POST\QueueItem;
+use Phramework\JSONAPI\ValidationModel;
 use Phramework\Models\Request;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\ServerException;
@@ -247,11 +248,11 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $validationCallbacks,
         $requestRelationships
     ) {
-        $validator = $modelClass::getValidationModel();
+        $validationModel = $modelClass::getValidationModel();
 
         $attributesValidator = (
-            isset($validator->attributes) && $validator->attributes
-            ? $validator->attributes
+            isset($validationModel->attributes) && $validationModel->attributes
+            ? $validationModel->attributes
             : new ObjectValidator()
         );
 
@@ -267,7 +268,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $modelClass,
             $attributes,
             $requestRelationships,
-            $relationshipParameters
+            $relationshipParameters,
+            $validationModel
         );
 
         //Call Validation callbacks
@@ -329,10 +331,9 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
         $modelClass,
         &$attributes,
         $requestRelationships,
-        $relationshipParameters = []
+        $relationshipParameters = [],
+        ValidationModel $validationModel
     ) {
-        $validator = $modelClass::getValidationModel();
-
         /**
          * Format, object with
          * - relationshipKey1 -> id1
@@ -456,8 +457,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
 
         //Parse attributes using relationship's validation model
         $parsedRelationshipAttributes = (
-            isset($validator->relationships)
-                ? $validator->relationships->parse(
+            isset($validationModel->relationships)
+            ? $validationModel->relationships->parse(
                 $relationshipAttributes
             )
             : new \stdClass()

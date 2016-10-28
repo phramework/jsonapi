@@ -107,8 +107,11 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
             ));
         }
 
+        $validationModel = $modelClass::getValidationModel();
+
         if (($patchValidationModel = $modelClass::getPatchValidationModel()) !== null) {
-            $validator = $patchValidationModel->attributes;
+            $validationModel = $patchValidationModel;
+            $validator       = $patchValidationModel->attributes;
         } else {
 
             //Construct a validator
@@ -169,7 +172,9 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
         $parsedRelationshipAttributes = self::getParsedRelationshipAttributes(
             $modelClass,
             $attributes,
-            $requestRelationships
+            $requestRelationships,
+            [],
+            $validationModel
         );
 
         //Check if callbacks for TO_MANY relationships are set
