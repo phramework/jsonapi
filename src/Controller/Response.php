@@ -29,6 +29,18 @@ class Response
 {
     /**
      * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public static function ok(
+        ResponseInterface $response
+    ) : ResponseInterface {
+        $response = $response->withStatus(200);
+
+        return $response;
+    }
+
+    /**
+     * @param ResponseInterface $response
      * @param string $location
      * @return ResponseInterface
      */
@@ -52,7 +64,9 @@ class Response
     public static function accepted(
         ResponseInterface $response
     ) : ResponseInterface {
-        //todo
+        $response = $response->withStatus(202);
+
+        return $response;
     }
 
     /**
@@ -63,6 +77,18 @@ class Response
         ResponseInterface $response
     ) : ResponseInterface {
         $response = $response->withStatus(204);
+
+        return $response;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public static function resetContent(
+        ResponseInterface $response
+    ) : ResponseInterface {
+        $response = $response->withStatus(205);
 
         return $response;
     }

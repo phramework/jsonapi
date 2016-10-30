@@ -160,7 +160,7 @@ class Resource extends \stdClass implements \JsonSerializable
     }
 
     /**
-     * @param (array|\stdClass)[] $records
+     * @param \stdClass[] $records
      * @param ResourceModel $model
      * @param Directive[]   $directives
      * @param int           $flags
@@ -203,7 +203,7 @@ class Resource extends \stdClass implements \JsonSerializable
     }
 
     /**
-     * @param array|\stdClass $record
+     * @param \stdClass $record
      * @param ResourceModel   $model
      * @param Directive[]    $directives
      * @param int             $flags
@@ -270,7 +270,7 @@ class Resource extends \stdClass implements \JsonSerializable
             }
 
             if (!is_object($meta)) {
-                throw new \Exception(sprintf(
+                throw new \LogicException(sprintf(
                     'The value of meta member MUST be an object for resource with id "%s" of type "%s"',
                     $resource->id,
                     $resource->type
@@ -377,7 +377,7 @@ class Resource extends \stdClass implements \JsonSerializable
                             //If returned $relationshipEntryResource is RelationshipResource
                             $relationshipEntry->data = $relationshipEntryResource;
                         } else {
-                            throw new \Exception(sprintf(
+                            throw new \LogicException(sprintf(
                                 'Unexpected relationship entry resource of relationship "%s",'
                                 . ' expecting string or RelationshipResource "%s" given',
                                 $relationshipKey,
@@ -391,14 +391,14 @@ class Resource extends \stdClass implements \JsonSerializable
 
                     $relationshipEntryResources = [];
 
-                    if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //preloaded
+                    if (isset($record->{$recordDataAttribute}) && $record->{$recordDataAttribute}) { //pre-loaded
                         $relationshipEntryResources = $record->{$recordDataAttribute};
                     } elseif (isset($relationshipObject->getCallbacks()->{'GET'})) { //available from callback
                         $relationshipEntryResources = $dataCallback();
                     }
 
                     if (!is_array($relationshipEntryResources)) {
-                        throw new \Exception(sprintf(
+                        throw new \LogicException(sprintf(
                             'Expecting array for relationship entry resources of relationship "%s"',
                             $relationshipKey
                         ));
@@ -418,7 +418,7 @@ class Resource extends \stdClass implements \JsonSerializable
                         //If returned $relationshipEntryResources are RelationshipResource
                         $relationshipEntry->data = $relationshipEntryResources;
                     } else {
-                        throw new \Exception(sprintf(
+                        throw new \LogicException(sprintf(
                             'Unexpected relationship entry resources of relationship "%s",'
                             . ' expecting string or RelationshipResource "%s" given',
                             $relationshipKey,

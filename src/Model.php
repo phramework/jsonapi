@@ -72,7 +72,7 @@ abstract class Model
     }
 
     /**
-     * Alias of ResourceModel's getResourceType, used as shortcut
+     * Alias of ResourceModel's getResourceType, used as a shortcut
      * @return string
      * @see ResourceModel::getResourceType
      */
