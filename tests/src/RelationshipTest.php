@@ -29,7 +29,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     /**
      * @var $model
      */
-    protected  $model;
+    protected $model;
     
     /**
      * @var Relationship
@@ -38,10 +38,12 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->model = new ResourceModel('user');
+        $this->model = $model = new ResourceModel('user');
         
         $this->relationship = new Relationship(
-            $this->model
+            function () use ($model) {
+                return $model;
+            }
         );
     }
 
@@ -50,8 +52,12 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
+        $model = $this->model;
+
         new Relationship(
-            $this->model,
+            function () use ($model) {
+                return $model;
+            },
             Relationship::TYPE_TO_ONE,
             'tag-id'
         );
@@ -62,18 +68,24 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct3()
     {
+        $model = $this->model;
+
         $relationship = new Relationship(
-            $this->model,
+            function () use ($model) {
+                return $model;
+            },
             Relationship::TYPE_TO_ONE,
             'tag-id',
             (object) [
-                'GET' => function () {}
+                'GET' => function () {
+                }
             ]
         );
 
         $this->assertEquals(
             (object) [
-                'GET' => function () {}
+                'GET' => function () {
+                }
             ],
             $relationship->getCallbacks()
         );
@@ -85,8 +97,12 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructFailure2()
     {
+        $model = $this->model;
+
         new Relationship(
-            $this->model,
+            function () use ($model) {
+                return $model;
+            },
             Relationship::TYPE_TO_ONE,
             null,
             (object) ['inv'] //Not callable
@@ -99,11 +115,16 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructFailureCallbackMethodUnset()
     {
+        $model = $this->model;
+
         new Relationship(
-            $this->model,
+            function () use ($model) {
+                return $model;
+            },
             Relationship::TYPE_TO_ONE,
             null,
-            (object) [function() {}] //Not callable
+            (object) [function () {
+            }] //Not callable
         );
     }
 
@@ -113,8 +134,12 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructFailureInvalidCallbackMethod()
     {
+        $model = $this->model;
+
         new Relationship(
-            $this->model,
+            function () use ($model) {
+                return $model;
+            },
             Relationship::TYPE_TO_ONE,
             null,
             (object) [
@@ -132,8 +157,12 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructFailureInvalidMethodNotCallable()
     {
+        $model = $this->model;
+
         new Relationship(
-            $this->model,
+            function () use ($model) {
+                return $model;
+            },
             Relationship::TYPE_TO_ONE,
             null,
             (object) [
@@ -167,7 +196,9 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
         );
 
         $relationship = new Relationship(
-            User::getResourceModel(),
+            function () {
+                return User::getResourceModel();
+            },
             Relationship::TYPE_TO_MANY,
             'group_id'
         );
@@ -189,7 +220,9 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
         );
 
         $relationship = new Relationship(
-            User::getResourceModel(),
+            function () {
+                return User::getResourceModel();
+            },
             Relationship::TYPE_TO_MANY,
             'group_id'
         );
@@ -211,12 +244,13 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
         );
 
         $relationship = new Relationship(
-            User::getResourceModel(),
+            function () {
+                return User::getResourceModel();
+            },
             Relationship::TYPE_TO_MANY,
             null,
             (object) [
                 'GET' => function () {
-
                 }
             ]
         );

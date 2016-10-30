@@ -221,6 +221,7 @@ class Resource extends \stdClass implements \JsonSerializable
      * );
      * ```
      * @todo what about getRelationshipData method ?
+     * @todo restore links
      */
     public static function parseFromRecord(
         \stdClass $record,
@@ -237,7 +238,6 @@ class Resource extends \stdClass implements \JsonSerializable
         $flagRelationships = ($flags & Resource::PARSE_RELATIONSHIP) != 0;
         $flagRelationshipLinks = ($flags & Resource::PARSE_RELATIONSHIP_LINKS) != 0;
         $flagRelationshipData = ($flags & Resource::PARSE_RELATIONSHIP_DATA) != 0;
-
 
         $idAttribute = $model->getIdAttribute();
 
@@ -328,6 +328,7 @@ class Resource extends \stdClass implements \JsonSerializable
              * @var ResourceModel
              */
             $relationshipModel = $relationshipObject->getResourceModel();
+
             $relationshipType = $relationshipObject->getType();
             $recordDataAttribute = $relationshipObject->getRecordDataAttribute();
 

@@ -88,6 +88,24 @@ MemoryDataSource::insert(
 );
 
 /**
+ * company
+ */
+
+MemoryDataSource::addTable('article');
+
+MemoryDataSource::insert(
+    'article',
+    (object) [
+        'id'       => '1',
+        'title'    => 'Hello world',
+        'body'     => 'Lorem ipsum',
+        'creator-user_id' => '1',
+        'tag_id' => ['1', '2']
+    ]
+);
+
+
+/**
  * user
  */
 
@@ -100,7 +118,8 @@ MemoryDataSource::insert(
         'username' => 'nohponex',
         'email'    => 'nohponex@gmail.com',
         'group_id' => '1',
-        'tag_id'   => ['1', '2']
+        'tag_id'   => ['1', '2'],
+        'referrer-user_id' => '1'
     ]
 );
 
@@ -111,7 +130,8 @@ MemoryDataSource::insert(
         'username' => 'nohponex2',
         'email'    => 'nohponex+2@gmail.com',
         'group_id' => '2',
-        'tag_id'   => []
+        'tag_id'   => [],
+        'referrer-user_id' => '2'
     ]
 );
 

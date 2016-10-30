@@ -29,7 +29,7 @@ use Phramework\JSONAPI\ModelTrait;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class Tag extends Model
+class A extends Model
 {
     use ModelTrait;
 
@@ -38,25 +38,16 @@ class Tag extends Model
      */
     protected static function defineModel() : ResourceModel
     {
-        $model = (new ResourceModel('tag', new MemoryDataSource()))
-            ->addVariable('table', 'tag')
+        $model = (new ResourceModel('A', new MemoryDataSource()))
+            ->addVariable('table', 'user')
             ->setRelationships((object) [
-                'article' => new Relationship(
-                    function () {
-                        return Article::getResourceModel();
+                'A' => new Relationship(
+                    function ()
+                    {
+                        return A::getResourceModel();
                     },
-                    Relationship::TYPE_TO_MANY,
-                    null,
-                    (object) [
-                        /**
-                         * @param string $tagId
-                         * @return string[]
-                         */
-                        'GET' => function (string $tagId) {
-                            $ids = [];
-                            return $ids;
-                        }
-                    ]
+                    Relationship::TYPE_TO_ONE,
+                    'referrer-user_id'
                 )
             ]);
 

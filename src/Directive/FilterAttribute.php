@@ -118,7 +118,7 @@ class FilterAttribute
             }
 
             //@todo is this required?
-            $singleFilterValue = urldecode($singleFilterValue);
+            $singleFilterValue = urldecode((string) $singleFilterValue);
 
             list($operator, $operand) = Operator::parse($singleFilterValue);
 
