@@ -31,21 +31,18 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait Patch
 {
-    use RequestBodyQueue;
-
     //prototype
     public static function handlePatch(
         ServerRequestInterface $request,
         ResponseInterface $response,
         ResourceModel $model,
-        string $id,
         array $validationCallbacks = [],
         callable $viewCallback = null,
-        int $bulkLimit = null,
+        int $bulkLimit = 1,
         array $directives = []
     ) : ResponseInterface {
         //Validate id using model's validator
-        $id = $model->getIdAttributeValidator()->parse($id);
+        //$id = $model->getIdAttributeValidator()->parse($id);
 
         //gather data as a queue
 

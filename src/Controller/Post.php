@@ -22,6 +22,8 @@ use Phramework\Exceptions\IncorrectParameterException;
 use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\Source\Pointer;
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
+use Phramework\JSONAPI\Controller\Helper\RequestWithBody;
+use Phramework\JSONAPI\Controller\Helper\ResourceQueueItem;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
 use Phramework\Util\Util;
@@ -38,8 +40,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 trait Post
 {
-    use RequestBodyQueue;
-
     //prototype
     public static function handlePost(
         ServerRequestInterface $request,
@@ -50,32 +50,7 @@ trait Post
         int $bulkLimit = null, //todo decide 1 or null for default
         array $directives = []
     ) : ResponseInterface {
-        //todo figure out a permanent solution to have body as object instead of array, for every framework
-        $body = json_decode(json_encode($request->getParsedBody()));
-
-        //Access request body primary data
-        $data = $body->data ?? new \stdClass();
-
-        /**
-         * @var bool
-         */
-        $isBulk = true;
-
-        //Treat all request data (bulk or not) as an array of resources
-        if (is_object($data)
-            || (is_array($data) && Util::isArrayAssoc($data))
-        ) {
-            $isBulk = false;
-            $data = [$data];
-        }
-        
-        //check bulk limit
-        if ($bulkLimit !== null && count($data) > $bulkLimit) {
-            throw new RequestException(sprintf(
-                'Number of batch requests is exceeding the maximum of %s',
-                $bulkLimit
-            ));
-        }
+        list($data, $isBulk) = RequestWithBody::prepareData($request, $bulkLimit);
 
         $typeValidator = (new EnumValidator([$model->getResourceType()]));
         
@@ -119,11 +94,10 @@ trait Post
             $requestAttributes    = $resource->attributes    ?? new \stdClass();
             $requestRelationships = $resource->relationships ?? new \stdClass();
 
-            //todo use helper class
-            $queueItem = (object) [
-                'attributes'    => $requestAttributes,
-                'relationships' => $requestRelationships
-            ];
+            $queueItem = new ResourceQueueItem(
+                $requestAttributes,
+                $requestRelationships
+            );
                 
             $requestQueue->push($queueItem);
             
@@ -135,7 +109,7 @@ trait Post
         foreach ($requestQueue as $i => $q) {
             $validationModel->attributes
                 ->setSource(new Pointer('/data/' . $i . '/attributes'))
-                ->parse($q->attributes);
+                ->parse($q->getAttributes());
         }
 
         //on each call validation callback
@@ -151,10 +125,13 @@ trait Post
 
         //process queue
         while (!$requestQueue->isEmpty()) {
+            /**
+             * @var ResourceQueueItem
+             */
             $queueItem = $requestQueue->pop();
 
             $id = $model->post(
-                $queueItem->attributes
+                $queueItem->getAttributes()
             );
 
             Controller::assertUnknownError(
@@ -163,7 +140,7 @@ trait Post
             );
 
             //POST item's relationships
-            $relationships = $queueItem->relationships;
+            $relationships = $queueItem->getRelationships();
 
             foreach ($relationships as $key => $relationship) {
                 //Call post relationship method to post each of relationships pairs
