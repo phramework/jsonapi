@@ -24,6 +24,7 @@ use Phramework\Exceptions\RequestException;
 use Phramework\Exceptions\ServerException;
 use Phramework\Exceptions\Source\Pointer;
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
+use Phramework\JSONAPI\Controller\Helper\RequestWithBody;
 use Phramework\JSONAPI\Controller\Helper\ResourceQueueItem;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\Relationship;
@@ -59,7 +60,7 @@ trait Post
      * - string[] $ids
      * - returning ResponseInterface
      * @param int|null               $bulkLimit
-     * @param array                  $directives
+     * @param Directive[]            $directives
      * @return ResponseInterface
      * @throws ForbiddenException
      * @throws RequestException
@@ -72,37 +73,13 @@ trait Post
         ResourceModel $model,
         array $validationCallbacks = [],
         callable $viewCallback = null, //function (request, response, $ids) : ResponseInterface
-        int $bulkLimit = null, //todo decide 1 or null for default
+        int $bulkLimit = null,
         array $directives = []
     ) : ResponseInterface {
-        //todo figure out a permanent solution to have body as object instead of array, for every framework
-        $body = json_decode(json_encode($request->getParsedBody())) ?? new \stdClass();
-
-        Controller::requireProperties($body, new Pointer('/'), 'data');
-
-        //Access request body primary data
-        $data = $body->data;
-
-        /**
-         * @var bool
-         */
-        $isBulk = true;
-
-        //Treat all request data (bulk or not) as an array of resources
-        if (is_object($data)
-            || (is_array($data) && Util::isArrayAssoc($data))
-        ) {
-            $isBulk = false;
-            $data = [$data];
-        }
-        
-        //check bulk limit
-        if ($bulkLimit !== null && count($data) > $bulkLimit) {
-            throw new RequestException(sprintf(
-                'Number of bulk requests is exceeding the maximum of %s',
-                $bulkLimit
-            ));
-        }
+        list($data, $isBulk) = RequestWithBody::prepareData(
+            $request,
+            $bulkLimit
+        );
 
         $typeValidator = (new EnumValidator([$model->getResourceType()]));
         
@@ -115,20 +92,20 @@ trait Post
 
         $bulkIndex = 0;
 
-        //Prepare exception source
-        $source = new Pointer(
-            '/data' .
-            (
-                $isBulk
-                ? '/' . $bulkIndex
-                : ''
-            )
-        );
-
         /*
          * gather data as a queue
          */
         foreach ($data as $resource) {
+            //Prepare exception source
+            $source = new Pointer(
+                '/data' .
+                (
+                    $isBulk
+                    ? '/' . $bulkIndex
+                    : ''
+                )
+            );
+
             //Require resource type
             Controller::requireProperties($resource, $source, 'type');
 
