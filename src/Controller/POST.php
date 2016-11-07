@@ -411,7 +411,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             } elseif ($relationship->type == Relationship::TYPE_TO_MANY) {
                 $parsedValues = [];
 
-                if (!is_array($relationshipData)) {
+                if (!is_array($relationshipData) && (count((array) $relationshipData) > 0)) {
                     throw new RequestException(sprintf(
                         'Expected data to be an array for relationship "%s"',
                         $relationshipKey
