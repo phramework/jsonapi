@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\Controller\Helper\RequestBodyQueue;
+use Phramework\JSONAPI\Controller\Helper\RequestWithBody;
 use Phramework\JSONAPI\Directive\Directive;
 use Phramework\JSONAPI\ResourceModel;
 use Psr\Http\Message\ResponseInterface;
@@ -32,6 +33,7 @@ use Psr\Http\Message\ServerRequestInterface;
 trait Patch
 {
     //prototype
+    //@todo figure out view callback arguments
     public static function handlePatch(
         ServerRequestInterface $request,
         ResponseInterface $response,
@@ -41,22 +43,47 @@ trait Patch
         int $bulkLimit = 1,
         array $directives = []
     ) : ResponseInterface {
+        list($data, $isBulk) = RequestWithBody::prepareData(
+            $request,
+            $bulkLimit
+        );
 
         //gather data as a queue
-
-        //check bulk limit ??
-
-        //on each validate
 
         //prefer PATCH validation model
         $validationModel = $model->getValidationModel(
             'PATCH'
         );
 
-        //check if exists
+        //on each
 
-        //on each call validation callback
+          // validate
 
-        //204 or view callback
+          //check if exists
+
+          //call validation callbacks
+
+          //gather output for view callback
+
+        //return view callback, it MUST return a ResponseInterface
+        if ($viewCallback !== null) {
+            return $viewCallback(
+                $request,
+                $response
+            );
+        }
+
+        return Patch::defaultPatchViewCallback(
+            $request,
+            $response
+        );
+    }
+
+    public static function defaultPatchViewCallback(
+        ServerRequestInterface $request,
+        ResponseInterface $response
+    ) : ResponseInterface {
+        //Return 204 No Content
+        return Response::noContent($response);
     }
 }

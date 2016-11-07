@@ -208,7 +208,6 @@ trait Post
         }
 
         //return view callback, it MUST return a ResponseInterface
-
         if ($viewCallback !== null) {
             return $viewCallback(
                 $request,
