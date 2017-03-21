@@ -34,7 +34,7 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
      * Enable caching of resources
      * @var bool
      */
-    protected static $caching = true;
+    protected static $caching = false;
 
     /**
      * Get resource's validation model

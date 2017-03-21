@@ -87,7 +87,7 @@ abstract class Relationship extends Get
                 $resource = $callMethod = static::getById(
                     $id,
                     $fields,
-                    $primaryDataParameters
+                    ...$primaryDataParameters
                 );
 
                 if (!$resource) {
