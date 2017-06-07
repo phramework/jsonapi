@@ -156,4 +156,20 @@ class FilterAttribute
             $name
         ));
     }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __isset($name)
+    {
+        switch ($name) {
+            case 'operand':
+            case 'operator':
+            case 'attribute':
+                return $this->attribute !== null;
+            default:
+                return false;
+        }
+    }
 }

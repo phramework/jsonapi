@@ -101,15 +101,16 @@ abstract class Get extends \Phramework\JSONAPI\Model\Directives
             }
         }
 
+        /**
+         * @var string[]
+         */
+        $idAsArray = is_array($id) ? $id : [$id];
+
         //Prepare filter
-        $filter = new Filter((
-            is_array($id)
-            ? $id
-            : [$id]
-        )); //Force array for primary data
+        $filter = new Filter($idAsArray); //Force array for primary data
 
         $collection = static::get(
-            new Page(count($id)), //limit number of requested resources
+            new Page(count($idAsArray)), //limit number of requested resources
             $filter,
             null, //sort
             $fields, //fields
