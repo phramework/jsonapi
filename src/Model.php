@@ -167,7 +167,14 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
         return \Phramework\Database\Operations\Update::update(
             $id,
             (array) $attributes,
-            static::getTable(),
+            (
+                static::getSchema() === null
+                ? static::getTable()
+                : [
+                    'table' => static::getTable(),
+                    'schema' => static::getSchema()
+                ]
+            ),
             static::getIdAttribute()
         );
     }
@@ -190,7 +197,14 @@ abstract class Model extends \Phramework\JSONAPI\Model\Relationship
                 ? (array) $additionalAttributes
                 : []
             ),
-            static::getTable(),
+            (
+                static::getSchema() === null
+                ? static::getTable()
+                : [
+                    'table' => static::getTable(),
+                    'schema' => static::getSchema()
+                ]
+            ),
             static::getIdAttribute()
         );
     }
