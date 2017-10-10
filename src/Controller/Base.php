@@ -219,7 +219,7 @@ abstract class Base
         }
 
         //Require data
-        Request::requireParameters($parameters, ['relationships']);
+        Request::requireParameters($parameters, ['data']);
 
         //Require data['relationships']
         if (isset($parameters->data->relationships)) {
