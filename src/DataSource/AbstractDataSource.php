@@ -15,16 +15,38 @@ declare(strict_types=1);
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+namespace Phramework\JsonApi\DataSource;
 
-namespace Phramework\JsonApi\Directive;
-
-namespace Phramework\JsonApi\Directive;
+use Phramework\JsonApi\Directive\AbstractDirective;
 
 /**
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @since 4.0.0
  */
-abstract class AbstractDirective
+abstract class AbstractDataSource
 {
+    abstract public function get(
+        AbstractDirective ...$directives
+    ) : array;
+
+    /**
+     * @todo allow multiple return type
+     */
+    abstract public function post(
+        \stdClass $attributes
+    );
+
+    /**
+     * @todo allow multiple return type
+     */
+    abstract public function patch(
+        string $resourceId,
+        \stdClass $resourceAttributes
+    );
+
+    abstract public function delete(
+        string $resourceId,
+        ?\stdClass $resourceAttributes
+    );
 }

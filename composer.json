@@ -26,7 +26,11 @@
       "Phramework\\JsonApi\\": "src"
     }
   },
-  "autoload-dev": {},
+  "autoload-dev": {
+    "psr-4": {
+      "Phramework\\JsonApi\\APP\\": "tests/APP"
+    }
+  },
   "archive": {
     "exclude": [
       "*",
