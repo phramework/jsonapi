@@ -185,7 +185,7 @@ class Filter
                 $relationshipObject = $modelClass::getRelationship($relationshipKey);
                 $relationshipObjectModelClass = $relationshipObject->modelClass;
                 $relationshipValidationModel = $relationshipObjectModelClass::getValidationModel();
-                $relationshipFilterValidationModel = $relationshipObjectModelClass::getValidationModel();
+                $relationshipFilterValidationModel = $relationshipObjectModelClass::getFilterValidationModel();
 
                 if ($relationshipFilterValidationModel !== null
                     && isset($relationshipFilterValidationModel->properties->{$relationshipObjectModelClass::getIdAttribute()})) {
