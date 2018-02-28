@@ -502,7 +502,7 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                         ...$currentRelationshipParameters
                     ),
                     sprintf(
-                        'Resource of type "%s" and id "%d" is not found',
+                        'Resource of type "%s" and id "%s" is not found',
                         $relationshipModelClass::getType(),
                         $tempId
                     )
@@ -526,7 +526,10 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                             )
                         ),
                         sprintf(
-                            'Resource of type "%s" and id "%d" is not found',
+                            'Resource of type "%s" and id "
+                            
+                            
+                            " is not found',
                             $value->type,
                             $value->id
                         )
