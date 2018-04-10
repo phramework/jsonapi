@@ -86,7 +86,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
                         $filter,
                         $hasWhere
                     ),
-                    $sort
+                    $sort ?? static::getSort()
                 ),
                 $page
             ),
