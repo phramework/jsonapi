@@ -360,7 +360,7 @@ trait DataSourceTrait
 
         //pass new directives
         $toPassDirectives[] = $filter;
-        $toPassDirectives[] = new Page(count($id));
+        $toPassDirectives[] = new Page(is_array($id) ? count($id) : 1);
 
         $collection = $this->get(
             ...$toPassDirectives
