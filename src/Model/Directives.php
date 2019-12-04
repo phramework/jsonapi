@@ -287,7 +287,9 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
 
                 $attribute = $filterValue->attribute;
                 $operator = $filterValue->operator;
-                $operand = $filterValue->operand;
+                $operand = $filterValue->operand
+                    ? str_replace("'", "''", $filterValue->operand)
+                    : $filterValue->operand;
 
                 if (in_array($operator, Operator::getOrderableOperators())) {
                     $additionalQuery[] = sprintf(
