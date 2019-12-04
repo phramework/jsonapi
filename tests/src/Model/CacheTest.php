@@ -23,13 +23,14 @@ use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\Viewers\JSONAPI;
 use Phramework\Phramework;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model\Cache
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class CacheTest extends \PHPUnit_Framework_TestCase
+class CacheTest extends TestCase
 {
     /**
      * Helper method
@@ -50,7 +51,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::initializeCache
      */
-    public function testInitializeCache()
+    public function testInitializeCache(): void
     {
         Bootstrap::invokeStaticMethod(
             Article::class,
@@ -63,7 +64,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      * @covers ::setCache
      * @after testInitializeCache
      */
-    public function testSetCache()
+    public function testSetCache(): void
     {
         $article = clone Article::getById('1');
 
@@ -97,7 +98,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      * @covers ::getCache
      * @after testInitializeCache
      */
-    public function testGetCache()
+    public function testGetCache(): void
     {
         $this->assertInstanceOf(
             Resource::class,
@@ -119,7 +120,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      * @covers ::invalidateCache
      * @after testGetCache
      */
-    public function testInvalidateCache()
+    public function testInvalidateCache(): void
     {
         Bootstrap::invokeStaticMethod(
             Article::class,

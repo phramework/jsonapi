@@ -21,13 +21,14 @@ use Phramework\JSONAPI\ValidationModel;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\Util\Util;
 use Phramework\Validate\ObjectValidator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class ModelTest extends \PHPUnit_Framework_TestCase
+class ModelTest extends TestCase
 {
     /**
      * @covers ::getValidationModel
@@ -57,8 +58,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::collection
      */
-    public function testCollection()
-    {
+    public function testCollection(): void
+{
         $resources = Article::collection([
             [
                 'id' => 1
@@ -72,8 +73,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::resource
      */
-    public function testResource()
-    {
+    public function testResource(): void
+{
         $resources = Article::resource(
             [
                 'id' => 1
@@ -92,7 +93,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase
     {
         $fields = $modelClass::getFilterable();
 
-        $this->assertInternalType('object', $fields);
+        $this->assertIsObject($fields);
 
         $this->assertTrue(Util::isArrayOf((array)$fields, 'integer'), 'Expect object of integers');
     }
@@ -138,8 +139,8 @@ class ModelTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::getSort
      */
-    public function testGetSort()
-    {
+    public function testGetSort(): void
+{
         $sort = Article::getSort();
 
         $this->assertInstanceOf(Sort::class, $sort);

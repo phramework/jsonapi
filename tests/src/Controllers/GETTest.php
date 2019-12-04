@@ -18,13 +18,14 @@ namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\APP\Bootstrap;
 use \Phramework\Phramework;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Controller\GET
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class GETTest extends \PHPUnit_Framework_TestCase
+class GETTest extends TestCase
 {
     /**
      * @var Phramework
@@ -35,15 +36,6 @@ class GETTest extends \PHPUnit_Framework_TestCase
      * @var object
      */
     protected $parameters;
-
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     * @todo update base
-     */
-    protected function setUp()
-    {
-    }
 
     protected function prepare()
     {
@@ -69,18 +61,11 @@ class GETTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-    }
 
     /**
      * @covers Phramework\JSONAPI\Controller\GET::handleGET
      */
-    public function testHandleGet()
+    public function testHandleGet(): void
     {
         $this->prepare();
 

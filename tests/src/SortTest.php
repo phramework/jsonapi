@@ -16,15 +16,17 @@
  */
 namespace Phramework\JSONAPI;
 
+use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Sort
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class SortTest extends \PHPUnit_Framework_TestCase
+class SortTest extends TestCase
 {
     public function getAvailableProperties()
     {
@@ -38,7 +40,7 @@ class SortTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $sort = new Sort(
             Article::getTable(),
@@ -49,7 +51,7 @@ class SortTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromParameters
      */
-    public function testParseFromParametersEmpty()
+    public function testParseFromParametersEmpty(): void
     {
         $sort = Sort::parseFromParameters(
             [],
@@ -62,7 +64,7 @@ class SortTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromParameters
      */
-    public function testParseFromParameters()
+    public function testParseFromParameters(): void
     {
         $parameters = (object) [
             'sort' => '-id'
@@ -96,63 +98,56 @@ class SortTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($sort->ascending);
     }
 
-    /**
-     * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\RequestException
-     */
-    public function testParseFromParametersFailureNotString()
+    public function testParseFromParametersFailureNotString(): void
     {
         $parameters = (object) [
             'sort' => ['id']
         ];
 
+        $this->expectException(RequestException::class);
+
         $sort = Sort::parseFromParameters(
             $parameters,
             Article::class
         );
     }
 
-    /**
-     * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\RequestException
-     */
-    public function testParseFromParametersFailureParseExpression()
+    public function testParseFromParametersFailureParseExpression(): void
     {
         $parameters = (object) [
             'sort' => '--id'
         ];
 
+        $this->expectException(RequestException::class);
+
         $sort = Sort::parseFromParameters(
             $parameters,
             Article::class
         );
     }
 
-    /**
-     * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\RequestException
-     */
-    public function testParseFromParametersFailureNotSortable()
+    public function testParseFromParametersFailureNotSortable(): void
     {
         $parameters = (object) [
             'sort' => 'meta'
         ];
 
+        $this->expectException(RequestException::class);
+
         $sort = Sort::parseFromParameters(
             $parameters,
             Article::class
         );
     }
 
-    /**
-     * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\RequestException
-     */
-    public function testParseFromParametersFailureNoSortableAttributes()
+    public function testParseFromParametersFailureNoSortableAttributes(): void
     {
         $parameters = (object) [
             'sort' => 'id'
         ];
+
+
+        $this->expectException(RequestException::class);
 
         $sort = Sort::parseFromParameters(
             $parameters,
@@ -180,7 +175,7 @@ class SortTest extends \PHPUnit_Framework_TestCase
      * @covers ::__get
      * @expectedException \Exception
      */
-    public function testGetFailure()
+    public function testGetFailure(): void
     {
         $sort = new Sort(
             Article::getTable(),

@@ -19,20 +19,21 @@ namespace Phramework\JSONAPI;
 use Phramework\Exceptions\RequestException;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\Models\Operator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\FilterAttribute
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class FilterAttributeTest extends \PHPUnit_Framework_TestCase
+class FilterAttributeTest extends TestCase
 {
     /**
      * @var FilterAttribute
      */
     protected $filterAttribute;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filterAttribute = new FilterAttribute(
             'id',
@@ -53,7 +54,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         new FilterAttribute(
             'id',
@@ -65,7 +66,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parse
      */
-    public function testValidate()
+    public function testValidate(): void
     {
         (new FilterTest())->testParseFromParameters();
     }
@@ -74,7 +75,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
      * @covers ::parse
      * @expectedException \Phramework\Exceptions\RequestException
      */
-    public function testValidateFailureAttributeArray()
+    public function testValidateFailureAttributeArray(): void
     {
         (new FilterTest())->testParseFromParametersFailureAttributeIsArray();
     }
@@ -83,7 +84,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
      * @covers ::parse
      * @expectedException \Phramework\Exceptions\RequestException
      */
-    public function testValidateFailureAttributeJSONSecondLevel()
+    public function testValidateFailureAttributeJSONSecondLevel(): void
     {
         (new FilterTest())->testParseFromParametersFailureAttributeJSONSecondLevel();
     }
@@ -106,7 +107,7 @@ class FilterAttributeTest extends \PHPUnit_Framework_TestCase
      * @covers ::__get
      * @expectedException \Exception
      */
-    public function testGetFailure()
+    public function testGetFailure(): void
     {
         $this->filterAttribute->{'not-found'};
     }

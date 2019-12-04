@@ -17,13 +17,14 @@
 namespace Phramework\JSONAPI\Controller;
 
 use \Phramework\Phramework;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Controller\Relationships
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class RelationshipsTest extends \PHPUnit_Framework_TestCase
+class RelationshipsTest extends TestCase
 {
     /**
      * @var Phramework
@@ -36,15 +37,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
      */
     protected $parameters;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-    }
-
-    protected function prepare()
+    protected function prepare(): void
     {
         $_SERVER['REQUEST_URI'] = '/article/1/relationships/tag/';
         $_SERVER['REQUEST_METHOD'] = Phramework::METHOD_GET;
@@ -70,7 +63,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleByIdRelationships
      */
-    public function testGETByIdSuccess()
+    public function testGETByIdSuccess(): void
     {
         $this->prepare();
 
@@ -80,14 +73,14 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
         $params = $this->parameters;
 
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
 
         $this->assertObjectHasAttribute('links', $params);
         $this->assertObjectHasAttribute('data', $params);
 
         return;
 
-        $this->assertInternalType('object', $params->data);
+        $this->assertIsObject($params->data);
         $this->assertObjectHasAttribute('id', $params->data);
 
         $this->assertInternalType('string', $params->data->id);
@@ -99,7 +92,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
 
         $article = \Phramework\JSONAPI\APP\Models\Article::getById($id);
 
-        $this->assertInternalType('object', $article);
+        $this->assertIsObject($article);
 
         $this->assertObjectHasAttribute('attributes', $article);
         $this->assertObjectHasAttribute('relationships', $article);
@@ -109,7 +102,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('creator', $relationships);
         $this->assertObjectHasAttribute('tag', $relationships);
 
-        $this->assertInternalType('object', $relationships->creator->data);
+        $this->assertIsObject($relationships->creator->data);
         $this->assertInternalType('array', $relationships->tag->data);
 
         $this->assertEquals('1', $relationships->creator->data->id);
@@ -121,7 +114,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleByIdRelationships
      */
-    public function testDELETEFailureNotFound()
+    public function testDELETEFailureNotFound(): void
     {
         $this->prepare();
 
@@ -133,7 +126,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
         //Access parameters returned by invoked phramework's viewer
         $params = $this->parameters;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(
@@ -146,7 +139,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleByIdRelationships
      */
-    public function testHandleFailure()
+    public function testHandleFailure(): void
     {
         $this->prepare();
 
@@ -157,7 +150,7 @@ class RelationshipsTest extends \PHPUnit_Framework_TestCase
         //Access parameters returned by invoked phramework's viewer
         $params = $this->parameters;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(

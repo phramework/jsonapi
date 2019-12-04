@@ -21,6 +21,7 @@ use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\Sort;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model\Get
@@ -28,7 +29,7 @@ use Phramework\JSONAPI\Sort;
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  * @afterClass CacheTest
  */
-class GetTest extends \PHPUnit_Framework_TestCase
+class GetTest extends TestCase
 {
     /**
      * Helper method
@@ -50,7 +51,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
      * @covers ::get
      * @expectedException \Phramework\Exceptions\NotImplementedException
      */
-    public function testGet()
+    public function testGet(): void
     {
         Get::get();
     }
@@ -61,8 +62,8 @@ class GetTest extends \PHPUnit_Framework_TestCase
      * Assuming at least one trend_template exists
      * @covers ::getById
      */
-    public function testGetById()
-    {
+    public function testGetById(): string
+{
         //Get 2 first items
         $collection = self::get(2);
 
@@ -73,7 +74,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
         //Request again to access cached
         $collectionResource = Article::getById($id);
 
-        $this->assertInternalType('object', $collectionResource);
+        $this->assertIsObject($collectionResource);
         $this->assertSame($id, $collectionResource->id);
         $this->assertSame(Article::getType(), $collectionResource->type);
 
@@ -90,7 +91,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
         //Request again to access cached
         $resources = Article::getById($ids);
 
-        $this->assertInternalType('object', $resources);
+        $this->assertIsObject($resources);
 
         $resourcesCount = 0;
         foreach ($resources as $r) {
@@ -109,7 +110,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
 
             $resource = $resources->{$resourceId};
 
-            $this->assertInternalType('object', $resource);
+            $this->assertIsObject($resource);
             $this->assertSame($resourceId, $resource->id);
             $this->assertSame(Article::getType(), $resource->type);
         }
@@ -127,7 +128,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
         //Fetch multiple resources
         $resources = Article::getById($ids);
 
-        $this->assertInternalType('object', $resources);
+        $this->assertIsObject($resources);
 
         $resourcesCount = 0;
         foreach ($resources as $r) {
@@ -147,7 +148,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
         $resourceId = $ids[0];
         $resource = $resources->{$resourceId};
 
-        $this->assertInternalType('object', $resource);
+        $this->assertIsObject($resource);
         $this->assertSame($resourceId, $resource->id);
         $this->assertSame(Article::getType(), $resource->type);
 
@@ -167,7 +168,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseSort
      */
-    public function testParseSort()
+    public function testParseSort(): void
     {
        $this->assertInstanceOf(Sort::class, Article::parseSort((object) []));
     }
@@ -175,7 +176,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parsePage
      */
-    public function testParsePage()
+    public function testParsePage(): void
     {
         $this->assertNull(Article::parsePage((object) []));
     }
@@ -183,7 +184,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFields
      */
-    public function testParseFields()
+    public function testParseFields(): void
     {
         $this->assertNull(Article::parseFields((object) []));
     }
@@ -191,7 +192,7 @@ class GetTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFilter
      */
-    public function testParseFilter()
+    public function testParseFilter(): void
     {
         $this->assertNull(Article::parseFilter((object) []));
     }

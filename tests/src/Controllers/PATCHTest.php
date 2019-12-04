@@ -18,13 +18,14 @@ namespace Phramework\JSONAPI\Controller;
 
 use Phramework\JSONAPI\APP\Models\User;
 use \Phramework\Phramework;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Controller\PATCH
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class PATCHTest extends \PHPUnit_Framework_TestCase
+class PATCHTest extends TestCase
 {
     /**
      * @var Phramework
@@ -35,14 +36,6 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
      * @var object
      */
     protected $parameters;
-
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-    }
 
     protected function prepare()
     {
@@ -99,7 +92,7 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handlePATCH
      */
-    public function testPATCHSuccess()
+    public function testPATCHSuccess(): void
     {
         $this->prepare();
         $this->phramework->invoke();
@@ -110,12 +103,12 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
 
         return;
 
-        $this->assertInternalType('object', $parameters);
+        $this->assertIsObject($parameters);
 
         $this->assertObjectHasAttribute('links', $parameters);
         $this->assertObjectHasAttribute('data', $parameters);
 
-        $this->assertInternalType('object', $parameters->data);
+        $this->assertIsObject($parameters->data);
         $this->assertObjectHasAttribute('id', $parameters->data);
 
         $this->assertInternalType('string', $parameters->data->id);
@@ -127,7 +120,7 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
 
         $article = \Phramework\JSONAPI\APP\Models\Article::getById($id);
 
-        $this->assertInternalType('object', $article);
+        $this->assertIsObject($article);
 
         $this->assertObjectHasAttribute('attributes', $article);
         $this->assertObjectHasAttribute('relationships', $article);
@@ -137,7 +130,7 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('creator', $relationships);
         $this->assertObjectHasAttribute('tag', $relationships);
 
-        $this->assertInternalType('object', $relationships->creator->data);
+        $this->assertIsObject($relationships->creator->data);
         $this->assertInternalType('array', $relationships->tag->data);
 
         $this->assertEquals('1', $relationships->creator->data->id);
@@ -150,7 +143,7 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
      * Cause a not found exception, at to TYPE_TO_ONE relationship
      * @covers \Phramework\JSONAPI\Controller\PATCH::handlePATCH
      */
-    public function testPATCHFailureToOne()
+    public function testPATCHFailureToOne(): void
     {
         $this->prepare();
 
@@ -162,7 +155,7 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
         //Access parameters written by invoked phramework's viewer
         $params = $this->parameters;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(
@@ -176,7 +169,7 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
      * Cause a not found exception, at to TYPE_TO_MANY relationship
      * @covers \Phramework\JSONAPI\Controller\PATCH::handlePATCH
      */
-    public function testPATCHFailureToMany()
+    public function testPATCHFailureToMany(): void
     {
         $this->prepare();
 
@@ -188,7 +181,7 @@ class PATCHTest extends \PHPUnit_Framework_TestCase
         //Access parameters written by invoked phramework's viewer
         $params = $this->parameters;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(
