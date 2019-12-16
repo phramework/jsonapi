@@ -78,10 +78,10 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
     ) {
         $query = str_replace('{{table}}', static::getTable(), $query);
 
-        $query = trim(self::handleFields(
-            self::handlePage(
-                self::handleSort(
-                    self::handleFilter(
+        $query = trim(static::handleFields(
+            static::handlePage(
+                static::handleSort(
+                    static::handleFilter(
                         $query,
                         $filter,
                         $hasWhere
