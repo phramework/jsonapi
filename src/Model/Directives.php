@@ -103,7 +103,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @param  Sort|null    $sort
      * @return string       Query
      */
-    private static function handleSort($query, $sort = null)
+    protected static function handleSort($query, $sort = null)
     {
         $replace = '';
 
@@ -141,7 +141,7 @@ abstract class Directives extends \Phramework\JSONAPI\Model\Cache
      * @uses Model::getDefaultPage if page is null
      * @throws RequestException
      */
-    private static function handlePage($query, $page = null)
+    protected static function handlePage($query, $page = null)
     {
         /**
          * string[]
