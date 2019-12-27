@@ -17,18 +17,19 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\Validate\ObjectValidator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\ValidationModel
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class ValidationModelTest extends \PHPUnit_Framework_TestCase
+class ValidationModelTest extends TestCase
 {
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         new ValidationModel(
             new ObjectValidator(),

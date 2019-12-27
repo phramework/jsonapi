@@ -19,13 +19,14 @@ namespace Phramework\JSONAPI;
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Relationship;
 use Phramework\Phramework;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Relationship
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class RelationshipTest extends \PHPUnit_Framework_TestCase
+class RelationshipTest extends TestCase
 {
     public function getAvailableProperties()
     {
@@ -43,7 +44,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      */
     protected $relationship;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->relationship = new Relationship(
             Tag::class
@@ -53,7 +54,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         new Relationship(
             Tag::class,
@@ -121,7 +122,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @expectedException \Exception
      */
-    public function testConstructFailureInvalidCallbackMethod()
+    public function testConstructFailureInvalidCallbackMethod(): void
     {
         new Relationship(
             Tag::class,
@@ -137,7 +138,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @expectedException \Exception
      */
-    public function testConstructFailureInvalidMethodNotCallable()
+    public function testConstructFailureInvalidMethodNotCallable(): void
     {
         new Relationship(
             Tag::class,
@@ -164,7 +165,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      * @covers ::__get
      * @expectedException \Exception
      */
-    public function testGetFailure()
+    public function testGetFailure(): void
     {
         $this->relationship->{'not-found'};
     }
@@ -172,7 +173,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__set
      */
-    public function testSet()
+    public function testSet(): void
     {
         $this->relationship->{'flags'} = Relationship::FLAG_INCLUDE_BY_DEFAULT;
 
@@ -183,7 +184,7 @@ class RelationshipTest extends \PHPUnit_Framework_TestCase
      * @covers ::__set
      * @expectedException \Exception
      */
-    public function testSetFailure()
+    public function testSetFailure(): void
     {
         $this->relationship->{'modelClass'} = Tag::class;
     }

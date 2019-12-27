@@ -17,13 +17,14 @@
 namespace Phramework\JSONAPI\Controller;
 
 use \Phramework\Phramework;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Controller\DELETE
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class DELETETest extends \PHPUnit_Framework_TestCase
+class DELETETest extends TestCase
 {
     /**
      * @var Phramework
@@ -35,14 +36,6 @@ class DELETETest extends \PHPUnit_Framework_TestCase
      * @todo rename if this is response data
      */
     protected $parameters;
-
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-    }
 
     protected function prepare()
     {
@@ -70,7 +63,7 @@ class DELETETest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleDELETE
      */
-    public function testDELETESuccess()
+    public function testDELETESuccess(): void
     {
         $this->prepare();
 
@@ -80,15 +73,15 @@ class DELETETest extends \PHPUnit_Framework_TestCase
         $params = $this->parameters;
         return;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
 
         $this->assertObjectHasAttribute('links', $params);
         $this->assertObjectHasAttribute('data', $params);
 
-        $this->assertInternalType('object', $params->data);
+        $this->assertIsObject($params->data);
         $this->assertObjectHasAttribute('id', $params->data);
 
-        $this->assertInternalType('string', $params->data->id);
+        $this->assertIsString($params->data->id);
 
         $id = $params->data->id;
 
@@ -97,7 +90,7 @@ class DELETETest extends \PHPUnit_Framework_TestCase
 
         $article = \Phramework\JSONAPI\APP\Models\Article::getById($id);
 
-        $this->assertInternalType('object', $article);
+        $this->assertIsObject($article);
 
         $this->assertObjectHasAttribute('attributes', $article);
         $this->assertObjectHasAttribute('relationships', $article);
@@ -107,7 +100,7 @@ class DELETETest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('creator', $relationships);
         $this->assertObjectHasAttribute('tag', $relationships);
 
-        $this->assertInternalType('object', $relationships->creator->data);
+        $this->assertIsObject($relationships->creator->data);
         $this->assertInternalType('array', $relationships->tag->data);
 
         $this->assertEquals('1', $relationships->creator->data->id);
@@ -120,7 +113,7 @@ class DELETETest extends \PHPUnit_Framework_TestCase
      * Cause a not found exception, at to TYPE_TO_ONE relationship
      * @covers \Phramework\JSONAPI\Controller\DELETE::handleDELETE
      */
-    public function testDELETEFailureToOne()
+    public function testDELETEFailureToOne(): void
     {
         $this->prepare();
 
@@ -132,7 +125,7 @@ class DELETETest extends \PHPUnit_Framework_TestCase
         //Access parameters written by invoked phramework's viewer
         $params = $this->parameters;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(
@@ -146,7 +139,7 @@ class DELETETest extends \PHPUnit_Framework_TestCase
      * Cause a not found exception, at to TYPE_TO_MANY relationship
      * @covers \Phramework\JSONAPI\Controller\DELETE::handleDELETE
      */
-    public function testDELETEFailureToMany()
+    public function testDELETEFailureToMany(): void
     {
         return;
         $this->prepare();
@@ -159,7 +152,7 @@ class DELETETest extends \PHPUnit_Framework_TestCase
         //Access parameters written by invoked phramework's viewer
         $params = $this->parameters;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(

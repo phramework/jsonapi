@@ -17,13 +17,14 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\JSONAPI\APP\Models\Article;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Page
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class PageTest extends \PHPUnit_Framework_TestCase
+class PageTest extends TestCase
 {
     public function getAvailableProperties()
     {
@@ -36,7 +37,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $page = new Page();
     }
@@ -44,7 +45,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromParameters
      */
-    public function testParseFromParametersEmpty()
+    public function testParseFromParametersEmpty(): void
     {
         $page = Page::parseFromParameters(
             [],
@@ -57,7 +58,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromParameters
      */
-    public function testParseFromParameters()
+    public function testParseFromParameters(): void
     {
         $parameters = (object) [
             'page' => [
@@ -84,7 +85,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromParameters
      * @expectedException \Phramework\Exceptions\IncorrectParametersException
      */
-    public function testParseFromParametersFailureToParseLimit()
+    public function testParseFromParametersFailureToParseLimit(): void
     {
         $parameters = (object) [
             'page' => (object) [
@@ -102,7 +103,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromParameters
      * @expectedException \Phramework\Exceptions\IncorrectParametersException
      */
-    public function testParseFromParametersFailureToParseOffset()
+    public function testParseFromParametersFailureToParseOffset(): void
     {
         $parameters = (object) [
             'page' => [
@@ -133,7 +134,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
      * @covers ::__get
      * @expectedException \Exception
      */
-    public function testGetFailure()
+    public function testGetFailure(): void
     {
         $page = new Page();
 

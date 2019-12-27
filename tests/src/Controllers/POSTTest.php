@@ -17,6 +17,7 @@
 namespace Phramework\JSONAPI\Controller;
 
 use \Phramework\Phramework;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @todo test wrong relationship
@@ -25,7 +26,7 @@ use \Phramework\Phramework;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class POSTTest extends \PHPUnit_Framework_TestCase
+class POSTTest extends TestCase
 {
     /**
      * @var Phramework
@@ -37,15 +38,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      */
     protected $params;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-    }
-
-    protected function prepare()
+    protected function prepare(): void
     {
         //ob_start();
         $_SERVER['REQUEST_URI'] = '/article/';
@@ -99,21 +92,9 @@ class POSTTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-        //\Phramework\JSONAPI\APP\Viewers\Viewer::release(__CLASS__);
-        //foreach ($this->buffer as $line) {
-        //    print_r($line);
-        //}
-    }
-
-    /**
      * @covers \Phramework\JSONAPI\Controller\POST::handlePOSTResource
      */
-    public function testHandlePOSTResource()
+    public function testHandlePOSTResource(): void
     {
         $this->testPOSTSuccess();
     }
@@ -121,7 +102,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
      */
-    public function testPOSTSuccess()
+    public function testPOSTSuccess(): void
     {
         $this->prepare();
         //ob_clean();
@@ -132,12 +113,12 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         $params = $this->params;
         return;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
 
         $this->assertObjectHasAttribute('links', $params);
         $this->assertObjectHasAttribute('data', $params);
 
-        $this->assertInternalType('object', $params->data);
+        $this->assertIsObject($params->data);
         $this->assertObjectHasAttribute('id', $params->data);
 
         $this->assertInternalType('string', $params->data->id);
@@ -149,7 +130,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
 
         $article = \Phramework\JSONAPI\APP\Models\Article::getById($id);
 
-        $this->assertInternalType('object', $article);
+        $this->assertIsObject($article);
 
         $this->assertObjectHasAttribute('attributes', $article);
         $this->assertObjectHasAttribute('relationships', $article);
@@ -159,7 +140,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('creator', $relationships);
         $this->assertObjectHasAttribute('tag', $relationships);
 
-        $this->assertInternalType('object', $relationships->creator->data);
+        $this->assertIsObject($relationships->creator->data);
         $this->assertInternalType('array', $relationships->tag->data);
 
         $this->assertEquals('1', $relationships->creator->data->id);
@@ -172,7 +153,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      * Cause a not found exception, at to TYPE_TO_ONE relationship
      * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
      */
-    public function testPOSTFailureToOne()
+    public function testPOSTFailureToOne(): void
     {
         $this->prepare();
 
@@ -184,7 +165,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         //Access parameters written by invoked phramework's viewer
         $params = $this->params;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(
@@ -198,7 +179,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
      * Cause a not found exception, at to TYPE_TO_MANY relationship
      * @covers \Phramework\JSONAPI\Controller\POST::handlePOST
      */
-    public function testPOSTFailureToMany()
+    public function testPOSTFailureToMany(): void
     {
         $this->prepare();
 
@@ -210,7 +191,7 @@ class POSTTest extends \PHPUnit_Framework_TestCase
         //Access parameters written by invoked phramework's viewer
         $params = $this->params;
 
-        $this->assertInternalType('object', $params);
+        $this->assertIsObject($params);
         $this->assertObjectHasAttribute('errors', $params);
 
         $this->assertSame(

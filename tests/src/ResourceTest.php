@@ -19,13 +19,14 @@ namespace Phramework\JSONAPI;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\APP\Models\User;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Resource
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class ResourceTest extends TestCase
 {
     public function getAvailableProperties()
     {
@@ -42,7 +43,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         new Resource(
             Article::getType(),
@@ -53,7 +54,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecords
      */
-    public function testParseFromRecords()
+    public function testParseFromRecords(): void
     {
         $articles = Article::get();
     }
@@ -61,7 +62,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecord
      */
-    public function testParseFromRecord()
+    public function testParseFromRecord(): void
     {
         $tags = Tag::get();
 
@@ -71,7 +72,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecords
      */
-    public function testParseFromRecordsEmpty()
+    public function testParseFromRecordsEmpty(): void
     {
         $this->assertEmpty(Tag::collection(null));
         $this->assertEmpty(Tag::collection([]));
@@ -80,7 +81,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecord
      */
-    public function testParseFromRecordEmpty()
+    public function testParseFromRecordEmpty(): void
     {
         $this->assertNull(Tag::resource(null));
         $this->assertNull(Tag::resource([]));
@@ -90,7 +91,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRecord
      * @expectedException \Exception
      */
-    public function testParseFromRecordFailureModelClass()
+    public function testParseFromRecordFailureModelClass(): void
     {
         Resource::parseFromRecord(
             [
@@ -103,7 +104,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecord
      */
-    public function testParseFromRecordSuccessToOnePreloaded()
+    public function testParseFromRecordSuccessToOnePreloaded(): void
     {
         Article::resource([
             'id' => '1',
@@ -114,7 +115,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecord
      */
-    public function testParseFromRecordSuccessToOnePreloadedRelationshipResource()
+    public function testParseFromRecordSuccessToOnePreloadedRelationshipResource(): void
     {
         $creator = RelationshipResource::parseFromRecord(User::$records[0], User::class);
 
@@ -128,7 +129,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRecord
      * @expectedException \Exception
      */
-    public function testParseFromRecordSuccessToOnePreloadedResource()
+    public function testParseFromRecordSuccessToOnePreloadedResource(): void
     {
         $creator = User::resource(User::$records[0]);
 
@@ -141,7 +142,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecord
      */
-    public function testParseFromRecordSuccessToOneUseCallback()
+    public function testParseFromRecordSuccessToOneUseCallback(): void
     {
         Article::resource([
             'id' => '1'
@@ -151,7 +152,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::parseFromRecord
      */
-    public function testParseFromRecordSuccessToManyPreloaded()
+    public function testParseFromRecordSuccessToManyPreloaded(): void
     {
         Article::resource([
             'id' => '1',
@@ -163,7 +164,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRecord
      * @expectedException \Exception
      */
-    public function testParseFromRecordFailureNoIdAttributeSetInRecord()
+    public function testParseFromRecordFailureNoIdAttributeSetInRecord(): void
     {
         Tag::resource(['title' => 'true']);
     }
@@ -172,7 +173,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRecord
      * @expectedException \Exception
      */
-    public function testParseFromRecordFailureMetaNotAnObject()
+    public function testParseFromRecordFailureMetaNotAnObject(): void
     {
         Tag::resource([
             'id' => '1',
@@ -196,7 +197,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRecord
      * @expectedException \Exception
      */
-    public function testParseFromRecordFailureToManyNotAnStringOrResource()
+    public function testParseFromRecordFailureToManyNotAnStringOrResource(): void
     {
         Article::resource([
             'id' => '1',
@@ -208,7 +209,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRecord
      * @expectedException \Exception
      */
-    public function testParseFromRecordFailureToManyNotAnArray()
+    public function testParseFromRecordFailureToManyNotAnArray(): void
     {
         $this->markTestIncomplete();
         Article::resource([
@@ -221,7 +222,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::parseFromRecord
      * @expectedException \Exception
      */
-    public function testParseFromRecordFailureToManyNotAnArrayOfStringsOrAttributes()
+    public function testParseFromRecordFailureToManyNotAnArrayOfStringsOrAttributes(): void
     {
         $this->markTestIncomplete();
         Article::resource([
@@ -255,7 +256,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__set
      */
-    public function testSetId()
+    public function testSetId(): void
     {
         $resource = new Resource(Tag::getType(), '1');
 
@@ -294,7 +295,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @covers ::__get
      * @expectedException \Exception
      */
-    public function testGetFailure()
+    public function testGetFailure(): void
     {
         $resource = new Resource(Tag::getType(), '1');
 

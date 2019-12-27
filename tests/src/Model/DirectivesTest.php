@@ -28,18 +28,19 @@ use Phramework\JSONAPI\Page;
 use Phramework\JSONAPI\Resource;
 use Phramework\JSONAPI\Sort;
 use Phramework\Models\Operator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model\Directives
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class DirectivesTest extends \PHPUnit_Framework_TestCase
+class DirectivesTest extends TestCase
 {
     /**
      * @covers ::handleSort
      */
-    public function testHandleSort()
+    public function testHandleSort(): void
     {
         $sort = new Sort(
             Tag::getTable(),
@@ -74,7 +75,7 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleSort
      */
-    public function testHandleSortNull()
+    public function testHandleSortNull(): void
     {
         $sort = new Sort(
             null,
@@ -108,7 +109,7 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handlePage
      */
-    public function testHandlePage()
+    public function testHandlePage(): void
     {
         $limit  = 1;
         $offset = 2;
@@ -131,7 +132,7 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
             $page
         );
 
-        $this->assertInternalType('string', $query);
+        $this->assertIsString($query);
 
         $pattern = sprintf(
             '/^SELECT \* FROM "%s"\s+LIMIT %s\s+OFFSET %s$/',
@@ -146,7 +147,7 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleFields
      */
-    public function testHandleFields()
+    public function testHandleFields(): void
     {
         $additional = 'title';
 
@@ -225,7 +226,7 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
      * @covers ::handleGet
      * @todo rewrite
      */
-    public function testHandleGet()
+    public function testHandleGet(): void
     {
         $page = new Page(10, 1);
         $filter = new Filter(
@@ -282,7 +283,7 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleFilter
      */
-    public function testHandleFilterViaGet()
+    public function testHandleFilterViaGet(): void
     {
         $this->testHandleGet();
     }
@@ -290,7 +291,7 @@ class DirectivesTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::handleFilter
      */
-    public function testHandleFilter()
+    public function testHandleFilter(): void
     {
         $filter = new Filter();
 

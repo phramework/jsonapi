@@ -19,18 +19,19 @@ namespace Phramework\JSONAPI\APP\Models;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Page;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\Model\Relationship
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class RelationshipTest extends \PHPUnit_Framework_TestCase
+class RelationshipTest extends TestCase
 {
     /**
      * @covers ::getRelationshipData
      */
-    public function testGetRelationshipData()
+    public function testGetRelationshipData(): void
     {
         $articles = Article::get(new Page(1, 1))[0];
 

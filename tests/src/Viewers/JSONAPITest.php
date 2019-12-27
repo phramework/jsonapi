@@ -19,18 +19,19 @@ namespace Phramework\JSONAPI\Viewers;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
 use Phramework\JSONAPI\Relationship;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Phramework\JSONAPI\Viewers\JSONAPI
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class JSONAPITest extends \PHPUnit_Framework_TestCase
+class JSONAPITest extends TestCase
 {
     /**
      * @covers ::view
      */
-    public function testView()
+    public function testView(): void
     {
         ob_start();
         (new JSONAPI())->view((object) [
@@ -53,7 +54,7 @@ class JSONAPITest extends \PHPUnit_Framework_TestCase
      * @covers ::header
      * @before testView
      */
-    public function testHeader()
+    public function testHeader(): void
     {
         JSONAPI::header();
     }

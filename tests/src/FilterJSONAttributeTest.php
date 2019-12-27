@@ -17,17 +17,18 @@
 namespace Phramework\JSONAPI;
 
 use Phramework\Models\Operator;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Phramework\JSONAPI\FilterJSONAttribute
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
+class FilterJSONAttributeTest extends TestCase
 {
     protected $filterAttribute;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filterAttribute = new FilterJSONAttribute(
             'meta',
@@ -40,7 +41,7 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstruct()
+    public function testConstruct(): void
     {
         new FilterJSONAttribute(
             'meta',
@@ -53,7 +54,7 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__get
      */
-    public function testGet()
+    public function testGet(): void
     {
         $this->assertSame(
             'keywords',
@@ -65,7 +66,7 @@ class FilterJSONAttributeTest extends \PHPUnit_Framework_TestCase
      * @covers ::__get
      * @expectedException \Exception
      */
-    public function testGetFailure()
+    public function testGetFailure(): void
     {
         $this->filterAttribute->{'not-found'};
     }

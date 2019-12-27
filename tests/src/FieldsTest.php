@@ -17,6 +17,8 @@
 namespace Phramework\JSONAPI;
 
 use Exception;
+use PHPUnit\Framework\TestCase;
+use Phramework\Exceptions\IncorrectParametersException;
 use Phramework\JSONAPI\APP\Models\Article;
 use Phramework\JSONAPI\APP\Models\Tag;
 
@@ -25,14 +27,14 @@ use Phramework\JSONAPI\APP\Models\Tag;
  * @license https://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  * @author Xenofon Spafaridis <nohponex@gmail.com>
  */
-class FieldsTest extends \PHPUnit_Framework_TestCase
+class FieldsTest extends TestCase
 {
     /**
      * @var Fields
      */
     protected $fields;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->fields = new Fields();
     }
@@ -44,7 +46,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     {
         $fieldsInstance = new Fields();
 
-        $this->assertInternalType('object', $fieldsInstance->getFields());
+        $this->assertIsObject($fieldsInstance->getFields());
     }
 
     /**
@@ -58,25 +60,22 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
 
         $fields = $fieldsInstance->getFields();
 
-        $this->assertInternalType('object', $fields);
+        $this->assertIsObject($fields);
 
         $this->assertObjectHasAttribute(
             Article::getType(),
             $fields
         );
 
-        $this->assertInternalType(
-            'array',
+        $this->assertIsArray(
             $fields->{Article::getType()}
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @expectedException Exception
-     */
-    public function testConstructFailure()
+    public function testConstructFailure(): void
     {
+        $this->expectException(\Exception::class);
+
         new Fields((object)[
             Article::getType() => 'title' //Must be an array
         ]);
@@ -84,10 +83,8 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::add
-     * @before testGet
-     * @before getFields
      */
-    public function testAdd()
+    public function testAdd(): void
     {
         $return = $this->fields->add(
             Article::getType(),
@@ -106,16 +103,18 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers ::get
-     */
-    public function testGet()
+    public function testGet(): void
     {
+        $this->fields->add(
+            Article::getType(),
+            ['id', 'title', 'updated']
+        );
+
         $return = $this->fields->get(
             Article::getType()
         );
 
-        $this->assertSame(
+        $this->assertEquals(
             $return,
             ['id', 'title', 'updated']
         );
@@ -124,7 +123,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::get
      */
-    public function testGetForNotSetResourceType()
+    public function testGetForNotSetResourceType(): void
     {
         $return = $this->fields->get(
             Tag::getType()
@@ -136,23 +135,15 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers ::getFields
-     */
-    public function testGetFields()
+    public function testGetFields(): void
     {
-        $fields = $this->fields->getFields();
+        $this->fields->add(Article::getType(), ['id']);
+        $fields = $this->fields->get(Article::getType());
 
-        $this->assertInternalType('object', $fields);
-
-        $this->assertObjectHasAttribute(Article::getType(), $fields);
+        $this->assertNotEmpty($fields);
     }
 
-
-    /**
-     * @covers ::parseFromParameters
-     */
-    public function testParseFromParametersEmpty()
+    public function testParseFromParametersEmpty(): void
     {
         $fields = Fields::parseFromParameters(
             [],
@@ -162,10 +153,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($fields);
     }
 
-    /**
-     * @covers ::parseFromParameters
-     */
-    public function testParseFromParameters()
+    public function testParseFromParameters(): void
     {
         $parameters = (object) [
             'fields' => [
@@ -188,11 +176,7 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['title'], $fields->fields->{Tag::getType()});
     }
 
-    /**
-     * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\IncorrectParametersException
-     */
-    public function testParseFromParametersFailureNotAllowed()
+    public function testParseFromParametersFailureNotAllowed(): void
     {
         $parameters = (object)[
             'fields' => [
@@ -200,17 +184,15 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        $this->expectException(IncorrectParametersException::class);
+
         $fields = Fields::parseFromParameters(
             $parameters,
             Article::class
         );
     }
 
-    /**
-     * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\IncorrectParametersException
-     */
-    public function testParseFromParametersFailureNotStringValue()
+    public function testParseFromParametersFailureNotStringValue(): void
     {
         $parameters = (object) [
             'fields' => [
@@ -218,17 +200,15 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        $this->expectException(\Phramework\Exceptions\IncorrectParametersException::class);
+
         Fields::parseFromParameters(
             $parameters,
             Article::class
         );
     }
 
-    /**
-     * @covers ::parseFromParameters
-     * @expectedException \Phramework\Exceptions\RequestException
-     */
-    public function testParseFromParametersFailureNotAllowedResourceType()
+    public function testParseFromParametersFailureNotAllowedResourceType(): void
     {
         $parameters = (object) [
             'fields' => [
@@ -236,6 +216,8 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
+        $this->expectException(\Phramework\Exceptions\RequestException::class);
+
         Fields::parseFromParameters(
             $parameters,
             Article::class
@@ -245,20 +227,22 @@ class FieldsTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__get
      */
-    public function testMagicGet()
+    public function testMagicGet(): void
     {
         $fields = new Fields();
 
-        $this->assertInternalType('object', $fields->fields);
+        $this->assertIsObject($fields->fields);
     }
 
     /**
      * @covers ::__get
-     * @expectedException \Exception
      */
-    public function testMagicGetFailure()
-    {
+    public function testMagicGetFailure(): void
+{
         $fields = new Fields();
+
+        $this->expectException(\Exception::class);
+
         $fields->{'not-found'};
     }
 }
