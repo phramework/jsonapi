@@ -492,4 +492,31 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 
         $filter->{'not-found'};
     }
+
+    /**
+     * @covers ::parseFromParameters
+     * This will happen when the url is ?filter or ?filter=TEST
+     */
+    public function testParseFromParametersReturnsNullWhenFiltersIsAString()
+    {
+        $parameters = (object) [
+            'filter' => '',
+        ];
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            Article::class //Use article resource model's filters
+        );
+
+        $this->assertNull($filter);
+
+        $parameters->filter = 'TEST';
+
+        $filter = Filter::parseFromParameters(
+            $parameters,
+            Article::class //Use article resource model's filters
+        );
+
+        $this->assertNull($filter);
+    }
 }
