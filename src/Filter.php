@@ -338,7 +338,11 @@ class Filter
      */
     public static function parseFromParameters($parameters, $modelClass)
     {
-        if (!isset($parameters->filter)) {
+        if (
+            !isset($parameters->filter) ||
+            empty($parameters->filter) || // empty strings or arrays
+            (!is_array($parameters->filter) && !is_object($parameters->filter)) // should allow arrays and objects
+        ) {
             return null;
         }
 
