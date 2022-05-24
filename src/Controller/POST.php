@@ -268,8 +268,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
             $modelClass,
             $attributes,
             $requestRelationships,
-            $relationshipParameters,
-            $validationModel
+            $validationModel,
+            $relationshipParameters
         );
 
         //Call Validation callbacks
@@ -322,17 +322,17 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
      * @param string $modelClass
      * @param object $attributes
      * @param object $requestRelationships
-     * @throws RequestException
+     * @return object
      * @throws \Exception
      * @throws \Phramework\Exceptions\NotFoundException
-     * @return object
+     * @throws RequestException
      */
     protected static function getParsedRelationshipAttributes(
         $modelClass,
         &$attributes,
         $requestRelationships,
-        $relationshipParameters = [],
-        ValidationModel $validationModel
+        ValidationModel $validationModel,
+        $relationshipParameters = []
     ) {
         /**
          * Format, object with
@@ -527,8 +527,8 @@ abstract class POST extends \Phramework\JSONAPI\Controller\GET
                         ),
                         sprintf(
                             'Resource of type "%s" and id "
-                            
-                            
+
+
                             " is not found',
                             $value->type,
                             $value->id

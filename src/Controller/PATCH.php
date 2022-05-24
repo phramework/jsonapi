@@ -120,7 +120,7 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
                 [],
                 false
             );
-            
+
             $attributeValidator = $modelClass::getValidationModel()->attributes;
 
             if ($attributeValidator === null) {
@@ -173,8 +173,8 @@ abstract class PATCH extends \Phramework\JSONAPI\Controller\POST
             $modelClass,
             $attributes,
             $requestRelationships,
-            [],
-            $validationModel
+            $validationModel,
+            []
         );
 
         //Check if callbacks for TO_MANY relationships are set
